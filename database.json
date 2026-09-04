@@ -1,0 +1,796 @@
+{
+  "admins": [
+    {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@nextgenarvr.club",
+      "password_hash": "$2a$10$dbStjEQjDn1TtVDYvQoCk.H0jClOD15obIfLsRJF5XhuMfoz20DwK",
+      "role": "super_admin",
+      "created_at": "2026-08-22T09:06:47.318Z",
+      "last_login": "2026-08-26T14:22:58.661Z",
+      "updated_at": "2026-08-26T14:22:58.661Z"
+    }
+  ],
+  "members": [
+    {
+      "id": 1,
+      "full_name": "Dr. Rajeshwari Sharma",
+      "roll_no": "FAC-CSE-012",
+      "branch": "Computer Science & Engineering",
+      "year": "Faculty",
+      "domain": "AR/VR & Spatial Computing",
+      "role": "Faculty Coordinator & Mentor",
+      "email": "rajeshwari.sharma@college.edu",
+      "phone": "+91 98765 43210",
+      "bio": "Associate Professor specializing in Extended Reality (XR), Computer Vision, and Immersive Human-Computer Interfaces with 12+ years of research experience.",
+      "avatar_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
+      "github_url": "https://github.com",
+      "linkedin_url": "https://linkedin.com",
+      "portfolio_url": "",
+      "status": "core_team",
+      "joined_at": "2023-01-10"
+    },
+    {
+      "id": 2,
+      "full_name": "Aarav Mehta",
+      "roll_no": "22CS089",
+      "branch": "Computer Science",
+      "year": "Final Year (4th)",
+      "domain": "AR/VR & Spatial Computing",
+      "role": "President & XR Lead",
+      "email": "aarav.mehta@nextgenarvr.club",
+      "phone": "+91 98111 22233",
+      "bio": "Building WebXR and Unity 3D spatial simulations. Led team to 1st place in National Smart India Hackathon 2025.",
+      "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
+      "github_url": "https://github.com/aarav-xr",
+      "linkedin_url": "https://linkedin.com/in/aarav-xr",
+      "portfolio_url": "https://aarav-xr.dev",
+      "status": "core_team",
+      "joined_at": "2023-08-15"
+    },
+    {
+      "id": 3,
+      "full_name": "Diya Sen",
+      "roll_no": "23IT044",
+      "branch": "Information Technology",
+      "year": "3rd Year",
+      "domain": "Game Development",
+      "role": "Vice President & Unreal Dev Lead",
+      "email": "diya.sen@nextgenarvr.club",
+      "phone": "+91 98222 33344",
+      "bio": "Unreal Engine 5 enthusiast, C++ gameplay programmer, and shader artist. Created the campus VR exploration tour.",
+      "avatar_url": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400",
+      "github_url": "https://github.com/diyasen-games",
+      "linkedin_url": "https://linkedin.com/in/diya-sen",
+      "portfolio_url": "https://diyasen.games",
+      "status": "core_team",
+      "joined_at": "2024-02-01"
+    },
+    {
+      "id": 4,
+      "full_name": "Rohan Varma",
+      "roll_no": "22ECE051",
+      "branch": "Electronics & Comm.",
+      "year": "4th Year",
+      "domain": "E-Sports Division",
+      "role": "E-Sports Operations Head",
+      "email": "rohan.varma@nextgenarvr.club",
+      "phone": "+91 98333 44455",
+      "bio": "National collegiate Valorant & BGMI tournament organizer. Passionate about competitive esports analytics and LAN infrastructure.",
+      "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
+      "github_url": "https://github.com",
+      "linkedin_url": "https://linkedin.com/in/rohan-esports",
+      "portfolio_url": "",
+      "status": "core_team",
+      "joined_at": "2023-08-20"
+    },
+    {
+      "id": 5,
+      "full_name": "Ananya Iyer",
+      "roll_no": "23CS112",
+      "branch": "Computer Science",
+      "year": "3rd Year",
+      "domain": "3D Design & Worldbuilding",
+      "role": "3D Art & UI/UX Head",
+      "email": "ananya.iyer@nextgenarvr.club",
+      "phone": "+91 98444 55566",
+      "bio": "Blender 3D artist, environment sculptor, and WebXR interface designer. Passionate about spatial UI and haptic ergonomics.",
+      "avatar_url": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400",
+      "github_url": "https://github.com",
+      "linkedin_url": "https://linkedin.com/in/ananya-iyer3d",
+      "portfolio_url": "https://artstation.com",
+      "status": "core_team",
+      "joined_at": "2024-02-10"
+    },
+    {
+      "id": 6,
+      "full_name": "Kabir Patel",
+      "roll_no": "24AI018",
+      "branch": "Artificial Intelligence & Data Science",
+      "year": "2nd Year",
+      "domain": "AI & Spatial Intelligence",
+      "role": "AI / Computer Vision Specialist",
+      "email": "kabir.patel@nextgenarvr.club",
+      "phone": "+91 98555 66677",
+      "bio": "Integrating generative 3D meshes (Gaussian Splatting, NeRFs) with realtime VR rendering engines.",
+      "avatar_url": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400",
+      "github_url": "https://github.com/kabir-ai",
+      "linkedin_url": "https://linkedin.com",
+      "portfolio_url": "",
+      "status": "active",
+      "joined_at": "2024-09-01"
+    },
+    {
+      "id": 7,
+      "full_name": "Tanvi Deshmukh",
+      "roll_no": "24CS095",
+      "branch": "Computer Science",
+      "year": "2nd Year",
+      "domain": "AR/VR & Spatial Computing",
+      "role": "WebXR Developer",
+      "email": "tanvi.d@nextgenarvr.club",
+      "phone": "+91 98666 77788",
+      "bio": "Three.js, React-Three-Fiber, and A-Frame developer crafting lightweight browser-based augmented reality experiences.",
+      "avatar_url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
+      "github_url": "https://github.com/tanvi-xr",
+      "linkedin_url": "https://linkedin.com",
+      "portfolio_url": "",
+      "status": "active",
+      "joined_at": "2024-09-01"
+    },
+    {
+      "id": 8,
+      "full_name": "Vikram Joshi",
+      "roll_no": "21CS015",
+      "branch": "Computer Science",
+      "year": "Alumni (2025)",
+      "domain": "Game Development",
+      "role": "Ex-President (Software Engineer @ ImmersiveWorks)",
+      "email": "vikram.joshi@alumni.edu",
+      "phone": "+91 98777 88899",
+      "bio": "Co-founded NextGen AR/VR club in 2022. Currently working on spatial operating systems and real-time raytraced simulation engines.",
+      "avatar_url": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=400",
+      "github_url": "https://github.com",
+      "linkedin_url": "https://linkedin.com",
+      "portfolio_url": "",
+      "status": "alumni",
+      "joined_at": "2022-08-01"
+    },
+    {
+      "id": 9,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST8814",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "domain": "AR/VR & Spatial Computing",
+      "role": "Member",
+      "email": "test.test8814@college.edu",
+      "phone": "+91 99999 88888",
+      "bio": "Passionate about building WebXR and Three.js 3D spatial simulations....",
+      "avatar_url": "https://api.dicebear.com/7.x/bottts/svg?seed=Test%20Applicant%20XR",
+      "github_url": "",
+      "linkedin_url": "",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "active",
+      "joined_at": "2026-08-22",
+      "created_at": "2026-08-22T09:15:29.009Z"
+    }
+  ],
+  "applications": [
+    {
+      "id": 1,
+      "full_name": "Ishaan Verma",
+      "roll_no": "25CS034",
+      "branch": "Computer Science",
+      "year": "1st Year",
+      "email": "ishaan.v@college.edu",
+      "phone": "+91 98711 33445",
+      "domains": [
+        "AR/VR & Spatial Computing",
+        "Game Development"
+      ],
+      "why_join": "I have been experimenting with Unity VR development and want to collaborate with seniors on WebXR hackathons.",
+      "experience": "Built a 3D solar system simulator in Unity and know basic C# scripting.",
+      "portfolio_url": "https://github.com/ishaan-v-dev",
+      "status": "pending",
+      "review_notes": "",
+      "submitted_at": "2026-08-20 11:45"
+    },
+    {
+      "id": 2,
+      "full_name": "Sneha Roy",
+      "roll_no": "24ECE019",
+      "branch": "Electronics & Comm.",
+      "year": "2nd Year",
+      "email": "sneha.roy@college.edu",
+      "phone": "+91 98722 44556",
+      "domains": [
+        "3D Design & Worldbuilding"
+      ],
+      "why_join": "I create 3D environment assets in Blender and want to design immersive VR spaces for club projects.",
+      "experience": "2 years of Blender modeling, texturing with Substance Painter, and basic rigging.",
+      "portfolio_url": "https://artstation.com/sneharoy3d",
+      "status": "pending",
+      "review_notes": "",
+      "submitted_at": "2026-08-21 16:20"
+    },
+    {
+      "id": 3,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST8814",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "email": "test.test8814@college.edu",
+      "phone": "+91 99999 88888",
+      "domains": [
+        "AR/VR & Spatial Computing",
+        "Game Development"
+      ],
+      "why_join": "Passionate about building WebXR and Three.js 3D spatial simulations.",
+      "experience": "Built 2 Unity prototypes",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "approved",
+      "review_notes": "Approved via automated test suite",
+      "submitted_at": "2026-08-22T09:15:28.830Z",
+      "created_at": "2026-08-22T09:15:28.830Z",
+      "reviewed_at": "2026-08-22T09:15:29.008Z",
+      "reviewed_by": "admin",
+      "updated_at": "2026-08-22T09:15:29.008Z"
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "title": "Meta Spatial Hackathon 2026",
+      "slug": "meta-spatial-hackathon-2026",
+      "category": "Hackathon",
+      "event_date": "2026-09-26",
+      "event_time": "09:00 AM - 06:00 PM",
+      "venue": "Main Auditorium & Spatial VR Lab",
+      "description": "A 36-hour intensive hackathon where teams construct groundbreaking spatial computing applications using Meta Quest 3 and WebXR. $3,000+ prize pool with direct industry mentorship.",
+      "poster_url": "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800",
+      "is_registration_open": 1,
+      "max_seats": 120,
+      "is_team_event": 1,
+      "max_team_size": 4,
+      "tags": [
+        "Meta Quest 3",
+        "WebXR",
+        "Unity",
+        "Prizes"
+      ],
+      "created_at": "2026-08-10"
+    },
+    {
+      "id": 2,
+      "title": "Unreal Engine 5.5 Masterclass: Nanite & Lumen",
+      "slug": "unreal-engine-5-masterclass",
+      "category": "Workshop",
+      "event_date": "2026-09-08",
+      "event_time": "02:00 PM - 05:30 PM",
+      "venue": "Computer Center Lab 3",
+      "description": "Hands-on practical workshop covering next-gen photorealistic game environment rendering, custom shader graphs, and haptic feedback setup for VR headsets.",
+      "poster_url": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800",
+      "is_registration_open": 1,
+      "max_seats": 60,
+      "is_team_event": 0,
+      "max_team_size": 1,
+      "tags": [
+        "Unreal Engine",
+        "Shaders",
+        "Game Dev",
+        "Hands-on"
+      ],
+      "created_at": "2026-08-12"
+    },
+    {
+      "id": 3,
+      "title": "CyberClash: Collegiate Valorant Championship",
+      "slug": "cyberclash-valorant-championship",
+      "category": "E-Sports",
+      "event_date": "2026-09-18",
+      "event_time": "10:00 AM - 08:00 PM",
+      "venue": "E-Sports Arena & Live Twitch Stream",
+      "description": "The ultimate 5v5 collegiate tactical shooter showdown. Double elimination bracket with professional caster commentary, custom trophies, and gaming gear rewards.",
+      "poster_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800",
+      "is_registration_open": 1,
+      "max_seats": 16,
+      "is_team_event": 1,
+      "max_team_size": 5,
+      "tags": [
+        "Valorant",
+        "5v5",
+        "LAN Tournament",
+        "Prize Pool"
+      ],
+      "created_at": "2026-08-14"
+    },
+    {
+      "id": 4,
+      "title": "Hands-on WebXR & Three.js Bootcamp",
+      "slug": "webxr-threejs-bootcamp-past",
+      "category": "Workshop",
+      "event_date": "2026-07-14",
+      "event_time": "01:00 PM - 05:00 PM",
+      "venue": "Seminar Hall 2",
+      "description": "Building immersive 3D interactive portfolio showcases that run directly inside mobile and desktop web browsers with zero installation needed.",
+      "poster_url": "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&q=80&w=800",
+      "is_registration_open": 0,
+      "max_seats": 80,
+      "is_team_event": 0,
+      "max_team_size": 1,
+      "tags": [
+        "Three.js",
+        "JavaScript",
+        "WebXR",
+        "Completed"
+      ],
+      "created_at": "2026-07-01"
+    }
+  ],
+  "event_registrations": [
+    {
+      "id": 1,
+      "event_id": 1,
+      "full_name": "Devanathan K",
+      "roll_no": "23CS045",
+      "email": "dev.k@college.edu",
+      "phone": "+91 98888 11111",
+      "branch": "Computer Science",
+      "year": "3rd Year",
+      "is_team": 1,
+      "team_name": "Nexus XR",
+      "team_members_info": "Devanathan K (Lead), Priyanka N, Arjun S, Karthik R",
+      "status": "confirmed",
+      "registered_at": "2026-08-15 10:30"
+    },
+    {
+      "id": 2,
+      "event_id": 2,
+      "full_name": "Pooja Hegde",
+      "roll_no": "24IT022",
+      "email": "pooja.h@college.edu",
+      "phone": "+91 98888 22222",
+      "branch": "Information Technology",
+      "year": "2nd Year",
+      "is_team": 0,
+      "team_name": "",
+      "team_members_info": "",
+      "status": "confirmed",
+      "registered_at": "2026-08-16 14:15"
+    },
+    {
+      "id": 3,
+      "event_id": 2,
+      "full_name": "Rohan Event Tester",
+      "roll_no": "REG8834",
+      "email": "rohan.reg8834@college.edu",
+      "phone": "+91 98888 77777",
+      "branch": "Information Technology",
+      "year": "3rd Year",
+      "is_team": 0,
+      "team_name": "",
+      "team_members_info": "",
+      "status": "confirmed",
+      "registered_at": "2026-08-22T09:15:28.837Z",
+      "created_at": "2026-08-22T09:15:28.837Z"
+    }
+  ],
+  "feedback": [
+    {
+      "id": 1,
+      "event_id": 4,
+      "event_title": "Hands-on WebXR & Three.js Bootcamp",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "The practical hands-on examples were super clear! We built a 3D solar system in 45 minutes.",
+      "what_improve": "Would love if the session was 1 hour longer for shader optimization questions.",
+      "comments": "Outstanding workshop, looking forward to the Meta Hackathon!",
+      "author_name": "Sahil Kulkarni",
+      "author_email": "sahil.k@college.edu",
+      "submitted_at": "2026-07-15 18:30"
+    },
+    {
+      "id": 2,
+      "event_id": 4,
+      "event_title": "Hands-on WebXR & Three.js Bootcamp",
+      "rating_content": 4,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Great step-by-step code walkthrough and supportive mentors.",
+      "what_improve": "Provide starter github repository template ahead of time.",
+      "comments": "Loved the energy from the core team!",
+      "author_name": "Meera Rao",
+      "author_email": "meera.r@college.edu",
+      "submitted_at": "2026-07-15 19:10"
+    },
+    {
+      "id": 3,
+      "event_id": 1,
+      "event_title": "Meta Spatial Hackathon 2026",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Fantastic hands-on Quest 3 passthrough demo!",
+      "what_improve": "None, loved it.",
+      "comments": "",
+      "author_name": "Feedback Tester",
+      "author_email": "tester@college.edu",
+      "submitted_at": "2026-08-22T09:15:28.844Z",
+      "created_at": "2026-08-22T09:15:28.844Z"
+    }
+  ],
+  "esports_games": [
+    {
+      "id": 1,
+      "name": "Valorant",
+      "slug": "valorant",
+      "icon": "Crosshair",
+      "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800",
+      "format": "5v5 Tactical Shooter",
+      "scoring_type": "match_win",
+      "default_rules": {
+        "match_win_points": 3,
+        "match_draw_points": 1,
+        "round_diff_multiplier": 0.1,
+        "ace_bonus": 1
+      },
+      "description": "First-person tactical hero shooter with precision gunplay and unique agent abilities."
+    },
+    {
+      "id": 2,
+      "name": "BGMI / Battle Royale League",
+      "slug": "bgmi-battle-royale",
+      "icon": "Target",
+      "banner_url": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=800",
+      "format": "Squad Battle Royale (16 Teams)",
+      "scoring_type": "battle_royale",
+      "default_rules": {
+        "placement_points": {
+          "1": 15,
+          "2": 12,
+          "3": 10,
+          "4": 8,
+          "5": 6,
+          "6": 4,
+          "7": 2,
+          "8": 1,
+          "9": 1,
+          "10": 1,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0
+        },
+        "kill_point_multiplier": 1,
+        "winner_chicken_dinner_bonus": 5
+      },
+      "description": "High-stakes battle royale combat where strategic zone rotations and gunfights determine the champions."
+    },
+    {
+      "id": 3,
+      "name": "Rocket League 3v3",
+      "slug": "rocket-league",
+      "icon": "Zap",
+      "banner_url": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=800",
+      "format": "3v3 High-Octane Vehicular Soccer",
+      "scoring_type": "match_win",
+      "default_rules": {
+        "series_win_points": 3,
+        "goal_diff_multiplier": 0.2,
+        "hat_trick_bonus": 1
+      },
+      "description": "Vehicular acrobatics meets soccer in hyper-fast airborne action."
+    }
+  ],
+  "esports_tournaments": [
+    {
+      "id": 1,
+      "title": "NextGen Pro Apex League Season 4",
+      "slug": "nextgen-pro-apex-season-4",
+      "game_id": 2,
+      "game_name": "BGMI / Battle Royale League",
+      "prize_pool": "₹50,000 INR (~$600 USD)",
+      "status": "live",
+      "start_date": "2026-08-15",
+      "end_date": "2026-09-10",
+      "venue": "NextGen Esports Lab & Twitch",
+      "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800",
+      "registration_open": 1,
+      "scoring_rules": {
+        "placement_scale": {
+          "1": 15,
+          "2": 12,
+          "3": 10,
+          "4": 8,
+          "5": 6,
+          "6": 4,
+          "7": 2,
+          "8": 1,
+          "9": 1,
+          "10": 1
+        },
+        "kill_multiplier": 1,
+        "win_bonus": 5
+      },
+      "description": "The premier college Battle Royale championship featuring 16 top squads battling across 6 rigorous map rotations."
+    }
+  ],
+  "esports_teams": [
+    {
+      "id": 1,
+      "tournament_id": 1,
+      "team_name": "Vortex Phantom",
+      "tag": "VP",
+      "logo_url": "⚡",
+      "captain_name": "Samar \"Vortex\" Singh",
+      "captain_contact": "samar.vp@gmail.com",
+      "members": [
+        "Vortex",
+        "Krypton",
+        "ShadowStrike",
+        "Nova"
+      ],
+      "matches_played": 6,
+      "wins": 3,
+      "kills": 54,
+      "placement_points": 73,
+      "kill_points": 54,
+      "bonus_points": 15,
+      "total_points": 142,
+      "rank": 1,
+      "updated_at": "2026-08-26T14:23:04.900Z"
+    },
+    {
+      "id": 2,
+      "tournament_id": 1,
+      "team_name": "Cyber Valkyries",
+      "tag": "CVK",
+      "logo_url": "🦅",
+      "captain_name": "Rhea \"Valkyrie\" Sen",
+      "captain_contact": "rhea.cvk@gmail.com",
+      "members": [
+        "Valkyrie",
+        "PixelQueen",
+        "Athena",
+        "Siren"
+      ],
+      "matches_played": 6,
+      "wins": 1,
+      "kills": 45,
+      "placement_points": 64,
+      "kill_points": 45,
+      "bonus_points": 5,
+      "total_points": 114,
+      "rank": 2,
+      "updated_at": "2026-08-26T14:23:04.902Z"
+    },
+    {
+      "id": 3,
+      "tournament_id": 1,
+      "team_name": "HyperDrive Gaming",
+      "tag": "HDG",
+      "logo_url": "🔥",
+      "captain_name": "Aditya \"Pulse\" Rao",
+      "captain_contact": "aditya.hdg@gmail.com",
+      "members": [
+        "Pulse",
+        "Blaze",
+        "Glitch",
+        "Overclock"
+      ],
+      "matches_played": 6,
+      "wins": 1,
+      "kills": 39,
+      "placement_points": 54,
+      "kill_points": 39,
+      "bonus_points": 5,
+      "total_points": 98,
+      "rank": 3,
+      "updated_at": "2026-08-26T14:23:04.904Z"
+    },
+    {
+      "id": 4,
+      "tournament_id": 1,
+      "team_name": "Quantum Titans",
+      "tag": "QTN",
+      "logo_url": "⚛️",
+      "captain_name": "Farhan \"Quark\" Ali",
+      "captain_contact": "farhan.qtn@gmail.com",
+      "members": [
+        "Quark",
+        "Boson",
+        "Entropy",
+        "Proton"
+      ],
+      "matches_played": 5,
+      "wins": 1,
+      "kills": 28,
+      "placement_points": 38,
+      "kill_points": 28,
+      "bonus_points": 5,
+      "total_points": 71,
+      "rank": 4,
+      "updated_at": "2026-08-26T14:23:04.907Z"
+    },
+    {
+      "id": 5,
+      "tournament_id": 1,
+      "team_name": "Neon Strikers",
+      "tag": "NST",
+      "logo_url": "🎯",
+      "captain_name": "Kavya \"Viper\" Nair",
+      "captain_contact": "kavya.nst@gmail.com",
+      "members": [
+        "Viper",
+        "Echo",
+        "FrostByte",
+        "Zero"
+      ],
+      "matches_played": 5,
+      "wins": 0,
+      "kills": 26,
+      "placement_points": 32,
+      "kill_points": 26,
+      "bonus_points": 0,
+      "total_points": 58,
+      "rank": 5,
+      "updated_at": "2026-08-26T14:23:04.908Z"
+    },
+    {
+      "id": 6,
+      "tournament_id": 1,
+      "team_name": "Apex Predators",
+      "tag": "APX",
+      "logo_url": "🐺",
+      "captain_name": "Dev \"Apex\" Verma",
+      "captain_contact": "dev.apx@gmail.com",
+      "members": [
+        "Apex",
+        "Raptor",
+        "Fang",
+        "Ghost"
+      ],
+      "matches_played": 5,
+      "wins": 0,
+      "kills": 22,
+      "placement_points": 26,
+      "kill_points": 22,
+      "bonus_points": 0,
+      "total_points": 48,
+      "rank": 6,
+      "updated_at": "2026-08-26T14:23:04.910Z"
+    }
+  ],
+  "esports_matches": [
+    {
+      "id": 1,
+      "tournament_id": 1,
+      "match_title": "Match 1: Erangel Opening Clash",
+      "match_number": 1,
+      "map_name": "Erangel",
+      "played_at": "2026-08-20 18:00",
+      "mvp_player": "VP_Vortex (11 Kills)",
+      "results": [
+        {
+          "team_id": 1,
+          "team_name": "Vortex Phantom",
+          "placement": 1,
+          "kills": 14,
+          "points": 29
+        },
+        {
+          "team_id": 2,
+          "team_name": "Cyber Valkyries",
+          "placement": 2,
+          "kills": 8,
+          "points": 20
+        },
+        {
+          "team_id": 3,
+          "team_name": "HyperDrive Gaming",
+          "placement": 3,
+          "kills": 7,
+          "points": 17
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "tournament_id": 1,
+      "match_title": "Match 2: Miramar High Desert",
+      "match_number": 2,
+      "map_name": "Miramar",
+      "played_at": "2026-08-21 19:30",
+      "mvp_player": "CVK_PixelQueen (9 Kills)",
+      "results": [
+        {
+          "team_id": 2,
+          "team_name": "Cyber Valkyries",
+          "placement": 1,
+          "kills": 12,
+          "points": 27
+        },
+        {
+          "team_id": 4,
+          "team_name": "Quantum Titans",
+          "placement": 2,
+          "kills": 9,
+          "points": 21
+        },
+        {
+          "team_id": 1,
+          "team_name": "Vortex Phantom",
+          "placement": 3,
+          "kills": 8,
+          "points": 18
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "tournament_id": 1,
+      "match_title": "Match 3: Sanhok Jungle Brawl",
+      "match_number": 3,
+      "map_name": "Sanhok",
+      "played_at": "2026-08-22 09:15",
+      "mvp_player": "VP_Krypton (10 Kills)",
+      "results": [
+        {
+          "team_id": 1,
+          "team_name": "Vortex Phantom",
+          "placement": 1,
+          "kills": 12,
+          "points": 32
+        },
+        {
+          "team_id": 2,
+          "team_name": "Cyber Valkyries",
+          "placement": 2,
+          "kills": 7,
+          "points": 19
+        },
+        {
+          "team_id": 3,
+          "team_name": "HyperDrive Gaming",
+          "placement": 3,
+          "kills": 5,
+          "points": 15
+        }
+      ],
+      "created_at": "2026-08-22T09:15:29.035Z"
+    }
+  ],
+  "site_content": {
+    "recruitment_status": {
+      "is_open": true,
+      "batch_name": "Fall 2026 Cohort",
+      "deadline": "2026-09-15",
+      "banner_message": "🚀 Fall 2026 Recruitment is LIVE! Applications are open across all technical & creative domains."
+    },
+    "announcement_banner": {
+      "active": true,
+      "title": "Meta XR Hackathon 2026 Registrations Open!",
+      "link": "/events",
+      "badge": "FEATURED"
+    },
+    "club_stats": {
+      "members_count": "250+",
+      "projects_count": "24+",
+      "events_hosted": "50+",
+      "esports_pool_won": "$15,000+"
+    },
+    "contact_info": {
+      "email": "contact@nextgenarvr.club",
+      "lab_location": "Spatial Computing Lab, Room 402, Technology Block A",
+      "discord": "https://discord.gg/nextgen-arvr",
+      "instagram": "https://instagram.com/nextgen_arvr",
+      "linkedin": "https://linkedin.com/company/nextgen-arvr-club",
+      "github": "https://github.com/nextgen-arvr-club"
+    }
+  },
+  "audit_logs": []
+}

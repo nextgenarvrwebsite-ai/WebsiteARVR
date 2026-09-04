@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: nextgen-arvr-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+    healthCheckPath: /api/health

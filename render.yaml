@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: nextgen-arvr-backend
+    name: nextgen-arvr-api
     runtime: node
     plan: free
     buildCommand: npm install
-    startCommand: node index.js
+    startCommand: node server/index.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -12,4 +12,13 @@ services:
         value: 10000
       - key: JWT_SECRET
         generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
     healthCheckPath: /api/health
+

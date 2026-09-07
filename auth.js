@@ -1,86 +1,32 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { db } from '../database.js';
-import { JWT_SECRET, authenticateAdmin, logAdminAction } from '../middleware/auth.js';
+import db from '../database.js';
 
-const router = express.Router();
+export const JWT_SECRET = process.env.JWT_SECRET || 'nextgen-arvr-portal-super-secret-key-2026';
 
-// POST /api/auth/login
-router.post('/login', (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required.' });
+export function authenticateAdmin(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: Admin authentication token required.' });
   }
 
-  const cleanEmail = email.trim().toLowerCase();
-  const admin = db.get('admins', a => (a.email && a.email.toLowerCase() === cleanEmail) || a.username === email.trim());
-
-  if (!admin) {
-    return res.status(401).json({ error: 'Invalid admin credentials.' });
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.admin = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Unauthorized: Token expired or invalid.' });
   }
+}
 
-  const isMatch = bcrypt.compareSync(password, admin.password_hash);
-  if (!isMatch) {
-    return res.status(401).json({ error: 'Invalid admin credentials.' });
+export function logAdminAction(adminUsername, action, details) {
+  try {
+    db.insert('audit_logs', {
+      admin_user: adminUsername || 'admin',
+      action: action || 'UNKNOWN',
+      details: typeof details === 'object' ? JSON.stringify(details) : String(details || '')
+    });
+  } catch (err) {
+    console.error('Failed to log admin action:', err);
   }
-
-  // Update last login
-  db.update('admins', a => a.id === admin.id, { last_login: new Date().toISOString() });
-
-  // Generate JWT token (expires in 24 hours)
-  const token = jwt.sign(
-    { id: admin.id, username: admin.username, email: admin.email, role: admin.role },
-    JWT_SECRET,
-    { expiresIn: '24h' }
-  );
-
-  logAdminAction(admin.username, 'ADMIN_LOGIN', `Admin logged in successfully.`);
-
-  return res.json({
-    message: 'Authentication successful',
-    token,
-    admin: {
-      id: admin.id,
-      username: admin.username,
-      email: admin.email,
-      role: admin.role
-    }
-  });
-});
-
-// GET /api/auth/verify (Verify current token)
-router.get('/verify', authenticateAdmin, (req, res) => {
-  const admin = db.get('admins', a => a.id === req.admin.id);
-  if (!admin) {
-    return res.status(404).json({ error: 'Admin account not found.' });
-  }
-  const { password_hash, ...safeAdmin } = admin;
-  return res.json({ admin: safeAdmin });
-});
-
-// POST /api/auth/change-password
-router.post('/change-password', authenticateAdmin, (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-
-  if (!currentPassword || !newPassword || newPassword.length < 6) {
-    return res.status(400).json({ error: 'New password must be at least 6 characters long.' });
-  }
-
-  const admin = db.get('admins', a => a.id === req.admin.id);
-  const isMatch = bcrypt.compareSync(currentPassword, admin.password_hash);
-  if (!isMatch) {
-    return res.status(400).json({ error: 'Incorrect current password.' });
-  }
-
-  const salt = bcrypt.genSaltSync(10);
-  const newHash = bcrypt.hashSync(newPassword, salt);
-
-  db.update('admins', a => a.id === req.admin.id, { password_hash: newHash });
-  logAdminAction(req.admin.username, 'PASSWORD_CHANGE', 'Admin updated password');
-
-  return res.json({ message: 'Password updated successfully.' });
-});
-
-export default router;
+}

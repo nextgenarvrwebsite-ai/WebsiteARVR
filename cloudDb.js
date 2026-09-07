@@ -1,220 +1,149 @@
-import pg from 'pg';
-import { createClient } from '@supabase/supabase-js';
+import {
+  initMongoDatabase,
+  isMongoActive,
+  syncMongoInsert,
+  syncMongoUpdate,
+  syncMongoDelete,
+  syncMongoSetAll,
+  syncMongoSetSetting,
+  getMongoStatus,
+  loadAllFromMongo,
+  seedMongoIfEmpty
+} from './mongoDb.js';
 
-const { Pool } = pg;
+import {
+  initPostgresDatabase,
+  isPostgresActive,
+  syncPostgresInsert,
+  syncPostgresUpdate,
+  syncPostgresDelete,
+  syncPostgresSetAll,
+  syncPostgresSetSetting,
+  getPostgresStatus,
+  loadAllFromPostgres,
+  seedPostgresIfEmpty
+} from './postgresDb.js';
 
-let pgPool = null;
-let supabaseClient = null;
-let isCloudDbActive = false;
-let cloudType = 'none'; // 'postgres', 'supabase', or 'none'
+export {
+  initMongoDatabase,
+  isMongoActive,
+  getMongoStatus,
+  loadAllFromMongo,
+  seedMongoIfEmpty,
+  initPostgresDatabase,
+  isPostgresActive,
+  getPostgresStatus,
+  loadAllFromPostgres,
+  seedPostgresIfEmpty
+};
 
-export function initCloudDatabase() {
-  const databaseUrl = process.env.DATABASE_URL;
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY;
+let activeCloudType = 'none'; // 'mongodb', 'postgres', or 'none'
 
-  // 1. Check for PostgreSQL Connection String (Supabase / Render Postgres / Neon / Railway)
-  if (databaseUrl) {
-    try {
-      console.log('📡 Connecting to Cloud PostgreSQL database...');
-      pgPool = new Pool({
-        connectionString: databaseUrl,
-        ssl: databaseUrl.includes('localhost') ? false : { rejectUnauthorized: false }
-      });
-
-      // Test connection & setup schema
-      pgPool.query('SELECT NOW()', (err, res) => {
-        if (err) {
-          console.error('⚠️ Cloud PostgreSQL connection notice:', err.message);
-        } else {
-          isCloudDbActive = true;
-          cloudType = 'postgres';
-          console.log('✅ Cloud PostgreSQL Connected successfully at:', res.rows[0].now);
-          setupPostgresTables();
-        }
-      });
-    } catch (err) {
-      console.error('Error initializing PostgreSQL pool:', err);
+export async function initCloudDatabase(onCloudReady) {
+  // 1. Check MongoDB Atlas (MONGODB_URI / MONGO_URI)
+  const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  if (mongoUri) {
+    const mongoOk = await initMongoDatabase(onCloudReady);
+    if (mongoOk) {
+      activeCloudType = 'mongodb';
+      return true;
     }
-  } 
-  // 2. Check for Supabase API Credentials
-  else if (supabaseUrl && supabaseKey) {
-    try {
-      console.log('📡 Connecting to Supabase Cloud API...');
-      supabaseClient = createClient(supabaseUrl, supabaseKey);
-      isCloudDbActive = true;
-      cloudType = 'supabase';
-      console.log('✅ Supabase Client initialized for:', supabaseUrl);
-    } catch (err) {
-      console.error('Error initializing Supabase client:', err);
-    }
-  } else {
-    console.log('💾 Cloud Database variables not detected. Operating with local database persistence (database.json).');
   }
+
+  // 2. Check Supabase / PostgreSQL (DATABASE_URL / SUPABASE_DB_URL / POSTGRES_URL / SUPABASE_URL)
+  const postgresOk = await initPostgresDatabase(onCloudReady);
+  if (postgresOk) {
+    activeCloudType = 'postgres';
+    return true;
+  }
+
+  console.log('💾 Cloud Database variables not detected. Operating with local database persistence (database.json).');
+  return false;
 }
 
-async function setupPostgresTables() {
-  if (!pgPool) return;
-  const schemaSql = `
-    CREATE TABLE IF NOT EXISTS applications (
-      id SERIAL PRIMARY KEY,
-      full_name TEXT NOT NULL,
-      roll_no TEXT NOT NULL,
-      branch TEXT,
-      year TEXT,
-      email TEXT,
-      phone TEXT,
-      domains TEXT,
-      why_join TEXT,
-      experience TEXT,
-      portfolio_url TEXT,
-      status TEXT DEFAULT 'pending',
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-    );
+/**
+ * Loads all collections/tables from active cloud database into memory state
+ */
+export async function loadAllFromCloud(state) {
+  if (isMongoActive()) {
+    return await loadAllFromMongo(state);
+  }
+  if (isPostgresActive()) {
+    return await loadAllFromPostgres(state);
+  }
+  return false;
+}
 
-    CREATE TABLE IF NOT EXISTS event_registrations (
-      id SERIAL PRIMARY KEY,
-      event_id INT,
-      full_name TEXT NOT NULL,
-      roll_no TEXT NOT NULL,
-      email TEXT,
-      phone TEXT,
-      branch TEXT,
-      year TEXT,
-      is_team BOOLEAN DEFAULT false,
-      team_name TEXT,
-      team_members_info TEXT,
-      ticket_id TEXT,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-    );
-
-    CREATE TABLE IF NOT EXISTS feedback (
-      id SERIAL PRIMARY KEY,
-      event_id INT,
-      event_title TEXT,
-      rating_content INT,
-      rating_organization INT,
-      rating_speaker INT,
-      what_liked TEXT,
-      what_improve TEXT,
-      comments TEXT,
-      author_name TEXT,
-      author_email TEXT,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-    );
-
-    CREATE TABLE IF NOT EXISTS contact_messages (
-      id SERIAL PRIMARY KEY,
-      name TEXT,
-      email TEXT,
-      subject TEXT,
-      message TEXT,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-    );
-  `;
-
-  try {
-    await pgPool.query(schemaSql);
-    console.log('✅ Cloud PostgreSQL tables verified: applications, event_registrations, feedback, contact_messages');
-  } catch (err) {
-    console.error('Error verifying PostgreSQL tables:', err.message);
+/**
+ * Seeds cloud database if tables/collections are empty on first deployment
+ */
+export async function seedCloudIfEmpty(state) {
+  if (isMongoActive()) {
+    await seedMongoIfEmpty(state);
+  } else if (isPostgresActive()) {
+    await seedPostgresIfEmpty(state);
   }
 }
 
 /**
- * Automatically syncs any inserted row into the active Cloud Database
+ * Syncs an inserted record to the active cloud database
  */
 export async function syncToCloud(table, row) {
-  // Fire optional Webhook notification if configured (Discord/Slack/Zapier/Make/Google Sheets)
   sendWebhookNotification(table, row);
 
-  if (!isCloudDbActive) return;
-
-  try {
-    if (cloudType === 'postgres' && pgPool) {
-      if (table === 'applications') {
-        const query = `
-          INSERT INTO applications (full_name, roll_no, branch, year, email, phone, domains, why_join, experience, portfolio_url, status)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-        `;
-        const values = [
-          row.full_name,
-          row.roll_no,
-          row.branch || '',
-          row.year || '',
-          row.email || '',
-          row.phone || '',
-          Array.isArray(row.domains) ? row.domains.join(', ') : (row.domains || ''),
-          row.why_join || '',
-          row.experience || '',
-          row.portfolio_url || '',
-          row.status || 'pending'
-        ];
-        await pgPool.query(query, values);
-        console.log(`☁️ Synced new application for ${row.full_name} (${row.roll_no}) to Cloud PostgreSQL`);
-      } else if (table === 'event_registrations') {
-        const query = `
-          INSERT INTO event_registrations (event_id, full_name, roll_no, email, phone, branch, year, is_team, team_name, team_members_info, ticket_id)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-        `;
-        const values = [
-          row.event_id,
-          row.full_name,
-          row.roll_no,
-          row.email || '',
-          row.phone || '',
-          row.branch || '',
-          row.year || '',
-          Boolean(row.is_team),
-          row.team_name || '',
-          row.team_members_info || '',
-          row.ticket_id || ''
-        ];
-        await pgPool.query(query, values);
-        console.log(`☁️ Synced event registration for ${row.full_name} to Cloud PostgreSQL`);
-      } else if (table === 'feedback') {
-        const query = `
-          INSERT INTO feedback (event_id, event_title, rating_content, rating_organization, rating_speaker, what_liked, what_improve, comments, author_name, author_email)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        `;
-        const values = [
-          row.event_id || null,
-          row.event_title || '',
-          row.rating_content || 5,
-          row.rating_organization || 5,
-          row.rating_speaker || 5,
-          row.what_liked || '',
-          row.what_improve || '',
-          row.comments || '',
-          row.author_name || 'Anonymous',
-          row.author_email || ''
-        ];
-        await pgPool.query(query, values);
-        console.log(`☁️ Synced feedback to Cloud PostgreSQL`);
-      } else if (table === 'contact_messages') {
-        const query = `
-          INSERT INTO contact_messages (name, email, subject, message)
-          VALUES ($1, $2, $3, $4)
-        `;
-        const values = [row.name, row.email, row.subject, row.message];
-        await pgPool.query(query, values);
-        console.log(`☁️ Synced contact message from ${row.name} to Cloud PostgreSQL`);
-      }
-    } else if (cloudType === 'supabase' && supabaseClient) {
-      const { error } = await supabaseClient.from(table).insert([row]);
-      if (error) {
-        console.error(`⚠️ Supabase sync error for ${table}:`, error.message);
-      } else {
-        console.log(`☁️ Synced record to Supabase table: ${table}`);
-      }
-    }
-  } catch (err) {
-    console.error(`Error syncing to cloud DB (${table}):`, err.message);
+  if (isMongoActive()) {
+    await syncMongoInsert(table, row);
+  } else if (isPostgresActive()) {
+    await syncPostgresInsert(table, row);
   }
 }
 
 /**
- * Optional: Instant webhook notifications (e.g. Discord, Slack, Zapier, Make, Telegram)
+ * Syncs an update to the active cloud database
+ */
+export async function syncUpdateToCloud(table, predicate, updateData) {
+  if (isMongoActive()) {
+    await syncMongoUpdate(table, predicate, updateData);
+  } else if (isPostgresActive()) {
+    await syncPostgresUpdate(table, predicate, updateData);
+  }
+}
+
+/**
+ * Syncs a deletion to the active cloud database
+ */
+export async function syncDeleteToCloud(table, item) {
+  if (isMongoActive()) {
+    await syncMongoDelete(table, item);
+  } else if (isPostgresActive()) {
+    await syncPostgresDelete(table, item);
+  }
+}
+
+/**
+ * Batch replaces a collection/table in the active cloud database
+ */
+export async function syncSetAllToCloud(table, list) {
+  if (isMongoActive()) {
+    await syncMongoSetAll(table, list);
+  } else if (isPostgresActive()) {
+    await syncPostgresSetAll(table, list);
+  }
+}
+
+/**
+ * Syncs a site setting to the active cloud database
+ */
+export async function syncSettingToCloud(key, value) {
+  if (isMongoActive()) {
+    await syncMongoSetSetting(key, value);
+  } else if (isPostgresActive()) {
+    await syncPostgresSetSetting(key, value);
+  }
+}
+
+/**
+ * Optional webhook notifications
  */
 function sendWebhookNotification(table, row) {
   const webhookUrl = process.env.NOTIFICATION_WEBHOOK_URL || process.env.DISCORD_WEBHOOK_URL;
@@ -249,8 +178,15 @@ function sendWebhookNotification(table, row) {
 }
 
 export function getCloudStatus() {
+  const isCloudActive = isMongoActive() || isPostgresActive();
+  let type = 'none';
+  if (isMongoActive()) type = 'mongodb';
+  else if (isPostgresActive()) type = 'supabase_postgres';
+
   return {
-    isCloudDbActive,
-    cloudType
+    isCloudDbActive: isCloudActive,
+    cloudType: type,
+    mongodb: getMongoStatus(),
+    postgres: getPostgresStatus()
   };
 }

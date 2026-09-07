@@ -133,36 +133,78 @@ router.post('/:id/register', (req, res) => {
   });
 });
 
-// POST /api/events (Admin create event)
-router.post('/', authenticateAdmin, (req, res) => {
-  const { title, category, event_date, event_time, venue, description, poster_url, is_registration_open, max_seats, is_team_event, max_team_size, tags } = req.body;
-
-  if (!title || !event_date || !venue || !description) {
-    return res.status(400).json({ error: 'Title, date, venue, and description are required.' });
+// Batch sync events endpoint (from Admin portal or cloud sync)
+function handleBatchSync(req, res) {
+  const eventsList = req.body.events;
+  if (!Array.isArray(eventsList)) {
+    return res.status(400).json({ error: 'Expected an array of events.' });
   }
 
-  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString().slice(-4);
+  // Sanitize each event in the list
+  const sanitized = eventsList.filter(e => e && (e.title || '').trim()).map((e, idx) => ({
+    id: e.id || (Date.now() + idx),
+    title: (e.title || '').trim(),
+    slug: e.slug || (e.title || 'event').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    category: e.category || 'Workshop',
+    event_date: e.event_date || new Date().toISOString().split('T')[0],
+    event_time: e.event_time || '02:00 PM - 05:00 PM',
+    venue: (e.venue || '').trim(),
+    description: (e.description || '').trim(),
+    poster_url: e.poster_url || 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800',
+    is_registration_open: e.is_registration_open !== undefined ? (e.is_registration_open ? 1 : 0) : 1,
+    max_seats: parseInt(e.max_seats, 10) || 100,
+    is_team_event: e.is_team_event ? 1 : 0,
+    max_team_size: parseInt(e.max_team_size, 10) || 4,
+    tags: Array.isArray(e.tags) ? e.tags : (e.tags ? String(e.tags).split(',').map(t => t.trim()) : ['AR/VR', 'NextGen']),
+    feedbackQuestions: Array.isArray(e.feedbackQuestions) ? e.feedbackQuestions : [],
+    created_at: e.created_at || new Date().toISOString()
+  }));
 
-  const newEvent = db.insert('events', {
-    title: title.trim(),
-    slug,
-    category: category || 'Workshop',
-    event_date,
-    event_time: event_time || '02:00 PM - 05:00 PM',
-    venue: venue.trim(),
-    description: description.trim(),
-    poster_url: poster_url || 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800',
-    is_registration_open: is_registration_open !== undefined ? (is_registration_open ? 1 : 0) : 1,
-    max_seats: parseInt(max_seats, 10) || 100,
-    is_team_event: is_team_event ? 1 : 0,
-    max_team_size: parseInt(max_team_size, 10) || 4,
-    tags: Array.isArray(tags) ? tags : (tags ? String(tags).split(',').map(t => t.trim()) : ['AR/VR', 'NextGen']),
-    created_at: new Date().toISOString()
+  db.setAll('events', sanitized);
+  return res.json({ success: true, count: sanitized.length, events: sanitized });
+}
+
+router.post('/sync', handleBatchSync);
+router.post('/batch', handleBatchSync);
+
+// POST /api/events (Admin create event OR batch sync)
+router.post('/', (req, res, next) => {
+  // If request contains an array of events, handle batch sync
+  if (req.body && Array.isArray(req.body.events)) {
+    return handleBatchSync(req, res);
+  }
+  // Otherwise require admin authentication for single event creation
+  return authenticateAdmin(req, res, () => {
+    const { title, category, event_date, event_time, venue, description, poster_url, is_registration_open, max_seats, is_team_event, max_team_size, tags, feedbackQuestions } = req.body;
+
+    if (!title || !event_date || !venue || !description) {
+      return res.status(400).json({ error: 'Title, date, venue, and description are required.' });
+    }
+
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString().slice(-4);
+
+    const newEvent = db.insert('events', {
+      title: title.trim(),
+      slug,
+      category: category || 'Workshop',
+      event_date,
+      event_time: event_time || '02:00 PM - 05:00 PM',
+      venue: venue.trim(),
+      description: description.trim(),
+      poster_url: poster_url || 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800',
+      is_registration_open: is_registration_open !== undefined ? (is_registration_open ? 1 : 0) : 1,
+      max_seats: parseInt(max_seats, 10) || 100,
+      is_team_event: is_team_event ? 1 : 0,
+      max_team_size: parseInt(max_team_size, 10) || 4,
+      tags: Array.isArray(tags) ? tags : (tags ? String(tags).split(',').map(t => t.trim()) : ['AR/VR', 'NextGen']),
+      feedbackQuestions: Array.isArray(feedbackQuestions) ? feedbackQuestions : [],
+      created_at: new Date().toISOString()
+    });
+
+    logAdminAction(req.admin.username, 'CREATE_EVENT', { event_id: newEvent.id, title });
+
+    return res.status(201).json({ message: 'Event created successfully', event: newEvent });
   });
-
-  logAdminAction(req.admin.username, 'CREATE_EVENT', { event_id: newEvent.id, title });
-
-  return res.status(201).json({ message: 'Event created successfully', event: newEvent });
 });
 
 // PUT /api/events/:id (Admin edit event)

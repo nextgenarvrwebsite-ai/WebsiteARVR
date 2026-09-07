@@ -2,7 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
-import { initCloudDatabase, syncToCloud } from './cloudDb.js';
+import { 
+  initCloudDatabase, 
+  syncToCloud, 
+  syncUpdateToCloud, 
+  syncDeleteToCloud, 
+  syncSetAllToCloud, 
+  syncSettingToCloud,
+  loadAllFromCloud,
+  seedCloudIfEmpty
+} from './cloudDb.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -87,15 +96,22 @@ export const db = {
       updated_at: new Date().toISOString()
     };
     saveToDisk();
+    syncUpdateToCloud(table, predicate, state[table][index]);
     return state[table][index];
   },
 
   delete(table, predicate) {
     if (!state[table]) return false;
     const initialLen = state[table].length;
+    const toDelete = state[table].filter(predicate);
     state[table] = state[table].filter(item => !predicate(item));
     const deleted = state[table].length < initialLen;
-    if (deleted) saveToDisk();
+    if (deleted) {
+      saveToDisk();
+      for (const item of toDelete) {
+        syncDeleteToCloud(table, item);
+      }
+    }
     return deleted;
   },
 
@@ -112,13 +128,25 @@ export const db = {
     if (!state.site_content) state.site_content = {};
     state.site_content[key] = value;
     saveToDisk();
+    syncSettingToCloud(key, value);
     return value;
+  },
+
+  setAll(table, list) {
+    state[table] = Array.isArray(list) ? list : [];
+    saveToDisk();
+    syncSetAllToCloud(table, state[table]);
+    return state[table];
   }
 };
 
-export function initDatabase() {
+export async function initDatabase() {
   loadFromDisk();
-  initCloudDatabase();
+  await initCloudDatabase(async () => {
+    await loadAllFromCloud(state);
+    await seedCloudIfEmpty(state);
+    saveToDisk();
+  });
 
   // 1. Seed Admin if empty
   if (!state.admins || state.admins.length === 0) {
@@ -175,259 +203,162 @@ export function initDatabase() {
     state.members = [
       {
         id: 1,
-        full_name: 'Dr. Rajeshwari Sharma',
-        roll_no: 'FAC-CSE-012',
-        branch: 'Computer Science & Engineering',
+        full_name: 'Prof. Ananthanagu U',
+        roll_no: '',
+        branch: 'Information Technology',
+        school: 'Alliance College of Engineering and Design (CED)',
         year: 'Faculty',
-        domain: 'AR/VR & Spatial Computing',
+        domain: 'AR/VR & Immersive Technologies',
         role: 'Faculty Coordinator & Mentor',
-        email: 'rajeshwari.sharma@college.edu',
-        phone: '+91 98765 43210',
-        bio: 'Associate Professor specializing in Extended Reality (XR), Computer Vision, and Immersive Human-Computer Interfaces with 12+ years of research experience.',
-        avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400',
-        github_url: 'https://github.com',
-        linkedin_url: 'https://linkedin.com',
-        portfolio_url: '',
+        designation: 'Assistant Professor & Associate Director (In Charge) - Centre of Excellence (Immersive Technologies (AR/VR))',
+        email: 'ananthanagu.u@alliance.edu.in',
+        phone: '+91 98450 12345',
+        bio: 'Assistant Professor & Associate Director (In Charge) - Centre of Excellence (Immersive Technologies (AR/VR)) at Alliance University. 14+ years of academic experience with research expertise in Data Science, Machine Learning, NLP, and Virtual Reality visualizations (IEEE ICVR 2023). Life member of CSI and ISTE.',
+        avatar_url: 'https://www.alliance.edu.in/wp-content/uploads/faculty/core-faculty/mr-ananthanagu-u-v1.webp',
+        github_url: '',
+        linkedin_url: '',
+        portfolio_url: 'https://www.alliance.edu.in/faculty/prof-ananthanagu-u/',
         status: 'core_team',
-        joined_at: '2023-01-10'
+        is_faculty: true,
+        joined_at: '2022-06-01'
       },
       {
         id: 2,
-        full_name: 'Aarav Mehta',
-        roll_no: '22CS089',
-        branch: 'Computer Science',
-        year: 'Final Year (4th)',
-        domain: 'AR/VR & Spatial Computing',
-        role: 'President & XR Lead',
-        email: 'aarav.mehta@nextgenarvr.club',
-        phone: '+91 98111 22233',
-        bio: 'Building WebXR and Unity 3D spatial simulations. Led team to 1st place in National Smart India Hackathon 2025.',
-        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
-        github_url: 'https://github.com/aarav-xr',
-        linkedin_url: 'https://linkedin.com/in/aarav-xr',
-        portfolio_url: 'https://aarav-xr.dev',
+        full_name: 'Ms. Kusuma J',
+        roll_no: '',
+        branch: 'Information Technology',
+        school: 'Alliance College of Engineering and Design (CED)',
+        year: 'Faculty',
+        domain: 'AI & Deep Learning',
+        role: 'Faculty Coordinator & Mentor',
+        designation: 'Assistant Professor, Department of Computer Science & Engineering',
+        email: 'kusuma.j@alliance.edu.in',
+        phone: '+91 98450 67890',
+        bio: 'Assistant Professor in Computer Science & Engineering at Alliance University. 5+ years of teaching experience with research specialization in Image Processing, Data Analytics, Machine Learning, and Deep Learning. Published in IEEE & Springer. Life member of ISTE.',
+        avatar_url: 'https://www.alliance.edu.in/wp-content/uploads/faculty/core-faculty/ms-kusuma-j.webp',
+        github_url: '',
+        linkedin_url: '',
+        portfolio_url: 'https://www.alliance.edu.in/faculty/ms-kusuma-j/',
         status: 'core_team',
-        joined_at: '2023-08-15'
+        is_faculty: true,
+        joined_at: '2023-01-10'
       },
       {
         id: 3,
-        full_name: 'Diya Sen',
-        roll_no: '23IT044',
+        full_name: 'S Darshan Sai',
+        roll_no: '',
         branch: 'Information Technology',
+        school: 'Alliance College of Engineering and Design (CED)',
         year: '3rd Year',
-        domain: 'Game Development',
-        role: 'Vice President & Unreal Dev Lead',
-        email: 'diya.sen@nextgenarvr.club',
-        phone: '+91 98222 33344',
-        bio: 'Unreal Engine 5 enthusiast, C++ gameplay programmer, and shader artist. Created the campus VR exploration tour.',
-        avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400',
-        github_url: 'https://github.com/diyasen-games',
-        linkedin_url: 'https://linkedin.com/in/diya-sen',
-        portfolio_url: 'https://diyasen.games',
+        domain: 'AR/VR & Spatial Innovation',
+        role: 'President',
+        email: 'president.nextgen@alliance.edu.in',
+        phone: '',
+        bio: 'President of NextGen (AR/VR) Reality Club (3rd Year, Information Technology). Leading spatial innovation, hardware initiatives, and immersive metaverse development at Alliance University.',
+        avatar_url: '/src/assets/council/council_member_1.jpg',
+        github_url: '',
+        linkedin_url: '',
+        portfolio_url: '',
         status: 'core_team',
-        joined_at: '2024-02-01'
+        is_council: true,
+        badge: 'PRESIDENT',
+        joined_at: '2023-08-01'
       },
       {
         id: 4,
-        full_name: 'Rohan Varma',
-        roll_no: '22ECE051',
-        branch: 'Electronics & Comm.',
-        year: '4th Year',
-        domain: 'E-Sports Division',
-        role: 'E-Sports Operations Head',
-        email: 'rohan.varma@nextgenarvr.club',
-        phone: '+91 98333 44455',
-        bio: 'National collegiate Valorant & BGMI tournament organizer. Passionate about competitive esports analytics and LAN infrastructure.',
-        avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
-        github_url: 'https://github.com',
-        linkedin_url: 'https://linkedin.com/in/rohan-esports',
+        full_name: 'Apoorva P Keretot',
+        roll_no: '',
+        branch: 'Information Technology',
+        school: 'Alliance College of Engineering and Design (CED)',
+        year: '3rd Year',
+        domain: 'Executive Council & Technical Wings',
+        role: 'Vice President',
+        email: 'vp.nextgen@alliance.edu.in',
+        phone: '',
+        bio: 'Vice President of NextGen (AR/VR) Reality Club (3rd Year, Information Technology). Overseeing executive operations, technical domain workshops, and student community engagements.',
+        avatar_url: '/src/assets/council/council_member_4.jpg',
+        github_url: '',
+        linkedin_url: '',
         portfolio_url: '',
         status: 'core_team',
-        joined_at: '2023-08-20'
+        is_council: true,
+        badge: 'VICE PRESIDENT',
+        joined_at: '2023-08-15'
       },
       {
         id: 5,
-        full_name: 'Ananya Iyer',
-        roll_no: '23CS112',
-        branch: 'Computer Science',
+        full_name: 'Puneeth N',
+        roll_no: '',
+        branch: 'Information Technology',
+        school: 'Alliance College of Engineering and Design (CED)',
         year: '3rd Year',
-        domain: '3D Design & Worldbuilding',
-        role: '3D Art & UI/UX Head',
-        email: 'ananya.iyer@nextgenarvr.club',
-        phone: '+91 98444 55566',
-        bio: 'Blender 3D artist, environment sculptor, and WebXR interface designer. Passionate about spatial UI and haptic ergonomics.',
-        avatar_url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400',
-        github_url: 'https://github.com',
-        linkedin_url: 'https://linkedin.com/in/ananya-iyer3d',
-        portfolio_url: 'https://artstation.com',
+        domain: 'Treasury & Resource Operations',
+        role: 'Treasurer',
+        email: 'treasurer.nextgen@alliance.edu.in',
+        phone: '',
+        bio: 'Council Member & Treasurer of NextGen (AR/VR) Reality Club (3rd Year, Information Technology). Managing club budget allocations, sponsorships, financial operations, and resources.',
+        avatar_url: '/src/assets/council/council_member_3.jpg',
+        github_url: '',
+        linkedin_url: '',
+        portfolio_url: '',
         status: 'core_team',
-        joined_at: '2024-02-10'
+        is_council: true,
+        badge: 'TREASURER',
+        joined_at: '2023-09-01'
       },
       {
         id: 6,
-        full_name: 'Kabir Patel',
-        roll_no: '24AI018',
-        branch: 'Artificial Intelligence & Data Science',
-        year: '2nd Year',
-        domain: 'AI & Spatial Intelligence',
-        role: 'AI / Computer Vision Specialist',
-        email: 'kabir.patel@nextgenarvr.club',
-        phone: '+91 98555 66677',
-        bio: 'Integrating generative 3D meshes (Gaussian Splatting, NeRFs) with realtime VR rendering engines.',
-        avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400',
-        github_url: 'https://github.com/kabir-ai',
-        linkedin_url: 'https://linkedin.com',
+        full_name: 'Panchaksharayya',
+        roll_no: '',
+        branch: 'Information Technology',
+        school: 'Alliance College of Engineering and Design (CED)',
+        year: '3rd Year',
+        domain: 'Media, PR & Documentation',
+        role: 'Media and Documentation Coordinator',
+        email: 'media.nextgen@alliance.edu.in',
+        phone: '',
+        bio: 'Council Member & Media and Documentation Coordinator (3rd Year, Information Technology). Managing documentation, institutional reporting, media production, and digital archives.',
+        avatar_url: '/src/assets/council/council_member_2.jpg',
+        github_url: '',
+        linkedin_url: '',
         portfolio_url: '',
-        status: 'active',
-        joined_at: '2024-09-01'
+        status: 'core_team',
+        is_council: true,
+        badge: 'MEDIA & DOCS',
+        joined_at: '2023-09-10'
       },
       {
         id: 7,
-        full_name: 'Tanvi Deshmukh',
-        roll_no: '24CS095',
-        branch: 'Computer Science',
-        year: '2nd Year',
-        domain: 'AR/VR & Spatial Computing',
-        role: 'WebXR Developer',
-        email: 'tanvi.d@nextgenarvr.club',
-        phone: '+91 98666 77788',
-        bio: 'Three.js, React-Three-Fiber, and A-Frame developer crafting lightweight browser-based augmented reality experiences.',
-        avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400',
-        github_url: 'https://github.com/tanvi-xr',
-        linkedin_url: 'https://linkedin.com',
+        full_name: 'Koel Dutta',
+        roll_no: '',
+        branch: 'Information Technology',
+        school: 'Alliance College of Engineering and Design (CED)',
+        year: '3rd Year',
+        domain: 'Student Operations & Community Lead',
+        role: 'Executive Member Lead',
+        email: 'executive.nextgen@alliance.edu.in',
+        phone: '',
+        bio: 'Council Member & Executive Member Lead (3rd Year, Information Technology). Directing student delegations, domain wings engagement, and internal club initiatives.',
+        avatar_url: '/src/assets/council/council_member_5.jpg',
+        github_url: '',
+        linkedin_url: '',
         portfolio_url: '',
-        status: 'active',
-        joined_at: '2024-09-01'
-      },
-      {
-        id: 8,
-        full_name: 'Vikram Joshi',
-        roll_no: '21CS015',
-        branch: 'Computer Science',
-        year: 'Alumni (2025)',
-        domain: 'Game Development',
-        role: 'Ex-President (Software Engineer @ ImmersiveWorks)',
-        email: 'vikram.joshi@alumni.edu',
-        phone: '+91 98777 88899',
-        bio: 'Co-founded NextGen AR/VR club in 2022. Currently working on spatial operating systems and real-time raytraced simulation engines.',
-        avatar_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=400',
-        github_url: 'https://github.com',
-        linkedin_url: 'https://linkedin.com',
-        portfolio_url: '',
-        status: 'alumni',
-        joined_at: '2022-08-01'
+        status: 'core_team',
+        is_council: true,
+        badge: 'EXECUTIVE LEAD',
+        joined_at: '2024-01-15'
       }
     ];
   }
 
   // 4. Seed Events if empty
-  if (!state.events || state.events.length === 0) {
-    state.events = [
-      {
-        id: 1,
-        title: 'Meta Spatial Hackathon 2026',
-        slug: 'meta-spatial-hackathon-2026',
-        category: 'Hackathon',
-        event_date: '2026-09-26',
-        event_time: '09:00 AM - 06:00 PM',
-        venue: 'Main Auditorium & Spatial VR Lab',
-        description: 'A 36-hour intensive hackathon where teams construct groundbreaking spatial computing applications using Meta Quest 3 and WebXR. $3,000+ prize pool with direct industry mentorship.',
-        poster_url: 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800',
-        is_registration_open: 1,
-        max_seats: 120,
-        is_team_event: 1,
-        max_team_size: 4,
-        tags: ['Meta Quest 3', 'WebXR', 'Unity', 'Prizes'],
-        created_at: '2026-08-10'
-      },
-      {
-        id: 2,
-        title: 'Unreal Engine 5.5 Masterclass: Nanite & Lumen',
-        slug: 'unreal-engine-5-masterclass',
-        category: 'Workshop',
-        event_date: '2026-09-08',
-        event_time: '02:00 PM - 05:30 PM',
-        venue: 'Computer Center Lab 3',
-        description: 'Hands-on practical workshop covering next-gen photorealistic game environment rendering, custom shader graphs, and haptic feedback setup for VR headsets.',
-        poster_url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800',
-        is_registration_open: 1,
-        max_seats: 60,
-        is_team_event: 0,
-        max_team_size: 1,
-        tags: ['Unreal Engine', 'Shaders', 'Game Dev', 'Hands-on'],
-        created_at: '2026-08-12'
-      },
-      {
-        id: 3,
-        title: 'CyberClash: Collegiate Valorant Championship',
-        slug: 'cyberclash-valorant-championship',
-        category: 'E-Sports',
-        event_date: '2026-09-18',
-        event_time: '10:00 AM - 08:00 PM',
-        venue: 'E-Sports Arena & Live Twitch Stream',
-        description: 'The ultimate 5v5 collegiate tactical shooter showdown. Double elimination bracket with professional caster commentary, custom trophies, and gaming gear rewards.',
-        poster_url: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800',
-        is_registration_open: 1,
-        max_seats: 16,
-        is_team_event: 1,
-        max_team_size: 5,
-        tags: ['Valorant', '5v5', 'LAN Tournament', 'Prize Pool'],
-        created_at: '2026-08-14'
-      },
-      {
-        id: 4,
-        title: 'Hands-on WebXR & Three.js Bootcamp',
-        slug: 'webxr-threejs-bootcamp-past',
-        category: 'Workshop',
-        event_date: '2026-07-14',
-        event_time: '01:00 PM - 05:00 PM',
-        venue: 'Seminar Hall 2',
-        description: 'Building immersive 3D interactive portfolio showcases that run directly inside mobile and desktop web browsers with zero installation needed.',
-        poster_url: 'https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&q=80&w=800',
-        is_registration_open: 0,
-        max_seats: 80,
-        is_team_event: 0,
-        max_team_size: 1,
-        tags: ['Three.js', 'JavaScript', 'WebXR', 'Completed'],
-        created_at: '2026-07-01'
-      }
-    ];
+  if (!state.events) {
+    state.events = [];
   }
 
   // 5. Seed Event Registrations if empty
-  if (!state.event_registrations || state.event_registrations.length === 0) {
-    state.event_registrations = [
-      {
-        id: 1,
-        event_id: 1,
-        full_name: 'Devanathan K',
-        roll_no: '23CS045',
-        email: 'dev.k@college.edu',
-        phone: '+91 98888 11111',
-        branch: 'Computer Science',
-        year: '3rd Year',
-        is_team: 1,
-        team_name: 'Nexus XR',
-        team_members_info: 'Devanathan K (Lead), Priyanka N, Arjun S, Karthik R',
-        status: 'confirmed',
-        registered_at: '2026-08-15 10:30'
-      },
-      {
-        id: 2,
-        event_id: 2,
-        full_name: 'Pooja Hegde',
-        roll_no: '24IT022',
-        email: 'pooja.h@college.edu',
-        phone: '+91 98888 22222',
-        branch: 'Information Technology',
-        year: '2nd Year',
-        is_team: 0,
-        team_name: '',
-        team_members_info: '',
-        status: 'confirmed',
-        registered_at: '2026-08-16 14:15'
-      }
-    ];
+  if (!state.event_registrations) {
+    state.event_registrations = [];
   }
 
   // 6. Seed Applications if empty
@@ -469,37 +400,8 @@ export function initDatabase() {
   }
 
   // 7. Seed Feedback if empty
-  if (!state.feedback || state.feedback.length === 0) {
-    state.feedback = [
-      {
-        id: 1,
-        event_id: 4,
-        event_title: 'Hands-on WebXR & Three.js Bootcamp',
-        rating_content: 5,
-        rating_organization: 5,
-        rating_speaker: 5,
-        what_liked: 'The practical hands-on examples were super clear! We built a 3D solar system in 45 minutes.',
-        what_improve: 'Would love if the session was 1 hour longer for shader optimization questions.',
-        comments: 'Outstanding workshop, looking forward to the Meta Hackathon!',
-        author_name: 'Sahil Kulkarni',
-        author_email: 'sahil.k@college.edu',
-        submitted_at: '2026-07-15 18:30'
-      },
-      {
-        id: 2,
-        event_id: 4,
-        event_title: 'Hands-on WebXR & Three.js Bootcamp',
-        rating_content: 4,
-        rating_organization: 5,
-        rating_speaker: 5,
-        what_liked: 'Great step-by-step code walkthrough and supportive mentors.',
-        what_improve: 'Provide starter github repository template ahead of time.',
-        comments: 'Loved the energy from the core team!',
-        author_name: 'Meera Rao',
-        author_email: 'meera.r@college.edu',
-        submitted_at: '2026-07-15 19:10'
-      }
-    ];
+  if (!state.feedback) {
+    state.feedback = [];
   }
 
   // 8. Seed E-Sports Games, Tournaments, Teams & Matches

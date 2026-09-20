@@ -1,32 +1,20 @@
 {
-  "name": "nextgen-arvr-portal",
+  "name": "nextgen-arvr-backend",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node server/index.js",
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "node server/index.js"
+    "start": "node index.js",
+    "dev": "node index.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.115.0",
     "bcryptjs": "^2.4.3",
-    "canvas-confetti": "^1.9.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "lucide-react": "^0.468.0",
     "mongoose": "^9.9.5",
-    "pg": "^8.23.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^5.4.11",
-    "vite-plugin-singlefile": "^2.3.3"
+    "pg": "^8.23.0"
   }
 }

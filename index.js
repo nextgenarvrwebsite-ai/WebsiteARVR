@@ -3,10 +3,11 @@ import "dotenv/config";
 import express9 from "express";
 import cors from "cors";
 import path2 from "path";
+import fs2 from "fs";
 import { fileURLToPath as fileURLToPath2 } from "url";
 
 // server/database.js
-import fs2 from "fs";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import bcrypt from "bcryptjs";
@@ -973,8 +974,8 @@ var __filename = fileURLToPath(import.meta.url);
 var __dirname = path.dirname(__filename);
 var dataDir = path.join(__dirname, "data");
 var dbFile = path.join(dataDir, "database.json");
-if (!fs2.existsSync(dataDir)) {
-  fs2.mkdirSync(dataDir, { recursive: true });
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
 }
 var state = {
   admins: [],
@@ -992,15 +993,15 @@ var state = {
 };
 function saveToDisk() {
   try {
-    fs2.writeFileSync(dbFile, JSON.stringify(state, null, 2), "utf-8");
+    fs.writeFileSync(dbFile, JSON.stringify(state, null, 2), "utf-8");
   } catch (err) {
     console.error("Error writing to database.json:", err);
   }
 }
 function loadFromDisk() {
-  if (fs2.existsSync(dbFile)) {
+  if (fs.existsSync(dbFile)) {
     try {
-      const data = fs2.readFileSync(dbFile, "utf-8");
+      const data = fs.readFileSync(dbFile, "utf-8");
       if (data && data.trim()) {
         state = JSON.parse(data);
       }
@@ -2728,14 +2729,14 @@ var candidateDistDirs = [
   path2.join(__dirname2, "public"),
   path2.join(process.cwd(), "public")
 ];
-var resolvedDistDir = candidateDistDirs.find((d) => fs.existsSync(path2.join(d, "index.html")));
+var resolvedDistDir = candidateDistDirs.find((d) => fs2.existsSync(path2.join(d, "index.html")));
 if (resolvedDistDir) {
   console.log(`\u{1F310} Serving full frontend website from: ${resolvedDistDir}`);
   app.use(express9.static(resolvedDistDir));
 }
 app.get("*", (req, res, next) => {
   if (req.url.startsWith("/api")) return next();
-  if (resolvedDistDir && fs.existsSync(path2.join(resolvedDistDir, "index.html"))) {
+  if (resolvedDistDir && fs2.existsSync(path2.join(resolvedDistDir, "index.html"))) {
     return res.sendFile(path2.join(resolvedDistDir, "index.html"));
   }
   const cloudInfo = getCloudStatus();

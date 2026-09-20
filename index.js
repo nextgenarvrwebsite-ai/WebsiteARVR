@@ -6,7 +6,7 @@ import path2 from "path";
 import { fileURLToPath as fileURLToPath2 } from "url";
 
 // server/database.js
-import fs from "fs";
+import fs2 from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import bcrypt from "bcryptjs";
@@ -973,8 +973,8 @@ var __filename = fileURLToPath(import.meta.url);
 var __dirname = path.dirname(__filename);
 var dataDir = path.join(__dirname, "data");
 var dbFile = path.join(dataDir, "database.json");
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+if (!fs2.existsSync(dataDir)) {
+  fs2.mkdirSync(dataDir, { recursive: true });
 }
 var state = {
   admins: [],
@@ -992,15 +992,15 @@ var state = {
 };
 function saveToDisk() {
   try {
-    fs.writeFileSync(dbFile, JSON.stringify(state, null, 2), "utf-8");
+    fs2.writeFileSync(dbFile, JSON.stringify(state, null, 2), "utf-8");
   } catch (err) {
     console.error("Error writing to database.json:", err);
   }
 }
 function loadFromDisk() {
-  if (fs.existsSync(dbFile)) {
+  if (fs2.existsSync(dbFile)) {
     try {
-      const data = fs.readFileSync(dbFile, "utf-8");
+      const data = fs2.readFileSync(dbFile, "utf-8");
       if (data && data.trim()) {
         state = JSON.parse(data);
       }
@@ -1139,7 +1139,7 @@ async function initDatabase() {
         full_name: "Prof. Ananthanagu U",
         roll_no: "",
         branch: "Information Technology",
-        school: "Alliance College of Engineering and Design (CED)",
+        school: "Information Technology",
         year: "Faculty",
         domain: "AR/VR & Immersive Technologies",
         role: "Faculty Coordinator & Mentor",
@@ -1160,7 +1160,7 @@ async function initDatabase() {
         full_name: "Ms. Kusuma J",
         roll_no: "",
         branch: "Information Technology",
-        school: "Alliance College of Engineering and Design (CED)",
+        school: "Information Technology",
         year: "Faculty",
         domain: "AI & Deep Learning",
         role: "Faculty Coordinator & Mentor",
@@ -1181,14 +1181,14 @@ async function initDatabase() {
         full_name: "S Darshan Sai",
         roll_no: "",
         branch: "Information Technology",
-        school: "Alliance College of Engineering and Design (CED)",
+        school: "Information Technology",
         year: "3rd Year",
         domain: "AR/VR & Spatial Innovation",
         role: "President",
         email: "president.nextgen@alliance.edu.in",
         phone: "",
         bio: "President of NextGen (AR/VR) Reality Club (3rd Year, Information Technology). Leading spatial innovation, hardware initiatives, and immersive metaverse development at Alliance University.",
-        avatar_url: "/src/assets/council/council_member_1.jpg",
+        avatar_url: "/assets/council/council_member_1.jpg",
         github_url: "",
         linkedin_url: "",
         portfolio_url: "",
@@ -1202,14 +1202,14 @@ async function initDatabase() {
         full_name: "Apoorva P Keretot",
         roll_no: "",
         branch: "Information Technology",
-        school: "Alliance College of Engineering and Design (CED)",
+        school: "Information Technology",
         year: "3rd Year",
         domain: "Executive Council & Technical Wings",
         role: "Vice President",
         email: "vp.nextgen@alliance.edu.in",
         phone: "",
         bio: "Vice President of NextGen (AR/VR) Reality Club (3rd Year, Information Technology). Overseeing executive operations, technical domain workshops, and student community engagements.",
-        avatar_url: "/src/assets/council/council_member_4.jpg",
+        avatar_url: "/assets/council/council_member_4.jpg",
         github_url: "",
         linkedin_url: "",
         portfolio_url: "",
@@ -1220,17 +1220,59 @@ async function initDatabase() {
       },
       {
         id: 5,
+        full_name: "Rashmi",
+        roll_no: "",
+        branch: "Information Technology",
+        school: "Information Technology",
+        year: "3rd Year",
+        domain: "Administration & Governance",
+        role: "Secretary",
+        email: "secretary.nextgen@alliance.edu.in",
+        phone: "",
+        bio: "Secretary of NextGen (AR/VR) Reality Club (3rd Year, Information Technology). Managing administrative governance, official council records, institutional communications, and student delegations.",
+        avatar_url: "/assets/council/council_member_rashmi.jpg",
+        github_url: "",
+        linkedin_url: "",
+        portfolio_url: "",
+        status: "core_team",
+        is_council: true,
+        badge: "SECRETARY",
+        joined_at: "2023-08-20"
+      },
+      {
+        id: 6,
+        full_name: "Sudeep",
+        roll_no: "",
+        branch: "Information Technology",
+        school: "Information Technology",
+        year: "3rd Year",
+        domain: "Operations & Member Relations",
+        role: "Joint Secretary",
+        email: "jointsecretary.nextgen@alliance.edu.in",
+        phone: "",
+        bio: "Joint Secretary of NextGen (AR/VR) Reality Club (3rd Year, Information Technology). Coordinating event operations, inter-domain logistics, club administration, and student outreach.",
+        avatar_url: "/assets/council/council_member_sudeep.jpg",
+        github_url: "",
+        linkedin_url: "",
+        portfolio_url: "",
+        status: "core_team",
+        is_council: true,
+        badge: "JOINT SECRETARY",
+        joined_at: "2023-08-25"
+      },
+      {
+        id: 7,
         full_name: "Puneeth N",
         roll_no: "",
         branch: "Information Technology",
-        school: "Alliance College of Engineering and Design (CED)",
+        school: "Information Technology",
         year: "3rd Year",
         domain: "Treasury & Resource Operations",
         role: "Treasurer",
         email: "treasurer.nextgen@alliance.edu.in",
         phone: "",
         bio: "Council Member & Treasurer of NextGen (AR/VR) Reality Club (3rd Year, Information Technology). Managing club budget allocations, sponsorships, financial operations, and resources.",
-        avatar_url: "/src/assets/council/council_member_3.jpg",
+        avatar_url: "/assets/council/council_member_3.jpg",
         github_url: "",
         linkedin_url: "",
         portfolio_url: "",
@@ -1240,46 +1282,46 @@ async function initDatabase() {
         joined_at: "2023-09-01"
       },
       {
-        id: 6,
+        id: 8,
+        full_name: "Koel Dutta",
+        roll_no: "",
+        branch: "Information Technology",
+        school: "Information Technology",
+        year: "3rd Year",
+        domain: "Student Operations & Community Lead",
+        role: "Executive Member",
+        email: "executive.nextgen@alliance.edu.in",
+        phone: "",
+        bio: "Council Member & Executive Member Lead (3rd Year, Information Technology). Directing student delegations, domain wings engagement, and internal club initiatives.",
+        avatar_url: "/assets/council/council_member_5.jpg",
+        github_url: "",
+        linkedin_url: "",
+        portfolio_url: "",
+        status: "core_team",
+        is_council: true,
+        badge: "EXECUTIVE MEMBER",
+        joined_at: "2024-01-15"
+      },
+      {
+        id: 9,
         full_name: "Panchaksharayya",
         roll_no: "",
         branch: "Information Technology",
-        school: "Alliance College of Engineering and Design (CED)",
+        school: "Information Technology",
         year: "3rd Year",
         domain: "Media, PR & Documentation",
         role: "Media and Documentation Coordinator",
         email: "media.nextgen@alliance.edu.in",
         phone: "",
         bio: "Council Member & Media and Documentation Coordinator (3rd Year, Information Technology). Managing documentation, institutional reporting, media production, and digital archives.",
-        avatar_url: "/src/assets/council/council_member_2.jpg",
+        avatar_url: "/assets/council/council_member_2.jpg",
         github_url: "",
         linkedin_url: "",
         portfolio_url: "",
         status: "core_team",
         is_council: true,
-        badge: "MEDIA & DOCS",
+        badge: "MEDIA & DOCUMENTATION",
         joined_at: "2023-09-10"
-      },
-      {
-        id: 7,
-        full_name: "Koel Dutta",
-        roll_no: "",
-        branch: "Information Technology",
-        school: "Alliance College of Engineering and Design (CED)",
-        year: "3rd Year",
-        domain: "Student Operations & Community Lead",
-        role: "Executive Member Lead",
-        email: "executive.nextgen@alliance.edu.in",
-        phone: "",
-        bio: "Council Member & Executive Member Lead (3rd Year, Information Technology). Directing student delegations, domain wings engagement, and internal club initiatives.",
-        avatar_url: "/src/assets/council/council_member_5.jpg",
-        github_url: "",
-        linkedin_url: "",
-        portfolio_url: "",
-        status: "core_team",
-        is_council: true,
-        badge: "EXECUTIVE LEAD",
-        joined_at: "2024-01-15"
       }
     ];
   }
@@ -2429,12 +2471,24 @@ router7.get("/settings", (req, res) => {
   const banner = db.getSetting("announcement_banner", { active: true, title: "Welcome to NextGen AR/VR" });
   const stats = db.getSetting("club_stats", { members_count: "250+", projects_count: "24+" });
   const contact = db.getSetting("contact_info", {});
+  const esports_locked = Boolean(db.getSetting("esports_locked", false));
   return res.json({
     recruitment_status: recruitment,
     announcement_banner: banner,
     club_stats: stats,
-    contact_info: contact
+    contact_info: contact,
+    esports_locked
   });
+});
+router7.get("/esports-lock", (req, res) => {
+  const locked = db.getSetting("esports_locked", false);
+  return res.json({ locked: Boolean(locked) });
+});
+router7.post("/esports-lock", (req, res) => {
+  const { locked } = req.body;
+  const isLocked = Boolean(locked);
+  db.setSetting("esports_locked", isLocked);
+  return res.json({ success: true, locked: isLocked });
 });
 router7.put("/settings", authenticateAdmin, (req, res) => {
   const { key, value } = req.body;
@@ -2667,24 +2721,121 @@ app.get("/download/:filename", (req, res) => {
     }
   });
 });
-var distPath = path2.join(__dirname2, "..", "dist");
-app.use(express9.static(distPath));
+var candidateDistDirs = [
+  path2.join(__dirname2, "dist"),
+  path2.join(__dirname2, "..", "dist"),
+  path2.join(process.cwd(), "dist"),
+  path2.join(__dirname2, "public"),
+  path2.join(process.cwd(), "public")
+];
+var resolvedDistDir = candidateDistDirs.find((d) => fs.existsSync(path2.join(d, "index.html")));
+if (resolvedDistDir) {
+  console.log(`\u{1F310} Serving full frontend website from: ${resolvedDistDir}`);
+  app.use(express9.static(resolvedDistDir));
+}
 app.get("*", (req, res, next) => {
   if (req.url.startsWith("/api")) return next();
-  res.sendFile(path2.join(distPath, "index.html"), (err) => {
-    if (err) {
-      res.status(200).send(`
-        <!DOCTYPE html>
-        <html>
-          <head><title>NextGen AR/VR API Server</title></head>
-          <body style="background:#080B10;color:#00F0FF;font-family:sans-serif;padding:2rem;text-align:center;">
-            <h1>NextGen AR/VR Backend API Server is Running on port ${PORT}</h1>
-            <p style="color:#94A3B8;">Frontend dev server runs separately on port 5173 with proxy.</p>
-          </body>
-        </html>
-      `);
-    }
-  });
+  if (resolvedDistDir && fs.existsSync(path2.join(resolvedDistDir, "index.html"))) {
+    return res.sendFile(path2.join(resolvedDistDir, "index.html"));
+  }
+  const cloudInfo = getCloudStatus();
+  res.status(200).send(`
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>NextGen AR/VR \u2014 Backend Cloud API</title>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body {
+            background: #080B10;
+            color: #F1F5F9;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+          }
+          .card {
+            background: rgba(13, 17, 26, 0.9);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.15);
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 620px;
+            width: 100%;
+            text-align: center;
+          }
+          h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: #FFFFFF;
+            margin-bottom: 0.5rem;
+          }
+          .badge {
+            display: inline-block;
+            background: rgba(0, 255, 157, 0.15);
+            color: #00FF9D;
+            border: 1px solid rgba(0, 255, 157, 0.35);
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+          }
+          p { color: #94A3B8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
+          .db-box {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            font-size: 0.88rem;
+            color: #CBD5E1;
+          }
+          .btn-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+          .btn {
+            background: linear-gradient(135deg, #00F0FF, #8A2BE2);
+            color: #000;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: inline-block;
+            transition: transform 0.2s;
+          }
+          .btn:hover { transform: scale(1.03); }
+          .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #00F0FF;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="badge">\u25CF Cloud API Online & Active</div>
+          <h1>NextGen AR/VR Backend API</h1>
+          <p>This is the high-performance cloud backend server for the NextGen AR/VR Portal.</p>
+          
+          <div class="db-box">
+            <div><strong>Cloud Database:</strong> ${cloudInfo.isCloudDbActive ? '<span style="color:#00FF9D">Connected to MongoDB Atlas</span>' : '<span style="color:#FFB800">Local Cache</span>'}</div>
+            <div style="margin-top:0.4rem;font-size:0.8rem;color:#64748B;">Ready to process cross-browser events, registrations, feedback, and authentication.</div>
+          </div>
+
+          <div class="btn-row">
+            <a href="/api/events" class="btn">View Live Events JSON</a>
+            <a href="/api/health" class="btn btn-secondary">API Health Status</a>
+          </div>
+        </div>
+      </body>
+    </html>
+  `);
 });
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`

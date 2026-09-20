@@ -70,26 +70,127 @@ app.get('/download/:filename', (req, res) => {
   });
 });
 
-// Serve frontend in production mode if dist exists
-const distPath = path.join(__dirname, '..', 'dist');
-app.use(express.static(distPath));
+// Serve frontend in production mode if dist exists in any common directory
+const candidateDistDirs = [
+  path.join(__dirname, 'dist'),
+  path.join(__dirname, '..', 'dist'),
+  path.join(process.cwd(), 'dist'),
+  path.join(__dirname, 'public'),
+  path.join(process.cwd(), 'public')
+];
+
+let resolvedDistDir = candidateDistDirs.find(d => fs.existsSync(path.join(d, 'index.html')));
+
+if (resolvedDistDir) {
+  console.log(`🌐 Serving full frontend website from: ${resolvedDistDir}`);
+  app.use(express.static(resolvedDistDir));
+}
 
 app.get('*', (req, res, next) => {
   if (req.url.startsWith('/api')) return next();
-  res.sendFile(path.join(distPath, 'index.html'), err => {
-    if (err) {
-      res.status(200).send(`
-        <!DOCTYPE html>
-        <html>
-          <head><title>NextGen AR/VR API Server</title></head>
-          <body style="background:#080B10;color:#00F0FF;font-family:sans-serif;padding:2rem;text-align:center;">
-            <h1>NextGen AR/VR Backend API Server is Running on port ${PORT}</h1>
-            <p style="color:#94A3B8;">Frontend dev server runs separately on port 5173 with proxy.</p>
-          </body>
-        </html>
-      `);
-    }
-  });
+
+  if (resolvedDistDir && fs.existsSync(path.join(resolvedDistDir, 'index.html'))) {
+    return res.sendFile(path.join(resolvedDistDir, 'index.html'));
+  }
+
+  const cloudInfo = getCloudStatus();
+  res.status(200).send(`
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>NextGen AR/VR — Backend Cloud API</title>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body {
+            background: #080B10;
+            color: #F1F5F9;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+          }
+          .card {
+            background: rgba(13, 17, 26, 0.9);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.15);
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 620px;
+            width: 100%;
+            text-align: center;
+          }
+          h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: #FFFFFF;
+            margin-bottom: 0.5rem;
+          }
+          .badge {
+            display: inline-block;
+            background: rgba(0, 255, 157, 0.15);
+            color: #00FF9D;
+            border: 1px solid rgba(0, 255, 157, 0.35);
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+          }
+          p { color: #94A3B8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
+          .db-box {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            font-size: 0.88rem;
+            color: #CBD5E1;
+          }
+          .btn-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+          .btn {
+            background: linear-gradient(135deg, #00F0FF, #8A2BE2);
+            color: #000;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: inline-block;
+            transition: transform 0.2s;
+          }
+          .btn:hover { transform: scale(1.03); }
+          .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #00F0FF;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="badge">● Cloud API Online & Active</div>
+          <h1>NextGen AR/VR Backend API</h1>
+          <p>This is the high-performance cloud backend server for the NextGen AR/VR Portal.</p>
+          
+          <div class="db-box">
+            <div><strong>Cloud Database:</strong> ${cloudInfo.isCloudDbActive ? '<span style="color:#00FF9D">Connected to MongoDB Atlas</span>' : '<span style="color:#FFB800">Local Cache</span>'}</div>
+            <div style="margin-top:0.4rem;font-size:0.8rem;color:#64748B;">Ready to process cross-browser events, registrations, feedback, and authentication.</div>
+          </div>
+
+          <div class="btn-row">
+            <a href="/api/events" class="btn">View Live Events JSON</a>
+            <a href="/api/health" class="btn btn-secondary">API Health Status</a>
+          </div>
+        </div>
+      </body>
+    </html>
+  `);
 });
 
 // Start Server (bind to 0.0.0.0 for cloud providers like Render, Railway, etc.)

@@ -10,13 +10,29 @@ router.get('/settings', (req, res) => {
   const banner = db.getSetting('announcement_banner', { active: true, title: 'Welcome to NextGen AR/VR' });
   const stats = db.getSetting('club_stats', { members_count: '250+', projects_count: '24+' });
   const contact = db.getSetting('contact_info', {});
+  const esports_locked = Boolean(db.getSetting('esports_locked', false));
 
   return res.json({
     recruitment_status: recruitment,
     announcement_banner: banner,
     club_stats: stats,
-    contact_info: contact
+    contact_info: contact,
+    esports_locked
   });
+});
+
+// GET /api/cms/esports-lock (Public e-sports arena lock status)
+router.get('/esports-lock', (req, res) => {
+  const locked = db.getSetting('esports_locked', false);
+  return res.json({ locked: Boolean(locked) });
+});
+
+// POST /api/cms/esports-lock (Update e-sports lock state)
+router.post('/esports-lock', (req, res) => {
+  const { locked } = req.body;
+  const isLocked = Boolean(locked);
+  db.setSetting('esports_locked', isLocked);
+  return res.json({ success: true, locked: isLocked });
 });
 
 // PUT /api/cms/settings (Admin update site settings)

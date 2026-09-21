@@ -85,9 +85,36 @@ router.post('/:id/register', (req, res) => {
     return res.status(400).json({ error: 'Registration for this event is currently closed.' });
   }
 
-  const { full_name, roll_no, email, phone, branch, year, is_team, team_name, team_members_info } = req.body;
+  const {
+    full_name,
+    name,
+    roll_no,
+    register_no,
+    email,
+    mail_id,
+    phone,
+    contact_no,
+    school,
+    branch,
+    department,
+    year,
+    semester,
+    sem,
+    is_team,
+    team_name,
+    team_members_info
+  } = req.body;
 
-  if (!full_name || !roll_no || !email || !phone) {
+  const resolvedName = (full_name || name || '').trim();
+  const resolvedRoll = (roll_no || register_no || '').trim().toUpperCase();
+  const resolvedEmail = (email || mail_id || '').trim().toLowerCase();
+  const resolvedPhone = (phone || contact_no || '').trim();
+  const resolvedSchool = (school || '').trim();
+  const resolvedDept = (department || branch || 'Information Technology').trim();
+  const resolvedYear = (year || '1st Year').trim();
+  const resolvedSem = (semester || sem || '').trim();
+
+  if (!resolvedName || !resolvedRoll || !resolvedEmail || !resolvedPhone) {
     return res.status(400).json({ error: 'Please provide full name, roll number, email, and phone.' });
   }
 
@@ -98,7 +125,7 @@ router.post('/:id/register', (req, res) => {
   // Check existing registration
   const existing = db.get('event_registrations', r =>
     r.event_id === id &&
-    (r.roll_no.toLowerCase() === roll_no.trim().toLowerCase() || r.email.toLowerCase() === email.trim().toLowerCase())
+    (r.roll_no.toLowerCase() === resolvedRoll.toLowerCase() || r.email.toLowerCase() === resolvedEmail.toLowerCase())
   );
 
   if (existing) {
@@ -111,14 +138,41 @@ router.post('/:id/register', (req, res) => {
     return res.status(400).json({ error: 'Event has reached maximum capacity.' });
   }
 
+  // Determine fallback school & semester if missing
+  let finalSchool = resolvedSchool;
+  if (!finalSchool) {
+    if (resolvedRoll.includes('ASAC')) finalSchool = 'Alliance School of Advanced Computing';
+    else if (resolvedRoll.includes('ASAE') || resolvedRoll.includes('CED')) finalSchool = 'Alliance School of Applied Engineering';
+    else if (resolvedRoll.includes('ASOB') || resolvedRoll.includes('BBA') || resolvedRoll.includes('MBA')) finalSchool = 'Alliance School of Business';
+    else if (resolvedRoll.includes('SOL') || resolvedRoll.includes('LAW')) finalSchool = 'Alliance School of Law';
+    else if (resolvedRoll.includes('SOD') || resolvedRoll.includes('DES')) finalSchool = 'Alliance School of Design';
+    else if (resolvedRoll.includes('SOLA') || resolvedRoll.includes('SLA')) finalSchool = 'Alliance School of Liberal Arts';
+    else if (resolvedRoll.includes('ASPA') || resolvedRoll.includes('SOPA')) finalSchool = 'Alliance School of Performing Arts';
+    else if (resolvedRoll.includes('ASOS') || resolvedRoll.includes('SOS')) finalSchool = 'Alliance School of Sciences';
+    else if (resolvedRoll.includes('ASMT') || resolvedRoll.includes('SMT')) finalSchool = 'Alliance School of Management and Technology';
+    else finalSchool = 'Alliance School of Advanced Computing';
+  }
+
+  let finalSem = resolvedSem;
+  if (!finalSem) {
+    if (resolvedYear.includes('1st')) finalSem = '1st Sem';
+    else if (resolvedYear.includes('2nd')) finalSem = '3rd Sem';
+    else if (resolvedYear.includes('3rd')) finalSem = '5th Sem';
+    else if (resolvedYear.includes('4th')) finalSem = '7th Sem';
+    else finalSem = '1st Sem';
+  }
+
   const registration = db.insert('event_registrations', {
     event_id: id,
-    full_name: full_name.trim(),
-    roll_no: roll_no.trim().toUpperCase(),
-    email: email.trim().toLowerCase(),
-    phone: phone.trim(),
-    branch: branch || 'Engineering',
-    year: year || '2nd Year',
+    full_name: resolvedName,
+    roll_no: resolvedRoll,
+    email: resolvedEmail,
+    phone: resolvedPhone,
+    school: finalSchool,
+    branch: resolvedDept,
+    department: resolvedDept,
+    year: resolvedYear,
+    semester: finalSem,
     is_team: is_team ? 1 : 0,
     team_name: team_name ? team_name.trim() : '',
     team_members_info: team_members_info ? team_members_info.trim() : '',
@@ -250,6 +304,34 @@ router.delete('/:id', authenticateAdmin, (req, res) => {
   return res.json({ message: 'Event deleted successfully.' });
 });
 
+function resolveSchool(r) {
+  if (r.school && r.school.trim()) return r.school.trim();
+  const roll = (r.roll_no || r.register_no || '').toUpperCase();
+  if (roll.includes('QUASAR')) return 'AU-QUASAR';
+  if (roll.includes('ASAC')) return 'Alliance School of Advanced Computing';
+  if (roll.includes('ASAE') || roll.includes('CED')) return 'Alliance School of Applied Engineering';
+  if (roll.includes('ASOB') || roll.includes('BBA') || roll.includes('MBA')) return 'Alliance School of Business';
+  if (roll.includes('SOL') || roll.includes('LAW')) return 'Alliance School of Law';
+  if (roll.includes('SOD') || roll.includes('DES')) return 'Alliance School of Design';
+  if (roll.includes('SOE') || roll.includes('ECON')) return 'Alliance School of Economics';
+  if (roll.includes('SOLA') || roll.includes('SLA')) return 'Alliance School of Liberal Arts';
+  if (roll.includes('ASPA') || roll.includes('SOPA')) return 'Alliance School of Performing Arts';
+  if (roll.includes('ASOS') || roll.includes('SOS')) return 'Alliance School of Sciences';
+  if (roll.includes('ASMT') || roll.includes('SMT')) return 'Alliance School of Management and Technology';
+  return 'Alliance School of Advanced Computing';
+}
+
+function resolveSem(r) {
+  if (r.semester && r.semester.trim()) return r.semester.trim();
+  if (r.sem && r.sem.trim()) return r.sem.trim();
+  const yr = (r.year || r.batch || '').toLowerCase();
+  if (yr.includes('1st')) return '1st Sem';
+  if (yr.includes('2nd')) return '3rd Sem';
+  if (yr.includes('3rd')) return '5th Sem';
+  if (yr.includes('4th')) return '7th Sem';
+  return '1st Sem';
+}
+
 // GET /api/events/:id/registrants (Admin view registrants)
 router.get('/:id/registrants', authenticateAdmin, (req, res) => {
   const id = parseInt(req.params.id, 10);
@@ -259,8 +341,13 @@ router.get('/:id/registrants', authenticateAdmin, (req, res) => {
     return res.status(404).json({ error: 'Event not found.' });
   }
 
-  const registrants = db.all('event_registrations', r => r.event_id === id);
+  const registrants = db.all('event_registrations', r => r.event_id === id).map(r => ({
+    ...r,
+    school: resolveSchool(r),
+    semester: resolveSem(r)
+  }));
   return res.json({ event, registrants, count: registrants.length });
 });
 
 export default router;
+

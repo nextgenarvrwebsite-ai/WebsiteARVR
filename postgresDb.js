@@ -149,8 +149,11 @@ async function verifyAndCreateTables() {
       roll_no TEXT NOT NULL,
       email TEXT,
       phone TEXT,
+      school TEXT DEFAULT '',
       branch TEXT,
+      department TEXT DEFAULT '',
       year TEXT,
+      semester TEXT DEFAULT '',
       is_team BOOLEAN DEFAULT false,
       team_name TEXT,
       team_members_info TEXT,
@@ -213,6 +216,12 @@ async function verifyAndCreateTables() {
 
   try {
     await pgPool.query(ddl);
+    // Migration: ensure new columns exist
+    await pgPool.query(`
+      ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS school TEXT DEFAULT '';
+      ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS department TEXT DEFAULT '';
+      ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS semester TEXT DEFAULT '';
+    `).catch(() => {});
     console.log('✅ PostgreSQL / Supabase tables verified: events, members, registrations, feedback, applications, site_content, admins');
   } catch (err) {
     console.error('Error verifying PostgreSQL tables:', err.message);

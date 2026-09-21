@@ -69,6 +69,34 @@ router.get('/applications.csv', authenticateAdmin, (req, res) => {
   return res.send(csv);
 });
 
+function resolveSchool(r) {
+  if (r.school && r.school.trim()) return r.school.trim();
+  const roll = (r.roll_no || r.register_no || '').toUpperCase();
+  if (roll.includes('QUASAR')) return 'AU-QUASAR';
+  if (roll.includes('ASAC')) return 'Alliance School of Advanced Computing';
+  if (roll.includes('ASAE') || roll.includes('CED')) return 'Alliance School of Applied Engineering';
+  if (roll.includes('ASOB') || roll.includes('BBA') || roll.includes('MBA')) return 'Alliance School of Business';
+  if (roll.includes('SOL') || roll.includes('LAW')) return 'Alliance School of Law';
+  if (roll.includes('SOD') || roll.includes('DES')) return 'Alliance School of Design';
+  if (roll.includes('SOE') || roll.includes('ECON')) return 'Alliance School of Economics';
+  if (roll.includes('SOLA') || roll.includes('SLA')) return 'Alliance School of Liberal Arts';
+  if (roll.includes('ASPA') || roll.includes('SOPA')) return 'Alliance School of Performing Arts';
+  if (roll.includes('ASOS') || roll.includes('SOS')) return 'Alliance School of Sciences';
+  if (roll.includes('ASMT') || roll.includes('SMT')) return 'Alliance School of Management and Technology';
+  return 'Alliance School of Advanced Computing';
+}
+
+function resolveSem(r) {
+  if (r.semester && r.semester.trim()) return r.semester.trim();
+  if (r.sem && r.sem.trim()) return r.sem.trim();
+  const yr = (r.year || r.batch || '').toLowerCase();
+  if (yr.includes('1st')) return '1st Sem';
+  if (yr.includes('2nd')) return '3rd Sem';
+  if (yr.includes('3rd')) return '5th Sem';
+  if (yr.includes('4th')) return '7th Sem';
+  return '1st Sem';
+}
+
 // 3. GET /api/admin/export/registrants.csv (All Registrants)
 router.get('/registrants.csv', authenticateAdmin, (req, res) => {
   const registrants = db.all('event_registrations');
@@ -79,16 +107,19 @@ router.get('/registrants.csv', authenticateAdmin, (req, res) => {
   const headers = [
     { key: 'id', label: 'Registration ID' },
     { getter: r => eventMap[r.event_id] || `Event #${r.event_id}`, label: 'Event Title' },
-    { key: 'full_name', label: 'Attendee Name' },
-    { key: 'roll_no', label: 'Roll Number' },
-    { key: 'email', label: 'Email' },
-    { key: 'phone', label: 'Phone' },
-    { key: 'branch', label: 'Branch' },
-    { key: 'year', label: 'Year' },
-    { getter: r => r.is_team ? 'Team' : 'Solo', label: 'Mode' },
-    { key: 'team_name', label: 'Team Name' },
-    { key: 'team_members_info', label: 'Team Members' },
-    { key: 'registered_at', label: 'Registered At' }
+    { getter: r => r.full_name || r.name || '', label: 'Student Name' },
+    { getter: r => r.roll_no || r.register_no || '', label: 'Register Number' },
+    { getter: r => r.email || r.mail_id || '', label: 'Mail ID' },
+    { getter: r => r.phone || r.contact_no || '', label: 'Contact Number' },
+    { getter: r => resolveSchool(r), label: 'School' },
+    { getter: r => r.department || r.branch || 'Information Technology', label: 'Department' },
+    { getter: r => r.year || r.batch || '1st Year', label: 'Year' },
+    { getter: r => resolveSem(r), label: 'Semester' },
+    { getter: r => r.is_team ? 'Team' : 'Solo', label: 'Team / Solo' },
+    { getter: r => r.team_name || '', label: 'Team Name' },
+    { getter: r => r.team_members_info || '', label: 'Teammates' },
+    { getter: r => r.ticket_id || `NG-EVT-${r.id}`, label: 'Ticket Pass ID' },
+    { getter: r => r.registered_at || '', label: 'Registered Date' }
   ];
 
   const csv = generateCsv(headers, registrants);
@@ -105,16 +136,19 @@ router.get('/registrants/:eventId.csv', authenticateAdmin, (req, res) => {
 
   const headers = [
     { key: 'id', label: 'Registration ID' },
-    { key: 'full_name', label: 'Attendee Name' },
-    { key: 'roll_no', label: 'Roll Number' },
-    { key: 'email', label: 'Email' },
-    { key: 'phone', label: 'Phone' },
-    { key: 'branch', label: 'Branch' },
-    { key: 'year', label: 'Year' },
-    { getter: r => r.is_team ? 'Team' : 'Solo', label: 'Type' },
-    { key: 'team_name', label: 'Team Name' },
-    { key: 'team_members_info', label: 'Team Members' },
-    { key: 'registered_at', label: 'Registration Date' }
+    { getter: r => r.full_name || r.name || '', label: 'Student Name' },
+    { getter: r => r.roll_no || r.register_no || '', label: 'Register Number' },
+    { getter: r => r.email || r.mail_id || '', label: 'Mail ID' },
+    { getter: r => r.phone || r.contact_no || '', label: 'Contact Number' },
+    { getter: r => resolveSchool(r), label: 'School' },
+    { getter: r => r.department || r.branch || 'Information Technology', label: 'Department' },
+    { getter: r => r.year || r.batch || '1st Year', label: 'Year' },
+    { getter: r => resolveSem(r), label: 'Semester' },
+    { getter: r => r.is_team ? 'Team' : 'Solo', label: 'Team / Solo' },
+    { getter: r => r.team_name || '', label: 'Team Name' },
+    { getter: r => r.team_members_info || '', label: 'Teammates' },
+    { getter: r => r.ticket_id || `NG-EVT-${r.id}`, label: 'Ticket Pass ID' },
+    { getter: r => r.registered_at || '', label: 'Registered Date' }
   ];
 
   const csv = generateCsv(headers, registrants);

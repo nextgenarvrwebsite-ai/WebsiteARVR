@@ -72,16 +72,22 @@ router.get('/applications.csv', authenticateAdmin, (req, res) => {
 function resolveSchool(r) {
   if (r.school && r.school.trim()) return r.school.trim();
   const roll = (r.roll_no || r.register_no || '').toUpperCase();
-  if (roll.includes('QUASAR')) return 'AU-QUASAR';
+  if (roll.includes('QUASAR')) return 'AU-QUASAR (Quantum Artificial Intelligence School for Advanced Research)';
   if (roll.includes('ASAC')) return 'Alliance School of Advanced Computing';
-  if (roll.includes('ASAE') || roll.includes('CED')) return 'Alliance School of Applied Engineering';
+  if (roll.includes('ASAE')) return 'Alliance School of Applied Engineering';
+  if (roll.includes('CED') || roll.includes('ACED')) return 'Alliance College of Engineering and Design';
   if (roll.includes('ASOB') || roll.includes('BBA') || roll.includes('MBA')) return 'Alliance School of Business';
+  if (roll.includes('AAC') || roll.includes('ASCENT')) return 'Alliance Ascent College';
+  if (roll.includes('AGBS')) return 'Alliance Global Business School';
   if (roll.includes('SOL') || roll.includes('LAW')) return 'Alliance School of Law';
-  if (roll.includes('SOD') || roll.includes('DES')) return 'Alliance School of Design';
+  if (roll.includes('CEPP') || roll.includes('ESG')) return 'Centre of Excellence in Public Policy, Sustainability and ESG Research';
+  if (roll.includes('SOD') || roll.includes('DES')) return 'Alliance School of Design (Alliance Global Design School)';
   if (roll.includes('SOE') || roll.includes('ECON')) return 'Alliance School of Economics';
   if (roll.includes('SOLA') || roll.includes('SLA')) return 'Alliance School of Liberal Arts';
-  if (roll.includes('ASPA') || roll.includes('SOPA')) return 'Alliance School of Performing Arts';
+  if (roll.includes('ASPA') || roll.includes('SOPA')) return 'Alliance School of Performing, Visual and Creative Arts';
   if (roll.includes('ASOS') || roll.includes('SOS')) return 'Alliance School of Sciences';
+  if (roll.includes('FILM') || roll.includes('FMS') || roll.includes('MEDIA')) return 'Alliance School of Film and Media Studies';
+  if (roll.includes('AVIA') || roll.includes('ASA')) return 'Alliance School of Aviation Studies';
   if (roll.includes('ASMT') || roll.includes('SMT')) return 'Alliance School of Management and Technology';
   return 'Alliance School of Advanced Computing';
 }
@@ -102,11 +108,14 @@ router.get('/registrants.csv', authenticateAdmin, (req, res) => {
   const registrants = db.all('event_registrations');
   const events = db.all('events');
   const eventMap = {};
-  events.forEach(e => { eventMap[e.id] = e.title; });
+  events.forEach(e => { 
+    eventMap[e.id] = e.title;
+    eventMap[String(e.id)] = e.title;
+  });
 
   const headers = [
     { key: 'id', label: 'Registration ID' },
-    { getter: r => eventMap[r.event_id] || `Event #${r.event_id}`, label: 'Event Title' },
+    { getter: r => eventMap[r.event_id] || eventMap[String(r.event_id)] || `Event #${r.event_id}`, label: 'Event Title' },
     { getter: r => r.full_name || r.name || '', label: 'Student Name' },
     { getter: r => r.roll_no || r.register_no || '', label: 'Register Number' },
     { getter: r => r.email || r.mail_id || '', label: 'Mail ID' },
@@ -130,9 +139,9 @@ router.get('/registrants.csv', authenticateAdmin, (req, res) => {
 
 // 4. GET /api/admin/export/registrants/:eventId.csv
 router.get('/registrants/:eventId.csv', authenticateAdmin, (req, res) => {
-  const eventId = parseInt(req.params.eventId, 10);
-  const event = db.get('events', e => e.id === eventId);
-  const registrants = db.all('event_registrations', r => r.event_id === eventId);
+  const rawId = req.params.eventId;
+  const event = db.get('events', e => String(e.id) === String(rawId));
+  const registrants = db.all('event_registrations', r => String(r.event_id) === String(rawId));
 
   const headers = [
     { key: 'id', label: 'Registration ID' },

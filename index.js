@@ -166,12 +166,16 @@ async function initMongoDatabase(onConnectedCallback) {
   }
 }
 function isMongoActive() {
-  return isMongoConnected && mongoose.connection.readyState === 1;
+  return mongoose.connection.readyState === 1;
 }
 function getMongoStatus() {
+  const readyState = mongoose.connection.readyState;
+  const hasEnv = !!(process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL && process.env.DATABASE_URL.startsWith("mongodb"));
   return {
-    isMongoConnected: isMongoActive(),
-    readyState: mongoose.connection.readyState,
+    isMongoConnected: readyState === 1,
+    isConnecting: readyState === 2 || hasEnv && readyState !== 1,
+    hasEnv,
+    readyState,
     host: mongoose.connection.host || null,
     dbName: mongoose.connection.name || null
   };
@@ -478,6 +482,66 @@ async function verifyAndCreateTables() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       last_login TIMESTAMPTZ
     );
+
+    CREATE TABLE IF NOT EXISTS esports_games (
+      id BIGINT PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT,
+      icon TEXT,
+      banner_url TEXT,
+      format TEXT,
+      scoring_type TEXT,
+      default_rules JSONB DEFAULT '{}'::jsonb,
+      description TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS esports_tournaments (
+      id BIGINT PRIMARY KEY,
+      title TEXT NOT NULL,
+      slug TEXT,
+      game_id BIGINT,
+      game_name TEXT,
+      prize_pool TEXT,
+      status TEXT,
+      start_date TEXT,
+      end_date TEXT,
+      venue TEXT,
+      banner_url TEXT,
+      registration_open INT DEFAULT 1,
+      scoring_rules JSONB DEFAULT '{}'::jsonb,
+      description TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS esports_teams (
+      id BIGINT PRIMARY KEY,
+      tournament_id BIGINT,
+      slot INT,
+      team_name TEXT NOT NULL,
+      tag TEXT,
+      logo_url TEXT,
+      captain_name TEXT,
+      captain_contact TEXT,
+      members JSONB DEFAULT '[]'::jsonb,
+      matches_played INT DEFAULT 0,
+      wins INT DEFAULT 0,
+      kills INT DEFAULT 0,
+      placement_points INT DEFAULT 0,
+      kill_points INT DEFAULT 0,
+      bonus_points INT DEFAULT 0,
+      total_points INT DEFAULT 0,
+      rank INT DEFAULT 1
+    );
+
+    CREATE TABLE IF NOT EXISTS esports_matches (
+      id BIGINT PRIMARY KEY,
+      tournament_id BIGINT,
+      match_title TEXT,
+      match_number INT,
+      map_name TEXT,
+      played_at TEXT,
+      mvp_player TEXT,
+      results JSONB DEFAULT '[]'::jsonb
+    );
   `;
   try {
     await pgPool.query(ddl);
@@ -487,7 +551,7 @@ async function verifyAndCreateTables() {
       ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS semester TEXT DEFAULT '';
     `).catch(() => {
     });
-    console.log("\u2705 PostgreSQL / Supabase tables verified: events, members, registrations, feedback, applications, site_content, admins");
+    console.log("\u2705 PostgreSQL / Supabase tables verified: events, members, registrations, feedback, applications, site_content, admins, esports");
   } catch (err) {
     console.error("Error verifying PostgreSQL tables:", err.message);
   }
@@ -537,6 +601,56 @@ async function loadAllFromPostgres(state2) {
           state2.site_content[row.key] = row.value;
         }
       }
+      const gamesRes = await pgPool.query("SELECT * FROM esports_games ORDER BY id ASC");
+      if (gamesRes.rows && gamesRes.rows.length > 0) {
+        state2.esports_games = gamesRes.rows.map((r) => ({
+          ...r,
+          id: Number(r.id),
+          default_rules: r.default_rules || {}
+        }));
+        totalLoaded += gamesRes.rows.length;
+      }
+      const tournRes = await pgPool.query("SELECT * FROM esports_tournaments ORDER BY id ASC");
+      if (tournRes.rows && tournRes.rows.length > 0) {
+        state2.esports_tournaments = tournRes.rows.map((r) => ({
+          ...r,
+          id: Number(r.id),
+          game_id: Number(r.game_id),
+          registration_open: Number(r.registration_open || 1),
+          scoring_rules: r.scoring_rules || {}
+        }));
+        totalLoaded += tournRes.rows.length;
+      }
+      const teamsRes = await pgPool.query("SELECT * FROM esports_teams ORDER BY tournament_id ASC, rank ASC");
+      if (teamsRes.rows && teamsRes.rows.length > 0) {
+        state2.esports_teams = teamsRes.rows.map((r) => ({
+          ...r,
+          id: Number(r.id),
+          tournament_id: Number(r.tournament_id),
+          slot: Number(r.slot || 1),
+          matches_played: Number(r.matches_played || 0),
+          wins: Number(r.wins || 0),
+          kills: Number(r.kills || 0),
+          placement_points: Number(r.placement_points || 0),
+          kill_points: Number(r.kill_points || 0),
+          bonus_points: Number(r.bonus_points || 0),
+          total_points: Number(r.total_points || 0),
+          rank: Number(r.rank || 1),
+          members: Array.isArray(r.members) ? r.members : []
+        }));
+        totalLoaded += teamsRes.rows.length;
+      }
+      const matchesRes = await pgPool.query("SELECT * FROM esports_matches ORDER BY tournament_id ASC, match_number ASC");
+      if (matchesRes.rows && matchesRes.rows.length > 0) {
+        state2.esports_matches = matchesRes.rows.map((r) => ({
+          ...r,
+          id: Number(r.id),
+          tournament_id: Number(r.tournament_id),
+          match_number: Number(r.match_number || 1),
+          results: Array.isArray(r.results) ? r.results : []
+        }));
+        totalLoaded += matchesRes.rows.length;
+      }
       console.log(`\u{1F4E5} Loaded ${totalLoaded} records from Supabase / PostgreSQL into active server state.`);
       return true;
     } catch (err) {
@@ -583,6 +697,34 @@ async function seedPostgresIfEmpty(state2) {
           await syncPostgresSetSetting(key, value);
         }
         console.log(`\u{1F331} Seeded initial site_content settings into Supabase / PostgreSQL.`);
+      }
+      const gamesCheck = await pgPool.query("SELECT COUNT(*) FROM esports_games");
+      if (parseInt(gamesCheck.rows[0].count, 10) === 0 && Array.isArray(state2.esports_games) && state2.esports_games.length > 0) {
+        for (const g of state2.esports_games) {
+          await syncPostgresInsert("esports_games", g);
+        }
+        console.log(`\u{1F331} Seeded ${state2.esports_games.length} esports games into Supabase / PostgreSQL.`);
+      }
+      const tournCheck = await pgPool.query("SELECT COUNT(*) FROM esports_tournaments");
+      if (parseInt(tournCheck.rows[0].count, 10) === 0 && Array.isArray(state2.esports_tournaments) && state2.esports_tournaments.length > 0) {
+        for (const t of state2.esports_tournaments) {
+          await syncPostgresInsert("esports_tournaments", t);
+        }
+        console.log(`\u{1F331} Seeded ${state2.esports_tournaments.length} esports tournaments into Supabase / PostgreSQL.`);
+      }
+      const teamsCheck = await pgPool.query("SELECT COUNT(*) FROM esports_teams");
+      if (parseInt(teamsCheck.rows[0].count, 10) === 0 && Array.isArray(state2.esports_teams) && state2.esports_teams.length > 0) {
+        for (const tm of state2.esports_teams) {
+          await syncPostgresInsert("esports_teams", tm);
+        }
+        console.log(`\u{1F331} Seeded ${state2.esports_teams.length} esports squads into Supabase / PostgreSQL.`);
+      }
+      const matchesCheck = await pgPool.query("SELECT COUNT(*) FROM esports_matches");
+      if (parseInt(matchesCheck.rows[0].count, 10) === 0 && Array.isArray(state2.esports_matches) && state2.esports_matches.length > 0) {
+        for (const m of state2.esports_matches) {
+          await syncPostgresInsert("esports_matches", m);
+        }
+        console.log(`\u{1F331} Seeded ${state2.esports_matches.length} esports matches into Supabase / PostgreSQL.`);
       }
     } catch (err) {
       console.error("Error seeding PostgreSQL:", err.message);
@@ -750,6 +892,117 @@ async function syncPostgresInsert(table, row) {
         ];
         await pgPool.query(query, values);
         console.log(`\u2601\uFE0F Synced application for ${row.full_name} to Supabase / PostgreSQL`);
+      } else if (table === "esports_tournaments") {
+        const query = `
+          INSERT INTO esports_tournaments (
+            id, title, slug, game_id, game_name, prize_pool, status, start_date, end_date, venue, banner_url, registration_open, scoring_rules, description
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            scoring_rules = EXCLUDED.scoring_rules,
+            status = EXCLUDED.status,
+            prize_pool = EXCLUDED.prize_pool,
+            description = EXCLUDED.description
+        `;
+        await pgPool.query(query, [
+          Number(row.id),
+          row.title || "",
+          row.slug || "",
+          Number(row.game_id || 1),
+          row.game_name || "",
+          row.prize_pool || "",
+          row.status || "live",
+          row.start_date || "",
+          row.end_date || "",
+          row.venue || "",
+          row.banner_url || "",
+          Number(row.registration_open || 1),
+          JSON.stringify(row.scoring_rules || {}),
+          row.description || ""
+        ]);
+        console.log(`\u2601\uFE0F Synced esports tournament "${row.title}" to Supabase / PostgreSQL`);
+      } else if (table === "esports_teams") {
+        const query = `
+          INSERT INTO esports_teams (
+            id, tournament_id, slot, team_name, tag, logo_url, captain_name, captain_contact, members,
+            matches_played, wins, kills, placement_points, kill_points, bonus_points, total_points, rank
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+          ON CONFLICT (id) DO UPDATE SET
+            team_name = EXCLUDED.team_name,
+            tag = EXCLUDED.tag,
+            matches_played = EXCLUDED.matches_played,
+            wins = EXCLUDED.wins,
+            kills = EXCLUDED.kills,
+            placement_points = EXCLUDED.placement_points,
+            kill_points = EXCLUDED.kill_points,
+            bonus_points = EXCLUDED.bonus_points,
+            total_points = EXCLUDED.total_points,
+            rank = EXCLUDED.rank
+        `;
+        await pgPool.query(query, [
+          Number(row.id),
+          Number(row.tournament_id || 1),
+          Number(row.slot || 1),
+          row.team_name || "",
+          row.tag || "",
+          row.logo_url || "\u{1F3AE}",
+          row.captain_name || "",
+          row.captain_contact || "",
+          JSON.stringify(Array.isArray(row.members) ? row.members : []),
+          Number(row.matches_played || 0),
+          Number(row.wins || 0),
+          Number(row.kills || 0),
+          Number(row.placement_points || 0),
+          Number(row.kill_points || 0),
+          Number(row.bonus_points || 0),
+          Number(row.total_points || 0),
+          Number(row.rank || 1)
+        ]);
+      } else if (table === "esports_matches") {
+        const query = `
+          INSERT INTO esports_matches (
+            id, tournament_id, match_title, match_number, map_name, played_at, mvp_player, results
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ON CONFLICT (id) DO UPDATE SET
+            match_title = EXCLUDED.match_title,
+            match_number = EXCLUDED.match_number,
+            map_name = EXCLUDED.map_name,
+            played_at = EXCLUDED.played_at,
+            mvp_player = EXCLUDED.mvp_player,
+            results = EXCLUDED.results
+        `;
+        await pgPool.query(query, [
+          Number(row.id),
+          Number(row.tournament_id || 1),
+          row.match_title || "",
+          Number(row.match_number || 1),
+          row.map_name || "",
+          row.played_at || "",
+          row.mvp_player || "",
+          JSON.stringify(Array.isArray(row.results) ? row.results : [])
+        ]);
+        console.log(`\u2601\uFE0F Synced esports match #${row.match_number} to Supabase / PostgreSQL`);
+      } else if (table === "esports_games") {
+        const query = `
+          INSERT INTO esports_games (
+            id, name, slug, icon, banner_url, format, scoring_type, default_rules, description
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            slug = EXCLUDED.slug,
+            default_rules = EXCLUDED.default_rules
+        `;
+        await pgPool.query(query, [
+          Number(row.id),
+          row.name || "",
+          row.slug || "",
+          row.icon || "",
+          row.banner_url || "",
+          row.format || "",
+          row.scoring_type || "",
+          JSON.stringify(row.default_rules || {}),
+          row.description || ""
+        ]);
       }
     } catch (err) {
       console.error(`Error syncing insert to PostgreSQL (${table}):`, err.message);
@@ -770,6 +1023,12 @@ async function syncPostgresUpdate(table, predicate, updateData) {
         await syncPostgresInsert("events", updateData);
       } else if (table === "members" && updateData.id) {
         await syncPostgresInsert("members", updateData);
+      } else if (table === "esports_tournaments" && updateData.id) {
+        await syncPostgresInsert("esports_tournaments", updateData);
+      } else if (table === "esports_teams" && updateData.id) {
+        await syncPostgresInsert("esports_teams", updateData);
+      } else if (table === "esports_matches" && updateData.id) {
+        await syncPostgresInsert("esports_matches", updateData);
       }
     } catch (err) {
       console.error(`Error syncing update to PostgreSQL (${table}):`, err.message);
@@ -971,14 +1230,18 @@ ${description}`
 }
 function getCloudStatus() {
   const isCloudActive = isMongoActive() || isPostgresActive();
+  const mongoStatus = getMongoStatus();
+  const postgresStatus = getPostgresStatus();
   let type = "none";
-  if (isMongoActive()) type = "mongodb";
-  else if (isPostgresActive()) type = "supabase_postgres";
+  if (mongoStatus.isMongoConnected || mongoStatus.hasEnv) type = "mongodb";
+  else if (postgresStatus.isPostgresConnected || postgresStatus.isSupabaseConnected) type = "supabase_postgres";
   return {
     isCloudDbActive: isCloudActive,
+    isConnecting: mongoStatus.isConnecting,
+    hasCloudEnv: mongoStatus.hasEnv || postgresStatus.isPostgresConnected,
     cloudType: type,
-    mongodb: getMongoStatus(),
-    postgres: getPostgresStatus()
+    mongodb: mongoStatus,
+    postgres: postgresStatus
   };
 }
 
@@ -1384,242 +1647,184 @@ async function initDatabase() {
   if (!state.feedback) {
     state.feedback = [];
   }
-  if (!state.esports_games || state.esports_games.length === 0) {
+  const hasFreeFire = Array.isArray(state.esports_tournaments) && state.esports_tournaments.some((t) => t.id === 2);
+  const hasLegacyValorant = Array.isArray(state.esports_games) && state.esports_games.some((g) => g.name === "Valorant");
+  if (!state.esports_games || state.esports_games.length === 0 || !hasFreeFire || hasLegacyValorant) {
     state.esports_games = [
       {
         id: 1,
-        name: "Valorant",
-        slug: "valorant",
-        icon: "Crosshair",
-        banner_url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800",
-        format: "5v5 Tactical Shooter",
-        scoring_type: "match_win",
-        default_rules: {
-          match_win_points: 3,
-          match_draw_points: 1,
-          round_diff_multiplier: 0.1,
-          ace_bonus: 1
-        },
-        description: "First-person tactical hero shooter with precision gunplay and unique agent abilities."
-      },
-      {
-        id: 2,
-        name: "BGMI / Battle Royale League",
-        slug: "bgmi-battle-royale",
+        name: "BGMI (Battlegrounds Mobile India)",
+        slug: "bgmi",
         icon: "Target",
-        banner_url: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=800",
+        banner_url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200",
         format: "Squad Battle Royale (16 Teams)",
         scoring_type: "battle_royale",
         default_rules: {
-          placement_points: {
-            "1": 15,
-            "2": 12,
-            "3": 10,
-            "4": 8,
-            "5": 6,
-            "6": 4,
-            "7": 2,
-            "8": 1,
-            "9": 1,
-            "10": 1,
-            "11": 0,
-            "12": 0,
-            "13": 0,
-            "14": 0,
-            "15": 0,
-            "16": 0
-          },
-          kill_point_multiplier: 1,
-          winner_chicken_dinner_bonus: 5
+          system_name: "Official BGIS / BMPS (10-Point)",
+          placement_scale: { 1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0 },
+          kill_multiplier: 1,
+          win_bonus: 0,
+          win_title: "WWCD \u{1F357}"
         },
-        description: "High-stakes battle royale combat where strategic zone rotations and gunfights determine the champions."
+        description: "Official collegiate Battle Royale championship featuring 16 top squads battling in Erangel, Miramar, and Sanhok."
       },
       {
-        id: 3,
-        name: "Rocket League 3v3",
-        slug: "rocket-league",
-        icon: "Zap",
-        banner_url: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&q=80&w=800",
-        format: "3v3 High-Octane Vehicular Soccer",
-        scoring_type: "match_win",
+        id: 2,
+        name: "Free Fire MAX",
+        slug: "freefire-max",
+        icon: "Flame",
+        banner_url: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200",
+        format: "Squad Battle Royale (12 Teams)",
+        scoring_type: "battle_royale",
         default_rules: {
-          series_win_points: 3,
-          goal_diff_multiplier: 0.2,
-          hat_trick_bonus: 1
+          system_name: "Official FFWS / FFIC (12-Point)",
+          placement_scale: { 1: 12, 2: 9, 3: 8, 4: 7, 5: 6, 6: 5, 7: 4, 8: 3, 9: 2, 10: 1, 11: 0, 12: 0 },
+          kill_multiplier: 1,
+          win_bonus: 0,
+          win_title: "BOOYAH \u{1F525}"
         },
-        description: "Vehicular acrobatics meets soccer in hyper-fast airborne action."
+        description: "Fast-paced Free Fire MAX competitive survival clash featuring 12 top squads across Bermuda, Purgatory, and Kalahari."
       }
     ];
     state.esports_tournaments = [
       {
         id: 1,
-        title: "NextGen Pro Apex League Season 4",
-        slug: "nextgen-pro-apex-season-4",
-        game_id: 2,
-        game_name: "BGMI / Battle Royale League",
+        title: "NextGen BGMI Masters Series 2026",
+        slug: "nextgen-bgmi-masters-series",
+        game_id: 1,
+        game_name: "BGMI (Battlegrounds Mobile India)",
         prize_pool: "\u20B950,000 INR (~$600 USD)",
         status: "live",
-        start_date: "2026-08-15",
-        end_date: "2026-09-10",
-        venue: "NextGen Esports Lab & Twitch",
-        banner_url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800",
+        start_date: "2026-09-20",
+        end_date: "2026-10-15",
+        venue: "NextGen Spatial Esports Lab & YouTube Live",
+        banner_url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200",
         registration_open: 1,
         scoring_rules: {
-          placement_scale: {
-            "1": 15,
-            "2": 12,
-            "3": 10,
-            "4": 8,
-            "5": 6,
-            "6": 4,
-            "7": 2,
-            "8": 1,
-            "9": 1,
-            "10": 1
-          },
+          system_name: "Official BGIS / BMPS (10-Point)",
+          placement_scale: { 1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0 },
           kill_multiplier: 1,
-          win_bonus: 5
+          win_bonus: 0,
+          win_title: "WWCD \u{1F357}"
         },
-        description: "The premier college Battle Royale championship featuring 16 top squads battling across 6 rigorous map rotations."
+        description: "The premier college Battle Royale championship featuring 16 top squads battling across 5 rigorous map rotations."
+      },
+      {
+        id: 2,
+        title: "NextGen Free Fire MAX Clash Series 2026",
+        slug: "nextgen-free-fire-clash-series",
+        game_id: 2,
+        game_name: "Free Fire MAX",
+        prize_pool: "\u20B935,000 INR (~$420 USD)",
+        status: "live",
+        start_date: "2026-09-20",
+        end_date: "2026-10-15",
+        venue: "NextGen Esports Arena & Discord Stream",
+        banner_url: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200",
+        registration_open: 1,
+        scoring_rules: {
+          system_name: "Official FFWS / FFIC (12-Point)",
+          placement_scale: { 1: 12, 2: 9, 3: 8, 4: 7, 5: 6, 6: 5, 7: 4, 8: 3, 9: 2, 10: 1, 11: 0, 12: 0 },
+          kill_multiplier: 1,
+          win_bonus: 0,
+          win_title: "BOOYAH \u{1F525}"
+        },
+        description: "High-octane Free Fire MAX survival clash featuring 12 top university squads competing in fast-paced Bermuda, Purgatory, and Kalahari drop-ins."
       }
     ];
     state.esports_teams = [
-      {
-        id: 1,
-        tournament_id: 1,
-        team_name: "Vortex Phantom",
-        tag: "VP",
-        logo_url: "\u26A1",
-        captain_name: 'Samar "Vortex" Singh',
-        captain_contact: "samar.vp@gmail.com",
-        members: ["Vortex", "Krypton", "ShadowStrike", "Nova"],
-        matches_played: 5,
-        wins: 2,
-        kills: 42,
-        placement_points: 58,
-        kill_points: 42,
-        bonus_points: 10,
-        total_points: 110,
-        rank: 1
-      },
-      {
-        id: 2,
-        tournament_id: 1,
-        team_name: "Cyber Valkyries",
-        tag: "CVK",
-        logo_url: "\u{1F985}",
-        captain_name: 'Rhea "Valkyrie" Sen',
-        captain_contact: "rhea.cvk@gmail.com",
-        members: ["Valkyrie", "PixelQueen", "Athena", "Siren"],
-        matches_played: 5,
-        wins: 1,
-        kills: 38,
-        placement_points: 52,
-        kill_points: 38,
-        bonus_points: 5,
-        total_points: 95,
-        rank: 2
-      },
-      {
-        id: 3,
-        tournament_id: 1,
-        team_name: "HyperDrive Gaming",
-        tag: "HDG",
-        logo_url: "\u{1F525}",
-        captain_name: 'Aditya "Pulse" Rao',
-        captain_contact: "aditya.hdg@gmail.com",
-        members: ["Pulse", "Blaze", "Glitch", "Overclock"],
-        matches_played: 5,
-        wins: 1,
-        kills: 34,
-        placement_points: 44,
-        kill_points: 34,
-        bonus_points: 5,
-        total_points: 83,
-        rank: 3
-      },
-      {
-        id: 4,
-        tournament_id: 1,
-        team_name: "Quantum Titans",
-        tag: "QTN",
-        logo_url: "\u269B\uFE0F",
-        captain_name: 'Farhan "Quark" Ali',
-        captain_contact: "farhan.qtn@gmail.com",
-        members: ["Quark", "Boson", "Entropy", "Proton"],
-        matches_played: 5,
-        wins: 1,
-        kills: 28,
-        placement_points: 38,
-        kill_points: 28,
-        bonus_points: 5,
-        total_points: 71,
-        rank: 4
-      },
-      {
-        id: 5,
-        tournament_id: 1,
-        team_name: "Neon Strikers",
-        tag: "NST",
-        logo_url: "\u{1F3AF}",
-        captain_name: 'Kavya "Viper" Nair',
-        captain_contact: "kavya.nst@gmail.com",
-        members: ["Viper", "Echo", "FrostByte", "Zero"],
-        matches_played: 5,
-        wins: 0,
-        kills: 26,
-        placement_points: 32,
-        kill_points: 26,
-        bonus_points: 0,
-        total_points: 58,
-        rank: 5
-      },
-      {
-        id: 6,
-        tournament_id: 1,
-        team_name: "Apex Predators",
-        tag: "APX",
-        logo_url: "\u{1F43A}",
-        captain_name: 'Dev "Apex" Verma',
-        captain_contact: "dev.apx@gmail.com",
-        members: ["Apex", "Raptor", "Fang", "Ghost"],
-        matches_played: 5,
-        wins: 0,
-        kills: 22,
-        placement_points: 26,
-        kill_points: 22,
-        bonus_points: 0,
-        total_points: 48,
-        rank: 6
-      }
+      // BGMI Teams (Tournament 1)
+      { id: 101, tournament_id: 1, slot: 1, team_name: "Soul Esports", tag: "SOUL", logo_url: "\u26A1", captain_name: 'Samar "Vortex" (C)', matches_played: 5, wins: 2, kills: 38, placement_points: 36, kill_points: 38, bonus_points: 0, total_points: 74, rank: 1 },
+      { id: 102, tournament_id: 1, slot: 2, team_name: "GodLike Esports", tag: "GODL", logo_url: "\u{1F451}", captain_name: 'Jonathan "JONNY" (C)', matches_played: 5, wins: 1, kills: 42, placement_points: 28, kill_points: 42, bonus_points: 0, total_points: 70, rank: 2 },
+      { id: 103, tournament_id: 1, slot: 3, team_name: "Team XSpark", tag: "TX", logo_url: "\u{1F525}", captain_name: 'ScoutOP "Tanmay" (C)', matches_played: 5, wins: 1, kills: 35, placement_points: 25, kill_points: 35, bonus_points: 0, total_points: 60, rank: 3 },
+      { id: 104, tournament_id: 1, slot: 4, team_name: "Entity Gaming", tag: "ENT", logo_url: "\u{1F6E1}\uFE0F", captain_name: 'Saumraj "Leader" (C)', matches_played: 5, wins: 1, kills: 31, placement_points: 24, kill_points: 31, bonus_points: 0, total_points: 55, rank: 4 },
+      { id: 105, tournament_id: 1, slot: 5, team_name: "Blind Esports", tag: "BLND", logo_url: "\u{1F441}\uFE0F", captain_name: "ManyaOP (C)", matches_played: 5, wins: 0, kills: 34, placement_points: 20, kill_points: 34, bonus_points: 0, total_points: 54, rank: 5 },
+      { id: 106, tournament_id: 1, slot: 6, team_name: "Revenant Esports", tag: "RNT", logo_url: "\u{1F985}", captain_name: 'Sensei "Deepak" (C)', matches_played: 5, wins: 0, kills: 29, placement_points: 19, kill_points: 29, bonus_points: 0, total_points: 48, rank: 6 },
+      { id: 107, tournament_id: 1, slot: 7, team_name: "Orangutan Gaming", tag: "OG", logo_url: "\u{1F9A7}", captain_name: 'Ash "Aashish" (C)', matches_played: 5, wins: 0, kills: 26, placement_points: 16, kill_points: 26, bonus_points: 0, total_points: 42, rank: 7 },
+      { id: 108, tournament_id: 1, slot: 8, team_name: "Gladiators Esports", tag: "GLAD", logo_url: "\u2694\uFE0F", captain_name: "Destro (C)", matches_played: 5, wins: 0, kills: 24, placement_points: 15, kill_points: 24, bonus_points: 0, total_points: 39, rank: 8 },
+      { id: 109, tournament_id: 1, slot: 9, team_name: "Global Esports", tag: "GE", logo_url: "\u{1F310}", captain_name: 'Mavi "Harmandeep" (C)', matches_played: 5, wins: 0, kills: 22, placement_points: 12, kill_points: 22, bonus_points: 0, total_points: 34, rank: 9 },
+      { id: 110, tournament_id: 1, slot: 10, team_name: "Medal Esports", tag: "MEDL", logo_url: "\u{1F3C5}", captain_name: "Paradox (C)", matches_played: 5, wins: 0, kills: 20, placement_points: 11, kill_points: 20, bonus_points: 0, total_points: 31, rank: 10 },
+      { id: 111, tournament_id: 1, slot: 11, team_name: "Hyderabad Hydras", tag: "HH", logo_url: "\u{1F40D}", captain_name: 'Carry "Akash" (C)', matches_played: 5, wins: 0, kills: 18, placement_points: 10, kill_points: 18, bonus_points: 0, total_points: 28, rank: 11 },
+      { id: 112, tournament_id: 1, slot: 12, team_name: "Team Insane", tag: "INS", logo_url: "\u{1F9E0}", captain_name: "Aadi (C)", matches_played: 5, wins: 0, kills: 16, placement_points: 8, kill_points: 16, bonus_points: 0, total_points: 24, rank: 12 },
+      { id: 113, tournament_id: 1, slot: 13, team_name: "Gujarat Tigers", tag: "GT", logo_url: "\u{1F405}", captain_name: "Shadow (C)", matches_played: 5, wins: 0, kills: 15, placement_points: 6, kill_points: 15, bonus_points: 0, total_points: 21, rank: 13 },
+      { id: 114, tournament_id: 1, slot: 14, team_name: "Big Brother Esports", tag: "BB", logo_url: "\u{1F91D}", captain_name: "Uzair (C)", matches_played: 5, wins: 0, kills: 14, placement_points: 4, kill_points: 14, bonus_points: 0, total_points: 18, rank: 14 },
+      { id: 115, tournament_id: 1, slot: 15, team_name: "Team 8Bit", tag: "8BIT", logo_url: "\u{1F47E}", captain_name: "Juicy (C)", matches_played: 5, wins: 0, kills: 11, placement_points: 3, kill_points: 11, bonus_points: 0, total_points: 14, rank: 15 },
+      { id: 116, tournament_id: 1, slot: 16, team_name: "Autobotz Esports", tag: "AUTO", logo_url: "\u{1F916}", captain_name: "Cyber (C)", matches_played: 5, wins: 0, kills: 9, placement_points: 2, kill_points: 9, bonus_points: 0, total_points: 11, rank: 16 },
+      // Free Fire MAX Teams (Tournament 2)
+      { id: 201, tournament_id: 2, slot: 1, team_name: "Total Gaming Esports", tag: "TG", logo_url: "\u{1F405}", captain_name: 'Ajay "Ajjubhai" (C)', matches_played: 5, wins: 2, kills: 36, placement_points: 42, kill_points: 36, bonus_points: 0, total_points: 78, rank: 1 },
+      { id: 202, tournament_id: 2, slot: 2, team_name: "Team Elite (Blind FF)", tag: "ELITE", logo_url: "\u26A1", captain_name: "KillerFF (C)", matches_played: 5, wins: 1, kills: 38, placement_points: 34, kill_points: 38, bonus_points: 0, total_points: 72, rank: 2 },
+      { id: 203, tournament_id: 2, slot: 3, team_name: "Desi Gamers Esports", tag: "DG", logo_url: "\u{1F525}", captain_name: "Amitbhai (C)", matches_played: 5, wins: 1, kills: 32, placement_points: 31, kill_points: 32, bonus_points: 0, total_points: 63, rank: 3 },
+      { id: 204, tournament_id: 2, slot: 4, team_name: "Orangutan Elite", tag: "OGE", logo_url: "\u{1F9A7}", captain_name: "DevAlone (C)", matches_played: 5, wins: 1, kills: 28, placement_points: 29, kill_points: 28, bonus_points: 0, total_points: 57, rank: 4 },
+      { id: 205, tournament_id: 2, slot: 5, team_name: "Chemin Esports", tag: "CHMN", logo_url: "\u{1F985}", captain_name: "Swastik (C)", matches_played: 5, wins: 0, kills: 27, placement_points: 24, kill_points: 27, bonus_points: 0, total_points: 51, rank: 5 },
+      { id: 206, tournament_id: 2, slot: 6, team_name: "Nigma Galaxy FF", tag: "NG", logo_url: "\u{1F30C}", captain_name: "VasiyoCRJ7 (C)", matches_played: 5, wins: 0, kills: 25, placement_points: 21, kill_points: 25, bonus_points: 0, total_points: 46, rank: 6 },
+      { id: 207, tournament_id: 2, slot: 7, team_name: "GodLike Free Fire", tag: "GDLK", logo_url: "\u{1F451}", captain_name: "Niku (C)", matches_played: 5, wins: 0, kills: 22, placement_points: 18, kill_points: 22, bonus_points: 0, total_points: 40, rank: 7 },
+      { id: 208, tournament_id: 2, slot: 8, team_name: "TSM FTX Free Fire", tag: "TSM", logo_url: "\u{1F3AF}", captain_name: "OldMonk (C)", matches_played: 5, wins: 0, kills: 19, placement_points: 17, kill_points: 19, bonus_points: 0, total_points: 36, rank: 8 },
+      { id: 209, tournament_id: 2, slot: 9, team_name: "PVS Gaming Esports", tag: "PVS", logo_url: "\u{1F6E1}\uFE0F", captain_name: 'Hari "PVS" (C)', matches_played: 5, wins: 0, kills: 18, placement_points: 14, kill_points: 18, bonus_points: 0, total_points: 32, rank: 9 },
+      { id: 210, tournament_id: 2, slot: 10, team_name: "Black Flag Army", tag: "BFA", logo_url: "\u{1F3F4}", captain_name: "Aawara (C)", matches_played: 5, wins: 0, kills: 15, placement_points: 12, kill_points: 15, bonus_points: 0, total_points: 27, rank: 10 },
+      { id: 211, tournament_id: 2, slot: 11, team_name: "Team Mayhem", tag: "MYHM", logo_url: "\u{1F4A5}", captain_name: "Lethal (C)", matches_played: 5, wins: 0, kills: 12, placement_points: 9, kill_points: 12, bonus_points: 0, total_points: 21, rank: 11 },
+      { id: 212, tournament_id: 2, slot: 12, team_name: "Galaxy Racer FF", tag: "GXR", logo_url: "\u{1F3CE}\uFE0F", captain_name: "Speedy (C)", matches_played: 5, wins: 0, kills: 10, placement_points: 6, kill_points: 10, bonus_points: 0, total_points: 16, rank: 12 }
     ];
     state.esports_matches = [
+      // BGMI Matches
       {
-        id: 1,
+        id: 1001,
         tournament_id: 1,
-        match_title: "Match 1: Erangel Opening Clash",
+        match_title: "Match 1 \xB7 Erangel Launch",
         match_number: 1,
         map_name: "Erangel",
-        played_at: "2026-08-20 18:00",
-        mvp_player: "VP_Vortex (11 Kills)",
+        played_at: "2026-09-24 16:30",
+        mvp_player: "SOUL_Manya (7 Kills)",
         results: [
-          { team_id: 1, team_name: "Vortex Phantom", placement: 1, kills: 14, points: 29 },
-          { team_id: 2, team_name: "Cyber Valkyries", placement: 2, kills: 8, points: 20 },
-          { team_id: 3, team_name: "HyperDrive Gaming", placement: 3, kills: 7, points: 17 }
+          { team_id: 101, team_name: "Soul Esports", placement: 1, kills: 12, points: 22 },
+          { team_id: 102, team_name: "GodLike Esports", placement: 2, kills: 9, points: 15 },
+          { team_id: 103, team_name: "Team XSpark", placement: 3, kills: 7, points: 12 },
+          { team_id: 104, team_name: "Entity Gaming", placement: 4, kills: 6, points: 10 },
+          { team_id: 105, team_name: "Blind Esports", placement: 5, kills: 8, points: 11 }
         ]
       },
       {
-        id: 2,
+        id: 1002,
         tournament_id: 1,
-        match_title: "Match 2: Miramar High Desert",
+        match_title: "Match 2 \xB7 Miramar Ridge Storm",
         match_number: 2,
         map_name: "Miramar",
-        played_at: "2026-08-21 19:30",
-        mvp_player: "CVK_PixelQueen (9 Kills)",
+        played_at: "2026-09-24 17:30",
+        mvp_player: "GODL_Jonathan (9 Kills)",
         results: [
-          { team_id: 2, team_name: "Cyber Valkyries", placement: 1, kills: 12, points: 27 },
-          { team_id: 4, team_name: "Quantum Titans", placement: 2, kills: 9, points: 21 },
-          { team_id: 1, team_name: "Vortex Phantom", placement: 3, kills: 8, points: 18 }
+          { team_id: 102, team_name: "GodLike Esports", placement: 1, kills: 14, points: 24 },
+          { team_id: 101, team_name: "Soul Esports", placement: 2, kills: 8, points: 14 },
+          { team_id: 104, team_name: "Entity Gaming", placement: 3, kills: 7, points: 12 },
+          { team_id: 103, team_name: "Team XSpark", placement: 4, kills: 6, points: 10 }
+        ]
+      },
+      // Free Fire Matches
+      {
+        id: 2001,
+        tournament_id: 2,
+        match_title: "Match 1 \xB7 Bermuda Clock Tower",
+        match_number: 1,
+        map_name: "Bermuda",
+        played_at: "2026-09-24 16:30",
+        mvp_player: "TG_FozyAjay (8 Kills)",
+        results: [
+          { team_id: 201, team_name: "Total Gaming Esports", placement: 1, kills: 11, points: 23 },
+          { team_id: 202, team_name: "Team Elite (Blind FF)", placement: 2, kills: 9, points: 18 },
+          { team_id: 203, team_name: "Desi Gamers Esports", placement: 3, kills: 7, points: 15 },
+          { team_id: 204, team_name: "Orangutan Elite", placement: 4, kills: 6, points: 13 }
+        ]
+      },
+      {
+        id: 2002,
+        tournament_id: 2,
+        match_title: "Match 2 \xB7 Purgatory Central",
+        match_number: 2,
+        map_name: "Purgatory",
+        played_at: "2026-09-24 17:30",
+        mvp_player: "ELITE_Killer (10 Kills)",
+        results: [
+          { team_id: 202, team_name: "Team Elite (Blind FF)", placement: 1, kills: 12, points: 24 },
+          { team_id: 201, team_name: "Total Gaming Esports", placement: 2, kills: 8, points: 17 },
+          { team_id: 203, team_name: "Desi Gamers Esports", placement: 3, kills: 6, points: 14 }
         ]
       }
     ];
@@ -2136,35 +2341,61 @@ router4.post("/:id/register", (req, res) => {
   });
 });
 function handleBatchSync(req, res) {
-  const eventsList = req.body.events;
+  const eventsList = Array.isArray(req.body) ? req.body : req.body && req.body.events;
   if (!Array.isArray(eventsList)) {
     return res.status(400).json({ error: "Expected an array of events." });
   }
-  const sanitized = eventsList.filter((e) => e && (e.title || "").trim()).map((e, idx) => ({
-    id: e.id || Date.now() + idx,
-    title: (e.title || "").trim(),
-    slug: e.slug || (e.title || "event").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-    category: e.category || "Workshop",
-    event_date: e.event_date || (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-    event_time: e.event_time || "02:00 PM - 05:00 PM",
-    venue: (e.venue || "").trim(),
-    description: (e.description || "").trim(),
-    poster_url: e.poster_url || "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800",
-    is_registration_open: e.is_registration_open !== void 0 ? e.is_registration_open ? 1 : 0 : 1,
-    max_seats: parseInt(e.max_seats, 10) || 100,
-    is_team_event: e.is_team_event ? 1 : 0,
-    max_team_size: parseInt(e.max_team_size, 10) || 4,
-    tags: Array.isArray(e.tags) ? e.tags : e.tags ? String(e.tags).split(",").map((t) => t.trim()) : ["AR/VR", "NextGen"],
-    feedbackQuestions: Array.isArray(e.feedbackQuestions) ? e.feedbackQuestions : [],
-    created_at: e.created_at || (/* @__PURE__ */ new Date()).toISOString()
-  }));
-  db.setAll("events", sanitized);
-  return res.json({ success: true, count: sanitized.length, events: sanitized });
+  const legacyTitles = [
+    "meta spatial hackathon 2026",
+    "unreal engine 5.5 masterclass: nanite & lumen",
+    "cyberclash: collegiate valorant championship",
+    "hands-on webxr & three.js bootcamp",
+    "hands-on spatial xr & webxr masterclass 2026"
+  ];
+  const currentEvents = db.all("events");
+  const mergedMap = /* @__PURE__ */ new Map();
+  currentEvents.forEach((e) => {
+    if (!e || !e.id) return;
+    const t = (e.title || "").trim().toLowerCase();
+    if (legacyTitles.includes(t) || t.includes("hands-on spatial xr") || t.includes("spatial xr & webxr")) return;
+    mergedMap.set(String(e.id), e);
+  });
+  eventsList.forEach((e, idx) => {
+    if (!e || !e.title) return;
+    const t = (e.title || "").trim().toLowerCase();
+    if (legacyTitles.includes(t) || t.includes("hands-on spatial xr") || t.includes("spatial xr & webxr")) return;
+    const id = e.id ? String(e.id) : String(Date.now() + idx);
+    const existing = mergedMap.get(id);
+    const clean = {
+      ...existing || {},
+      ...e,
+      id: parseInt(id, 10) || id,
+      title: (e.title || "").trim(),
+      slug: e.slug || (e.title || "event").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      category: e.category || existing?.category || "Workshop",
+      event_date: e.event_date || existing?.event_date || (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+      event_time: e.event_time || existing?.event_time || "02:00 PM - 05:00 PM",
+      venue: (e.venue || existing?.venue || "Room 402, Spatial VR Lab").trim(),
+      description: (e.description || existing?.description || "").trim(),
+      poster_url: e.poster_url || existing?.poster_url || "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800",
+      is_registration_open: e.is_registration_open !== void 0 ? e.is_registration_open ? 1 : 0 : existing?.is_registration_open ?? 1,
+      max_seats: parseInt(e.max_seats, 10) || existing?.max_seats || 100,
+      is_team_event: e.is_team_event ? 1 : existing?.is_team_event ? 1 : 0,
+      max_team_size: parseInt(e.max_team_size, 10) || existing?.max_team_size || 4,
+      tags: Array.isArray(e.tags) ? e.tags : e.tags ? String(e.tags).split(",").map((s) => s.trim()) : existing?.tags || ["AR/VR", "NextGen"],
+      feedbackQuestions: Array.isArray(e.feedbackQuestions) ? e.feedbackQuestions : existing?.feedbackQuestions || [],
+      created_at: e.created_at || existing?.created_at || (/* @__PURE__ */ new Date()).toISOString()
+    };
+    mergedMap.set(id, clean);
+  });
+  const finalEvents = Array.from(mergedMap.values());
+  db.setAll("events", finalEvents);
+  return res.json({ success: true, count: finalEvents.length, events: finalEvents.map(enrichEvent) });
 }
 router4.post("/sync", handleBatchSync);
 router4.post("/batch", handleBatchSync);
 router4.post("/", (req, res, next) => {
-  if (req.body && Array.isArray(req.body.events)) {
+  if (Array.isArray(req.body) || req.body && Array.isArray(req.body.events)) {
     return handleBatchSync(req, res);
   }
   return authenticateAdmin(req, res, () => {
@@ -2274,42 +2505,104 @@ var events_default = router4;
 // server/routes/feedback.js
 import express5 from "express";
 var router5 = express5.Router();
-router5.post("/", (req, res) => {
-  const { event_id, event_title, rating_content, rating_organization, rating_speaker, what_liked, what_improve, comments, author_name, author_email } = req.body;
-  const rContent = parseInt(rating_content, 10);
-  const rOrg = parseInt(rating_organization, 10);
-  const rSpeaker = parseInt(rating_speaker, 10);
-  if (!rContent || !rOrg || !rSpeaker || rContent < 1 || rContent > 5 || rOrg < 1 || rOrg > 5 || rSpeaker < 1 || rSpeaker > 5) {
-    return res.status(400).json({ error: "Please provide valid 1-5 star ratings for all categories." });
+function normalizeFeedbackRecord(item) {
+  const answers = item.answers || {};
+  const author_name = (item.participant_name || item.author_name || item.name || "Anonymous Student").trim();
+  const register_no = (item.register_no || item.roll_no || "").trim().toUpperCase();
+  const author_email = (item.email || item.author_email || item.mail_id || "").trim().toLowerCase();
+  const department = (item.department || item.branch || "").trim();
+  let rContent = parseInt(item.rating_content, 10);
+  if (isNaN(rContent) || rContent < 1 || rContent > 5) {
+    if (typeof answers.q1 === "number") rContent = answers.q1;
+    else if (typeof answers.q1 === "string" && !isNaN(parseInt(answers.q1, 10))) rContent = parseInt(answers.q1, 10);
+    else rContent = 5;
   }
-  let finalTitle = event_title || "General Club Feedback";
-  if (event_id) {
-    const event = db.get("events", (e) => e.id === parseInt(event_id, 10));
-    if (event) finalTitle = event.title;
+  let rOrg = parseInt(item.rating_organization, 10);
+  if (isNaN(rOrg) || rOrg < 1 || rOrg > 5) {
+    if (typeof answers.q2 === "number") rOrg = answers.q2;
+    else if (typeof answers.q2 === "string" && !isNaN(parseInt(answers.q2, 10))) rOrg = parseInt(answers.q2, 10);
+    else rOrg = 5;
   }
-  const feedback = db.insert("feedback", {
-    event_id: event_id ? parseInt(event_id, 10) : null,
+  let rSpeaker = parseInt(item.rating_speaker, 10);
+  if (isNaN(rSpeaker) || rSpeaker < 1 || rSpeaker > 5) {
+    rSpeaker = 5;
+  }
+  const what_liked = (item.what_liked || (answers.q3 ? String(answers.q3) : "")).trim();
+  const what_improve = (item.what_improve || (answers.q4 ? String(answers.q4) : "")).trim();
+  const comments = (item.comments || (answers.q5 ? String(answers.q5) : "")).trim();
+  let finalTitle = item.event_title || "General NextGen Club Feedback";
+  const rawEventId = item.event_id || "general";
+  if (rawEventId && String(rawEventId) !== "general") {
+    const event = db.get("events", (e) => String(e.id) === String(rawEventId));
+    if (event && event.title) finalTitle = event.title;
+  }
+  return {
+    id: item.id || Date.now() + Math.floor(Math.random() * 1e3),
+    event_id: String(rawEventId),
     event_title: finalTitle,
+    participant_name: author_name,
+    register_no,
+    email: author_email,
+    department,
+    author_name,
+    author_email,
     rating_content: rContent,
     rating_organization: rOrg,
     rating_speaker: rSpeaker,
-    what_liked: what_liked ? what_liked.trim() : "",
-    what_improve: what_improve ? what_improve.trim() : "",
-    comments: comments ? comments.trim() : "",
-    author_name: author_name ? author_name.trim() : "Anonymous Member",
-    author_email: author_email ? author_email.trim().toLowerCase() : "",
-    submitted_at: (/* @__PURE__ */ new Date()).toISOString()
-  });
+    what_liked,
+    what_improve,
+    comments,
+    answers,
+    submitted_at: item.submitted_at || item.created_at || (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
+router5.post("/", (req, res) => {
+  const normalized = normalizeFeedbackRecord(req.body);
+  const feedback = db.insert("feedback", normalized);
   return res.status(201).json({
     message: "Thank you for your valuable feedback! Your response has been recorded.",
-    feedback_id: feedback.id
+    feedback_id: feedback.id,
+    feedback
   });
+});
+function handleBatchSync2(req, res) {
+  const list = req.body.feedbacks || req.body.feedback;
+  if (!Array.isArray(list)) {
+    return res.status(400).json({ error: "Expected an array of feedbacks." });
+  }
+  let syncedCount = 0;
+  const existingAll = db.all("feedback");
+  list.forEach((item) => {
+    if (!item) return;
+    const normalized = normalizeFeedbackRecord(item);
+    const exists = existingAll.some(
+      (ex) => String(ex.id) === String(normalized.id) || normalized.register_no && String(ex.event_id) === String(normalized.event_id) && String(ex.register_no).toUpperCase() === normalized.register_no
+    );
+    if (!exists) {
+      db.insert("feedback", normalized);
+      existingAll.push(normalized);
+      syncedCount++;
+    }
+  });
+  return res.json({
+    success: true,
+    synced: syncedCount,
+    total: db.count("feedback"),
+    feedbacks: db.all("feedback")
+  });
+}
+router5.post("/sync", handleBatchSync2);
+router5.post("/batch", handleBatchSync2);
+router5.get("/all", (req, res) => {
+  const all = db.all("feedback");
+  all.sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+  return res.json({ success: true, count: all.length, feedbacks: all });
 });
 router5.get("/", authenticateAdmin, (req, res) => {
   const { event_id } = req.query;
   let feedbackList = db.all("feedback", (f) => {
     if (event_id && event_id !== "all") {
-      return f.event_id === parseInt(event_id, 10);
+      return String(f.event_id) === String(event_id);
     }
     return true;
   });
@@ -2324,10 +2617,13 @@ router5.get("/", authenticateAdmin, (req, res) => {
     let sumOrg = 0;
     let sumSpeaker = 0;
     for (const f of feedbackList) {
-      sumContent += f.rating_content;
-      sumOrg += f.rating_organization;
-      sumSpeaker += f.rating_speaker;
-      const itemAvg = Math.round((f.rating_content + f.rating_organization + f.rating_speaker) / 3);
+      const c = f.rating_content || 5;
+      const o = f.rating_organization || 5;
+      const s = f.rating_speaker || 5;
+      sumContent += c;
+      sumOrg += o;
+      sumSpeaker += s;
+      const itemAvg = Math.max(1, Math.min(5, Math.round((c + o + s) / 3)));
       if (distribution[itemAvg] !== void 0) {
         distribution[itemAvg]++;
       }
@@ -2337,9 +2633,10 @@ router5.get("/", authenticateAdmin, (req, res) => {
     avgSpeaker = Number((sumSpeaker / total).toFixed(1));
     overallAvg = Number(((avgContent + avgOrg + avgSpeaker) / 3).toFixed(1));
   }
-  feedbackList.sort((a, b) => new Date(b.submitted_at || b.created_at) - new Date(a.submitted_at || a.created_at));
+  feedbackList.sort((a, b) => new Date(b.submitted_at || b.created_at || 0) - new Date(a.submitted_at || a.created_at || 0));
   return res.json({
     feedback: feedbackList,
+    feedbacks: feedbackList,
     stats: {
       total_responses: total,
       overall_avg: overallAvg,
@@ -2356,16 +2653,68 @@ var feedback_default = router5;
 import express6 from "express";
 var router6 = express6.Router();
 function recalculateLeaderboard(tournamentId) {
-  const teams = db.all("esports_teams", (t) => t.tournament_id === tournamentId);
-  teams.sort((a, b) => {
+  const tId = parseInt(tournamentId, 10);
+  const tournament = db.get("esports_tournaments", (t) => t.id === tId);
+  const rules = tournament?.scoring_rules || {
+    placement_scale: { 1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1 },
+    kill_multiplier: 1,
+    win_bonus: 0
+  };
+  const teams = db.all("esports_teams", (t) => t.tournament_id === tId);
+  const matches = db.all("esports_matches", (m) => m.tournament_id === tId).sort((a, b) => (a.match_number || 0) - (b.match_number || 0));
+  const teamStats = {};
+  teams.forEach((t) => {
+    teamStats[t.id] = {
+      matches_played: 0,
+      wins: 0,
+      kills: 0,
+      placement_points: 0,
+      kill_points: 0,
+      bonus_points: t.bonus_points || 0,
+      total_points: t.bonus_points || 0
+    };
+  });
+  matches.forEach((m) => {
+    if (Array.isArray(m.results)) {
+      m.results.forEach((r) => {
+        const teamId = r.team_id;
+        if (teamStats[teamId]) {
+          const placement = parseInt(r.placement, 10);
+          const kills = parseInt(r.kills, 10) || 0;
+          const pScale = rules.placement_scale || {};
+          const pPts = pScale[placement] !== void 0 ? Number(pScale[placement]) : 0;
+          const kPts = kills * (rules.kill_multiplier !== void 0 ? Number(rules.kill_multiplier) : 1);
+          const isWin = placement === 1;
+          const winBonus = isWin ? Number(rules.win_bonus || 0) : 0;
+          const matchTotal = pPts + kPts + winBonus;
+          r.points = matchTotal;
+          teamStats[teamId].matches_played += 1;
+          if (isWin) teamStats[teamId].wins += 1;
+          teamStats[teamId].kills += kills;
+          teamStats[teamId].placement_points += pPts;
+          teamStats[teamId].kill_points += kPts;
+          teamStats[teamId].total_points += matchTotal;
+        }
+      });
+      db.update("esports_matches", (match) => match.id === m.id, { results: m.results });
+    }
+  });
+  teams.forEach((t) => {
+    const s = teamStats[t.id] || {};
+    db.update("esports_teams", (item) => item.id === t.id, s);
+  });
+  const updatedTeams = db.all("esports_teams", (t) => t.tournament_id === tId);
+  updatedTeams.sort((a, b) => {
     if (b.total_points !== a.total_points) return b.total_points - a.total_points;
     if (b.wins !== a.wins) return b.wins - a.wins;
+    if (b.placement_points !== a.placement_points) return b.placement_points - a.placement_points;
     return b.kills - a.kills;
   });
-  teams.forEach((team, index) => {
+  updatedTeams.forEach((team, index) => {
     db.update("esports_teams", (t) => t.id === team.id, { rank: index + 1 });
+    team.rank = index + 1;
   });
-  return teams;
+  return updatedTeams;
 }
 router6.get("/overview", (req, res) => {
   const games = db.all("esports_games");
@@ -2376,12 +2725,12 @@ router6.get("/overview", (req, res) => {
     const teamCount = db.count("esports_teams", (team) => team.tournament_id === t.id);
     return {
       ...t,
-      game_name: game ? game.name : "Esports Game",
-      game_slug: game ? game.slug : "general",
+      game_name: game ? game.name : t.game_name || "Esports Game",
+      game_slug: game ? game.slug : t.game_slug || "battle-royale",
       team_count: teamCount
     };
   });
-  const recentMatches = [...matches].sort((a, b) => new Date(b.played_at || b.created_at) - new Date(a.played_at || a.created_at)).slice(0, 5);
+  const recentMatches = [...matches].sort((a, b) => new Date(b.played_at || b.created_at || 0) - new Date(a.played_at || a.created_at || 0)).slice(0, 10);
   return res.json({
     games,
     tournaments: enrichedTournaments,
@@ -2396,7 +2745,30 @@ router6.get("/tournaments/:id/leaderboard", (req, res) => {
   }
   const game = db.get("esports_games", (g) => g.id === tournament.game_id);
   const teams = recalculateLeaderboard(tournamentId);
-  const matches = db.all("esports_matches", (m) => m.tournament_id === tournamentId).sort((a, b) => (b.match_number || 0) - (a.match_number || 0));
+  const matches = db.all("esports_matches", (m) => m.tournament_id === tournamentId).sort((a, b) => (a.match_number || 0) - (b.match_number || 0));
+  const warhead = teams.map((team) => {
+    const matchScores = matches.map((m) => {
+      const resRow = (m.results || []).find((r) => r.team_id === team.id);
+      return {
+        match_id: m.id,
+        match_number: m.match_number,
+        map_name: m.map_name,
+        placement: resRow ? resRow.placement : null,
+        kills: resRow ? resRow.kills : 0,
+        points: resRow ? resRow.points : 0,
+        is_win: resRow ? resRow.placement === 1 : false
+      };
+    });
+    return {
+      team_id: team.id,
+      team_name: team.team_name,
+      tag: team.tag,
+      rank: team.rank,
+      total_points: team.total_points,
+      wins: team.wins,
+      matches: matchScores
+    };
+  });
   const podium = {
     first: teams[0] || null,
     second: teams[1] || null,
@@ -2405,135 +2777,103 @@ router6.get("/tournaments/:id/leaderboard", (req, res) => {
   return res.json({
     tournament: {
       ...tournament,
-      game_name: game ? game.name : "Esports Game"
+      game_name: game ? game.name : tournament.game_name
     },
     podium,
     leaderboard: teams,
-    matches
+    matches,
+    warhead
   });
+});
+router6.put("/tournaments/:id/scoring-rules", authenticateAdmin, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const tournament = db.get("esports_tournaments", (t) => t.id === id);
+  if (!tournament) {
+    return res.status(404).json({ error: "Tournament not found." });
+  }
+  const { placement_scale, kill_multiplier, win_bonus, system_name, win_title } = req.body;
+  const currentRules = tournament.scoring_rules || {};
+  const updatedRules = {
+    ...currentRules,
+    system_name: system_name || currentRules.system_name || "Custom Points System",
+    placement_scale: placement_scale || currentRules.placement_scale || {},
+    kill_multiplier: kill_multiplier !== void 0 ? parseFloat(kill_multiplier) : currentRules.kill_multiplier ?? 1,
+    win_bonus: win_bonus !== void 0 ? parseFloat(win_bonus) : currentRules.win_bonus ?? 0,
+    win_title: win_title || currentRules.win_title || "WINNER"
+  };
+  const updatedTournament = db.update("esports_tournaments", (t) => t.id === id, { scoring_rules: updatedRules });
+  const updatedLeaderboard = recalculateLeaderboard(id);
+  logAdminAction(req.admin.username, "UPDATE_SCORING_RULES", {
+    tournament_id: id,
+    tournament_title: tournament.title,
+    rules: updatedRules
+  });
+  return res.json({
+    message: "Points system updated and all match scores recalculated successfully!",
+    tournament: updatedTournament,
+    leaderboard: updatedLeaderboard
+  });
+});
+router6.post("/tournaments/:id/recalculate", authenticateAdmin, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const tournament = db.get("esports_tournaments", (t) => t.id === id);
+  if (!tournament) {
+    return res.status(404).json({ error: "Tournament not found." });
+  }
+  const leaderboard = recalculateLeaderboard(id);
+  return res.json({ message: "Leaderboard recalculated successfully.", leaderboard });
+});
+router6.get("/tournaments/:id/export.csv", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const tournament = db.get("esports_tournaments", (t) => t.id === id);
+  const teams = recalculateLeaderboard(id);
+  const winLabel = tournament?.game_name?.toLowerCase().includes("free fire") ? "Booyahs" : "WWCD";
+  let csv = `\uFEFFRank,Team Name,Tag,Captain,Matches Played,${winLabel},Placement Points,Kill Points,Bonus Points,Total Points\r
+`;
+  teams.forEach((t) => {
+    const sanitize = (v) => `"${String(v || "").replace(/"/g, '""')}"`;
+    csv += `${t.rank},${sanitize(t.team_name)},${sanitize(t.tag)},${sanitize(t.captain_name)},${t.matches_played || 0},${t.wins || 0},${t.placement_points || 0},${t.kill_points || 0},${t.bonus_points || 0},${t.total_points || 0}\r
+`;
+  });
+  const safeTitle = (tournament?.title || "esports_standings").replace(/[^a-zA-Z0-9]/g, "_");
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}_points_table.csv"`);
+  return res.send(csv);
 });
 router6.post("/calculate", (req, res) => {
   const {
-    scoring_type = "battle_royale",
+    game = "bgmi",
     placement = 1,
     kills = 0,
-    is_win = false,
     kill_multiplier = 1,
-    win_bonus = 5,
+    win_bonus = 0,
     custom_placement_scale = null
   } = req.body;
   const numPlacement = parseInt(placement, 10) || 1;
   const numKills = parseInt(kills, 10) || 0;
   const kMult = parseFloat(kill_multiplier) || 1;
   const wBonus = parseFloat(win_bonus) || 0;
-  let placementPoints = 0;
-  let killPoints = numKills * kMult;
-  let bonusPoints = is_win || numPlacement === 1 ? wBonus : 0;
-  let breakdown = {};
-  if (scoring_type === "battle_royale") {
-    const scale = custom_placement_scale || {
-      1: 15,
-      2: 12,
-      3: 10,
-      4: 8,
-      5: 6,
-      6: 4,
-      7: 2,
-      8: 1,
-      9: 1,
-      10: 1
-    };
-    placementPoints = scale[numPlacement] !== void 0 ? scale[numPlacement] : 0;
-    const total = placementPoints + killPoints + bonusPoints;
-    breakdown = {
-      formula: `(Placement Pts: ${placementPoints}) + (${numKills} Kills \xD7 ${kMult} = ${killPoints} Kill Pts) + (Winner Bonus: ${bonusPoints})`,
-      placement_points: placementPoints,
-      kill_points: killPoints,
-      bonus_points: bonusPoints,
-      total_points: total
-    };
-  } else if (scoring_type === "match_win") {
-    const winPts = is_win ? 3 : 0;
-    const total = winPts + killPoints + bonusPoints;
-    breakdown = {
-      formula: `(Match Result: ${winPts} Pts) + (${numKills} Frags \xD7 ${kMult} = ${killPoints} Kill Pts) + (Bonus: ${bonusPoints})`,
-      placement_points: winPts,
-      kill_points: killPoints,
-      bonus_points: bonusPoints,
-      total_points: total
-    };
-  }
+  const defaultScale = game === "freefire" ? { 1: 12, 2: 9, 3: 8, 4: 7, 5: 6, 6: 5, 7: 4, 8: 3, 9: 2, 10: 1, 11: 0, 12: 0 } : { 1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0 };
+  const scale = custom_placement_scale || defaultScale;
+  const placementPoints = scale[numPlacement] !== void 0 ? scale[numPlacement] : 0;
+  const killPoints = numKills * kMult;
+  const isWin = numPlacement === 1;
+  const bonusPoints = isWin ? wBonus : 0;
+  const total = placementPoints + killPoints + bonusPoints;
+  const winLabel = game === "freefire" ? "Booyah! \u{1F525}" : "WWCD! \u{1F357}";
+  const formula = `[Placement: Rank #${numPlacement} = ${placementPoints} Pts] + [${numKills} Kills \xD7 ${kMult} = ${killPoints} Kill Pts]${bonusPoints > 0 ? ` + [Win Bonus = ${bonusPoints} Pts]` : ""} = ${total} Total Points`;
   return res.json({
-    scoring_type,
-    input: { placement: numPlacement, kills: numKills, is_win },
-    result: breakdown
+    game,
+    placement: numPlacement,
+    kills: numKills,
+    placement_points: placementPoints,
+    kill_points: killPoints,
+    bonus_points: bonusPoints,
+    total_points: total,
+    is_win: isWin,
+    win_label: winLabel,
+    formula
   });
-});
-router6.post("/tournaments", authenticateAdmin, (req, res) => {
-  const { title, game_id, prize_pool, status, start_date, end_date, venue, banner_url, registration_open, scoring_rules, description } = req.body;
-  if (!title || !game_id) {
-    return res.status(400).json({ error: "Tournament title and game selection are required." });
-  }
-  const game = db.get("esports_games", (g) => g.id === parseInt(game_id, 10));
-  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now().toString().slice(-4);
-  const defaultRules = game ? game.default_rules : {
-    placement_scale: { 1: 15, 2: 12, 3: 10, 4: 8, 5: 6, 6: 4, 7: 2, 8: 1, 9: 1, 10: 1 },
-    kill_multiplier: 1,
-    win_bonus: 5
-  };
-  const tournament = db.insert("esports_tournaments", {
-    title: title.trim(),
-    slug,
-    game_id: parseInt(game_id, 10),
-    game_name: game ? game.name : "Esports Game",
-    prize_pool: prize_pool || "TBD",
-    status: status || "upcoming",
-    start_date: start_date || (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-    end_date: end_date || "",
-    venue: venue || "NextGen Esports Arena & Discord",
-    banner_url: banner_url || (game ? game.banner_url : ""),
-    registration_open: registration_open !== void 0 ? registration_open ? 1 : 0 : 1,
-    scoring_rules: scoring_rules || defaultRules,
-    description: description ? description.trim() : ""
-  });
-  logAdminAction(req.admin.username, "CREATE_TOURNAMENT", { tournament_id: tournament.id, title });
-  return res.status(201).json({ message: "Tournament created successfully", tournament });
-});
-router6.put("/tournaments/:id", authenticateAdmin, (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const existing = db.get("esports_tournaments", (t) => t.id === id);
-  if (!existing) {
-    return res.status(404).json({ error: "Tournament not found." });
-  }
-  const updated = db.update("esports_tournaments", (t) => t.id === id, req.body);
-  logAdminAction(req.admin.username, "EDIT_TOURNAMENT", { tournament_id: id, title: updated.title });
-  return res.json({ message: "Tournament updated successfully", tournament: updated });
-});
-router6.post("/teams", authenticateAdmin, (req, res) => {
-  const { tournament_id, team_name, tag, logo_url, captain_name, captain_contact, members } = req.body;
-  if (!tournament_id || !team_name || !captain_name) {
-    return res.status(400).json({ error: "Tournament, team name, and captain name are required." });
-  }
-  const team = db.insert("esports_teams", {
-    tournament_id: parseInt(tournament_id, 10),
-    team_name: team_name.trim(),
-    tag: tag ? tag.trim().toUpperCase() : team_name.slice(0, 3).toUpperCase(),
-    logo_url: logo_url || "\u{1F3AE}",
-    captain_name: captain_name.trim(),
-    captain_contact: captain_contact || "",
-    members: Array.isArray(members) ? members : members ? String(members).split(",").map((m) => m.trim()) : [captain_name],
-    matches_played: 0,
-    wins: 0,
-    kills: 0,
-    placement_points: 0,
-    kill_points: 0,
-    bonus_points: 0,
-    total_points: 0,
-    rank: 0
-  });
-  recalculateLeaderboard(parseInt(tournament_id, 10));
-  logAdminAction(req.admin.username, "ADD_ESPORTS_TEAM", { tournament_id, team_name });
-  return res.status(201).json({ message: "Team registered successfully", team });
 });
 router6.post("/matches", authenticateAdmin, (req, res) => {
   const { tournament_id, match_title, match_number, map_name, played_at, mvp_player, results } = req.body;
@@ -2546,38 +2886,28 @@ router6.post("/matches", authenticateAdmin, (req, res) => {
     return res.status(400).json({ error: "Match results array is required." });
   }
   const rules = tournament.scoring_rules || {
-    placement_scale: { 1: 15, 2: 12, 3: 10, 4: 8, 5: 6, 6: 4, 7: 2, 8: 1, 9: 1, 10: 1 },
+    placement_scale: { 1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1 },
     kill_multiplier: 1,
-    win_bonus: 5
+    win_bonus: 0
   };
   const processedResults = [];
   for (const item of results) {
     const teamId = parseInt(item.team_id, 10);
     const placement = parseInt(item.placement, 10);
     const kills = parseInt(item.kills, 10) || 0;
-    const placementPts = rules.placement_scale && rules.placement_scale[placement] || 0;
-    const killPts = kills * (rules.kill_multiplier || 1);
-    const winBonus = placement === 1 ? rules.win_bonus || 0 : 0;
+    const pScale = rules.placement_scale || {};
+    const placementPts = pScale[placement] !== void 0 ? Number(pScale[placement]) : 0;
+    const killPts = kills * (rules.kill_multiplier !== void 0 ? Number(rules.kill_multiplier) : 1);
+    const winBonus = placement === 1 ? Number(rules.win_bonus || 0) : 0;
     const matchTotalPoints = placementPts + killPts + winBonus;
     const team = db.get("esports_teams", (t) => t.id === teamId);
-    if (team) {
-      db.update("esports_teams", (t) => t.id === teamId, {
-        matches_played: (team.matches_played || 0) + 1,
-        wins: (team.wins || 0) + (placement === 1 ? 1 : 0),
-        kills: (team.kills || 0) + kills,
-        placement_points: (team.placement_points || 0) + placementPts,
-        kill_points: (team.kill_points || 0) + killPts,
-        bonus_points: (team.bonus_points || 0) + winBonus,
-        total_points: (team.total_points || 0) + matchTotalPoints
-      });
-      processedResults.push({
-        team_id: teamId,
-        team_name: team.team_name,
-        placement,
-        kills,
-        points: matchTotalPoints
-      });
-    }
+    processedResults.push({
+      team_id: teamId,
+      team_name: team ? team.team_name : item.team_name,
+      placement,
+      kills,
+      points: matchTotalPoints
+    });
   }
   const match = db.insert("esports_matches", {
     tournament_id: tId,
@@ -2595,6 +2925,35 @@ router6.post("/matches", authenticateAdmin, (req, res) => {
     match,
     leaderboard: updatedLeaderboard
   });
+});
+router6.post("/teams", authenticateAdmin, (req, res) => {
+  const { tournament_id, team_name, tag, logo_url, captain_name, captain_contact, members, slot } = req.body;
+  if (!tournament_id || !team_name || !captain_name) {
+    return res.status(400).json({ error: "Tournament, team name, and captain name are required." });
+  }
+  const tId = parseInt(tournament_id, 10);
+  const currentCount = db.count("esports_teams", (t) => t.tournament_id === tId);
+  const team = db.insert("esports_teams", {
+    tournament_id: tId,
+    slot: parseInt(slot, 10) || currentCount + 1,
+    team_name: team_name.trim(),
+    tag: tag ? tag.trim().toUpperCase() : team_name.slice(0, 3).toUpperCase(),
+    logo_url: logo_url || "\u{1F3AE}",
+    captain_name: captain_name.trim(),
+    captain_contact: captain_contact || "",
+    members: Array.isArray(members) ? members : members ? String(members).split(",").map((m) => m.trim()) : [captain_name],
+    matches_played: 0,
+    wins: 0,
+    kills: 0,
+    placement_points: 0,
+    kill_points: 0,
+    bonus_points: 0,
+    total_points: 0,
+    rank: currentCount + 1
+  });
+  recalculateLeaderboard(tId);
+  logAdminAction(req.admin.username, "ADD_ESPORTS_TEAM", { tournament_id: tId, team_name });
+  return res.status(201).json({ message: "Team registered successfully", team });
 });
 router6.put("/teams/:id/adjust-points", authenticateAdmin, (req, res) => {
   const teamId = parseInt(req.params.id, 10);
@@ -2619,6 +2978,18 @@ router6.put("/teams/:id/adjust-points", authenticateAdmin, (req, res) => {
   recalculateLeaderboard(team.tournament_id);
   logAdminAction(req.admin.username, "ADJUST_TEAM_POINTS", { team_id: teamId, team_name: team.team_name, newTotal, reason });
   return res.json({ message: "Team points adjusted successfully", team: updated });
+});
+router6.delete("/matches/:id", authenticateAdmin, (req, res) => {
+  const matchId = parseInt(req.params.id, 10);
+  const match = db.get("esports_matches", (m) => m.id === matchId);
+  if (!match) {
+    return res.status(404).json({ error: "Match not found." });
+  }
+  const tournId = match.tournament_id;
+  db.delete("esports_matches", (m) => m.id === matchId);
+  const updatedLeaderboard = recalculateLeaderboard(tournId);
+  logAdminAction(req.admin.username, "DELETE_MATCH", { match_id: matchId, tournament_id: tournId });
+  return res.json({ message: "Match deleted and leaderboard recalculated.", leaderboard: updatedLeaderboard });
 });
 var esports_default = router6;
 
@@ -2847,21 +3218,34 @@ router8.get("/feedback.csv", authenticateAdmin, (req, res) => {
   const feedbackList = db.all("feedback");
   const headers = [
     { key: "id", label: "Feedback ID" },
-    { key: "event_title", label: "Event / Session" },
-    { key: "rating_content", label: "Content Rating (1-5)" },
-    { key: "rating_organization", label: "Organization Rating (1-5)" },
-    { key: "rating_speaker", label: "Speaker Rating (1-5)" },
-    { getter: (f) => (((f.rating_content || 5) + (f.rating_organization || 5) + (f.rating_speaker || 5)) / 3).toFixed(1), label: "Average Score" },
-    { key: "what_liked", label: "What Worked Well" },
-    { key: "what_improve", label: "Suggested Improvements" },
-    { key: "comments", label: "Open Comments" },
-    { key: "author_name", label: "Submitted By" },
-    { key: "author_email", label: "Email" },
-    { key: "submitted_at", label: "Timestamp" }
+    { getter: (f) => f.event_title || "General NextGen Club Feedback", label: "Event / Session" },
+    { getter: (f) => f.participant_name || f.author_name || f.name || "Anonymous Student", label: "Participant Name" },
+    { getter: (f) => f.register_no || f.roll_no || "", label: "Register Number" },
+    { getter: (f) => f.department || f.branch || "", label: "Department / Branch" },
+    { getter: (f) => f.email || f.author_email || "", label: "Email Address" },
+    { getter: (f) => f.rating_content || f.answers && f.answers.q1 || 5, label: "Content / Organization Rating (1-5)" },
+    { getter: (f) => f.rating_organization || f.answers && f.answers.q2 || 5, label: "Speaker / Mentor Rating (1-5)" },
+    { getter: (f) => f.rating_speaker || 5, label: "Technical Depth Rating (1-5)" },
+    { getter: (f) => {
+      const c = Number(f.rating_content || f.answers && f.answers.q1 || 5);
+      const o = Number(f.rating_organization || f.answers && f.answers.q2 || 5);
+      const s = Number(f.rating_speaker || 5);
+      return ((c + o + s) / 3).toFixed(1);
+    }, label: "Average Score" },
+    { getter: (f) => f.what_liked || f.answers && f.answers.q3 || "", label: "What Learned / Worked Well (Q3)" },
+    { getter: (f) => f.what_improve || f.answers && f.answers.q4 || "", label: "Topics for Next Session (Q4)" },
+    { getter: (f) => f.comments || f.answers && f.answers.q5 || "", label: "Additional Comments / Suggestions (Q5)" },
+    { getter: (f) => {
+      if (f.answers && typeof f.answers === "object") {
+        return Object.entries(f.answers).map(([k, v]) => `${k}: ${v}`).join(" | ");
+      }
+      return "";
+    }, label: "Answers Summary" },
+    { getter: (f) => f.submitted_at || f.created_at || "", label: "Submitted Timestamp" }
   ];
   const csv = generateCsv(headers, feedbackList);
   res.setHeader("Content-Type", "text/csv; charset=utf-8");
-  res.setHeader("Content-Disposition", 'attachment; filename="nextgen_feedback.csv"');
+  res.setHeader("Content-Disposition", 'attachment; filename="nextgen_event_feedback.csv"');
   return res.send(csv);
 });
 router8.get("/backup.json", authenticateAdmin, (req, res) => {
@@ -2937,6 +3321,9 @@ app.get("*", (req, res, next) => {
     return res.sendFile(path2.join(resolvedDistDir, "index.html"));
   }
   const cloudInfo = getCloudStatus();
+  const eventCount = db.count("events");
+  const regCount = db.count("event_registrations");
+  const feedbackCount = db.count("feedback");
   res.status(200).send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -2944,7 +3331,7 @@ app.get("*", (req, res, next) => {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>NextGen AR/VR \u2014 Backend Cloud API</title>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body {
@@ -2958,18 +3345,18 @@ app.get("*", (req, res, next) => {
             padding: 1.5rem;
           }
           .card {
-            background: rgba(13, 17, 26, 0.9);
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            box-shadow: 0 0 35px rgba(0, 240, 255, 0.15);
+            background: rgba(13, 17, 26, 0.95);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.18);
             border-radius: 16px;
             padding: 2.5rem;
-            max-width: 620px;
+            max-width: 640px;
             width: 100%;
             text-align: center;
           }
           h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
+            font-size: 1.85rem;
             color: #FFFFFF;
             margin-bottom: 0.5rem;
           }
@@ -2977,8 +3364,8 @@ app.get("*", (req, res, next) => {
             display: inline-block;
             background: rgba(0, 255, 157, 0.15);
             color: #00FF9D;
-            border: 1px solid rgba(0, 255, 157, 0.35);
-            padding: 0.35rem 0.85rem;
+            border: 1px solid rgba(0, 255, 157, 0.4);
+            padding: 0.35rem 0.9rem;
             border-radius: 999px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -2988,12 +3375,37 @@ app.get("*", (req, res, next) => {
           .db-box {
             background: rgba(0, 240, 255, 0.05);
             border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 10px;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 1.25rem;
             margin-bottom: 1.5rem;
             text-align: left;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             color: #CBD5E1;
+          }
+          .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+          }
+          .stat-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem;
+            text-align: center;
+          }
+          .stat-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #00F0FF;
+          }
+          .stat-lbl {
+            font-size: 0.75rem;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
           }
           .btn-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
           .btn {
@@ -3017,20 +3429,69 @@ app.get("*", (req, res, next) => {
       </head>
       <body>
         <div class="card">
-          <div class="badge">\u25CF Cloud API Online & Active</div>
+          <div id="statusBadge" class="badge">\u25CF Cloud API Active</div>
           <h1>NextGen AR/VR Backend API</h1>
-          <p>This is the high-performance cloud backend server for the NextGen AR/VR Portal.</p>
+          <p>High-performance cloud backend server providing real-time data persistence, cross-browser synchronization, and event analytics.</p>
           
+          <div class="stats-grid">
+            <div class="stat-pill">
+              <div id="statEvents" class="stat-val">${eventCount}</div>
+              <div class="stat-lbl">Active Events</div>
+            </div>
+            <div class="stat-pill">
+              <div id="statRegs" class="stat-val" style="color:#00FF9D;">${regCount}</div>
+              <div class="stat-lbl">Registrations</div>
+            </div>
+            <div class="stat-pill">
+              <div id="statFeedback" class="stat-val" style="color:#FFB800;">${feedbackCount}</div>
+              <div class="stat-lbl">Feedbacks</div>
+            </div>
+          </div>
+
           <div class="db-box">
-            <div><strong>Cloud Database:</strong> ${cloudInfo.isCloudDbActive ? '<span style="color:#00FF9D">Connected to MongoDB Atlas</span>' : '<span style="color:#FFB800">Local Cache</span>'}</div>
-            <div style="margin-top:0.4rem;font-size:0.8rem;color:#64748B;">Ready to process cross-browser events, registrations, feedback, and authentication.</div>
+            <div id="dbStatusRow">
+              <strong>Cloud Database:</strong> 
+              ${cloudInfo.isCloudDbActive ? '<span style="color:#00FF9D">Connected to MongoDB Atlas</span>' : cloudInfo.hasCloudEnv ? '<span style="color:#00F0FF">Connecting to MongoDB Atlas (Spinning up...)...</span>' : '<span style="color:#00FF9D">Local Persistent Cache</span>'}
+            </div>
+            <div id="dbSubtext" style="margin-top:0.4rem;font-size:0.8rem;color:#64748B;">
+              ${cloudInfo.mongodb?.host ? `Host: ${cloudInfo.mongodb.host} (db: ${cloudInfo.mongodb.dbName || "test"})` : "Ready to synchronize cross-browser events, registrations, and feedback."}
+            </div>
           </div>
 
           <div class="btn-row">
-            <a href="/api/events" class="btn">View Live Events JSON</a>
-            <a href="/api/health" class="btn btn-secondary">API Health Status</a>
+            <a href="/api/events" class="btn">View Live Events</a>
+            <a href="/api/feedback/all" class="btn btn-secondary">All Feedbacks</a>
+            <a href="/api/health" class="btn btn-secondary">API Health</a>
           </div>
         </div>
+
+        <script>
+          // Client-side auto-refresher for cold-start database connection state
+          async function updateLiveStatus() {
+            try {
+              const res = await fetch('/api/health');
+              if (!res.ok) return;
+              const data = await res.json();
+              if (data && data.cloud) {
+                const isConn = data.cloud.isCloudDbActive || data.cloud.mongodb?.isMongoConnected;
+                const dbRow = document.getElementById('dbStatusRow');
+                const dbSub = document.getElementById('dbSubtext');
+                const badge = document.getElementById('statusBadge');
+                if (isConn && dbRow) {
+                  dbRow.innerHTML = '<strong>Cloud Database:</strong> <span style="color:#00FF9D">\u25CF Connected to MongoDB Atlas</span>';
+                  if (data.cloud.mongodb?.host) {
+                    dbSub.textContent = 'Connected host: ' + data.cloud.mongodb.host + ' | Database: ' + (data.cloud.mongodb.dbName || 'test');
+                  }
+                  badge.style.borderColor = 'rgba(0, 255, 157, 0.6)';
+                  badge.style.color = '#00FF9D';
+                  badge.textContent = '\u25CF MongoDB Atlas Online & Synchronized';
+                }
+              }
+            } catch (e) {}
+          }
+          setInterval(updateLiveStatus, 2500);
+          updateLiveStatus();
+        </script>
       </body>
     </html>
   `);

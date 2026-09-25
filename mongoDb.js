@@ -178,13 +178,17 @@ export async function initMongoDatabase(onConnectedCallback) {
 }
 
 export function isMongoActive() {
-  return isMongoConnected && mongoose.connection.readyState === 1;
+  return mongoose.connection.readyState === 1;
 }
 
 export function getMongoStatus() {
+  const readyState = mongoose.connection.readyState;
+  const hasEnv = !!(process.env.MONGODB_URI || process.env.MONGO_URI || (process.env.DATABASE_URL && process.env.DATABASE_URL.startsWith('mongodb')));
   return {
-    isMongoConnected: isMongoActive(),
-    readyState: mongoose.connection.readyState,
+    isMongoConnected: readyState === 1,
+    isConnecting: readyState === 2 || (hasEnv && readyState !== 1),
+    hasEnv,
+    readyState,
     host: mongoose.connection.host || null,
     dbName: mongoose.connection.name || null
   };

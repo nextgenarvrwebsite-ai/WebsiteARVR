@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NextGen AR/VR — Feedback Recovery & CSV Exporter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080B10;
+      color: #F1F5F9;
+      font-family: 'Inter', sans-serif;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, #00F0FF, #8A2BE2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    p { color: #94A3B8; font-size: 1rem; }
+    .card {
+      background: rgba(13, 17, 26, 0.95);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.12);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .btn-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .btn {
+      background: linear-gradient(135deg, #00F0FF, #8A2BE2);
+      color: #000;
+      font-weight: 700;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.4);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #00F0FF;
+      border: 1px solid rgba(0, 240, 255, 0.35);
+    }
+    .btn-success {
+      background: linear-gradient(135deg, #00FF9D, #00B8D9);
+      color: #000;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .badge-green { background: rgba(0, 255, 157, 0.15); color: #00FF9D; border: 1px solid rgba(0, 255, 157, 0.3); }
+    .badge-yellow { background: rgba(255, 184, 0, 0.15); color: #FFB800; border: 1px solid rgba(255, 184, 0, 0.3); }
+    .table-container {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+    th {
+      background: rgba(255, 255, 255, 0.05);
+      color: #94A3B8;
+      padding: 0.9rem 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #E2E8F0;
+    }
+    tr:hover td {
+      background: rgba(0, 240, 255, 0.03);
+    }
+    .status-banner {
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .banner-info { background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); color: #E2E8F0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>NextGen AR/VR — Event Feedback Center</h1>
+      <p>Universal Feedback Recovery, Cross-Browser Cloud Synchronizer & One-Click CSV Exporter</p>
+    </div>
+
+    <div class="card">
+      <div id="statusBanner" class="status-banner banner-info">
+        <span id="statusText">Scanning browser local cache and cloud backend for feedback records...</span>
+        <span id="recordBadge" class="badge badge-green">0 records</span>
+      </div>
+
+      <div class="btn-row">
+        <button id="btnExportCsv" class="btn btn-success" onclick="exportCsv()">
+          📥 Download Feedback CSV (Excel Ready)
+        </button>
+        <button id="btnSyncCloud" class="btn" onclick="syncWithCloud()">
+          ☁️ Sync All to Render Cloud Database
+        </button>
+        <button class="btn btn-secondary" onclick="loadAllFeedbacks()">
+          🔄 Refresh Feedbacks
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Participant</th>
+              <th>Register No</th>
+              <th>Department</th>
+              <th>Event Title</th>
+              <th>Ratings</th>
+              <th>What Learned</th>
+              <th>Next Topics</th>
+              <th>Comments</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="feedbackTableBody">
+            <tr>
+              <td colspan="10" style="text-align:center;padding:2rem;color:#64748B;">No feedback records loaded yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'nextgen_event_feedbacks';
+    const RENDER_API = 'https://websitearvr-1.onrender.com';
+    let loadedFeedbacks = [];
+
+    async function loadAllFeedbacks() {
+      const banner = document.getElementById('statusText');
+      const badge = document.getElementById('recordBadge');
+      banner.textContent = 'Loading feedback records from local storage & cloud...';
+
+      // 1. Read from localStorage
+      let local = [];
+      try {
+        local = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch (e) {}
+
+      // 2. Fetch from Cloud backend
+      let cloud = [];
+      try {
+        const res = await fetch(`${RENDER_API}/api/feedback/all`);
+        if (res.ok) {
+          const data = await res.json();
+          cloud = data.feedbacks || data.feedback || [];
+        }
+      } catch (e) {
+        console.warn('Could not reach Render backend directly:', e);
+      }
+
+      // 3. Merge without duplicates
+      const map = new Map();
+      cloud.forEach(f => {
+        if (f) map.set(String(f.id || (f.register_no + '_' + f.event_id)), f);
+      });
+      local.forEach(f => {
+        if (f) {
+          const key = String(f.id || (f.register_no + '_' + f.event_id));
+          if (!map.has(key)) map.set(key, f);
+        }
+      });
+
+      loadedFeedbacks = Array.from(map.values());
+      loadedFeedbacks.sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+
+      badge.textContent = `${loadedFeedbacks.length} feedback responses`;
+      banner.innerHTML = `<strong>Status:</strong> Loaded <strong>${loadedFeedbacks.length}</strong> feedback responses (${local.length} in this browser, ${cloud.length} in cloud database).`;
+
+      renderTable(loadedFeedbacks);
+    }
+
+    function renderTable(list) {
+      const tbody = document.getElementById('feedbackTableBody');
+      if (!list || list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem;color:#64748B;">No feedback submissions found. If you received feedback yesterday on another browser, please open this file in that browser to automatically sync!</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = list.map(f => {
+        const ans = f.answers || {};
+        const name = f.participant_name || f.author_name || f.name || 'Anonymous';
+        const reg = f.register_no || f.roll_no || '-';
+        const dept = f.department || f.branch || '-';
+        const title = f.event_title || 'General NextGen Event';
+        const q1 = f.rating_content || ans.q1 || 5;
+        const q2 = f.rating_organization || ans.q2 || 5;
+        const q3 = f.what_liked || ans.q3 || '-';
+        const q4 = f.what_improve || ans.q4 || '-';
+        const q5 = f.comments || ans.q5 || '-';
+        const date = (f.submitted_at || f.created_at || '').slice(0, 16).replace('T', ' ');
+
+        return `
+          <tr>
+            <td><code>${f.id || '-'}</code></td>
+            <td><strong>${name}</strong></td>
+            <td>${reg}</td>
+            <td>${dept}</td>
+            <td>${title}</td>
+            <td><span style="color:#FFB800">★ ${q1}</span> | <span style="color:#00FF9D">★ ${q2}</span></td>
+            <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${q3}">${q3}</td>
+            <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${q4}">${q4}</td>
+            <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${q5}">${q5}</td>
+            <td style="font-size:0.75rem;color:#94A3B8;">${date}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function exportCsv() {
+      if (!loadedFeedbacks || loadedFeedbacks.length === 0) {
+        alert('No feedback responses found to export!');
+        return;
+      }
+
+      const headers = [
+        'Feedback ID',
+        'Event Title',
+        'Participant Name',
+        'Register Number',
+        'Department / Branch',
+        'Email Address',
+        'Content / Organization Rating (1-5)',
+        'Speaker / Mentor Rating (1-5)',
+        'Technical Depth Rating (1-5)',
+        'Average Score',
+        'What Learned / Worked Well (Q3)',
+        'Topics for Next Session (Q4)',
+        'Additional Comments / Suggestions (Q5)',
+        'Answers Summary',
+        'Submitted Date'
+      ];
+
+      const sanitize = (val) => {
+        if (val === null || val === undefined) return '""';
+        return `"${String(val).replace(/"/g, '""')}"`;
+      };
+
+      let csv = '\uFEFF' + headers.map(sanitize).join(',') + '\r\n';
+
+      loadedFeedbacks.forEach(f => {
+        const ans = f.answers || {};
+        const c = Number(f.rating_content || ans.q1 || 5);
+        const o = Number(f.rating_organization || ans.q2 || 5);
+        const s = Number(f.rating_speaker || 5);
+        const avg = ((c + o + s) / 3).toFixed(1);
+
+        let ansSummary = '';
+        if (ans && typeof ans === 'object') {
+          ansSummary = Object.entries(ans).map(([k, v]) => `${k}: ${v}`).join(' | ');
+        }
+
+        const row = [
+          f.id || '',
+          f.event_title || 'General NextGen Event Feedback',
+          f.participant_name || f.author_name || f.name || 'Anonymous Student',
+          f.register_no || f.roll_no || '',
+          f.department || f.branch || '',
+          f.email || f.author_email || '',
+          c,
+          o,
+          s,
+          avg,
+          f.what_liked || ans.q3 || '',
+          f.what_improve || ans.q4 || '',
+          f.comments || ans.q5 || '',
+          ansSummary,
+          f.submitted_at || f.created_at || ''
+        ];
+
+        csv += row.map(sanitize).join(',') + '\r\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nextgen_all_event_feedback_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    }
+
+    async function syncWithCloud() {
+      if (!loadedFeedbacks || loadedFeedbacks.length === 0) {
+        alert('No feedbacks to sync!');
+        return;
+      }
+
+      const banner = document.getElementById('statusText');
+      banner.textContent = 'Pushing all feedback responses to Render Cloud Database...';
+
+      try {
+        const res = await fetch(`${RENDER_API}/api/feedback/batch`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ feedbacks: loadedFeedbacks })
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          alert(`Successfully synced ${json.synced || loadedFeedbacks.length} feedbacks to MongoDB Atlas cloud database!`);
+          banner.innerHTML = `<span style="color:#00FF9D">● Successfully synchronized with MongoDB Atlas! Cross-browser access enabled.</span>`;
+          loadAllFeedbacks();
+        } else {
+          alert('Backend responded with status ' + res.status);
+        }
+      } catch (err) {
+        alert('Could not connect to Render: ' + err.message);
+      }
+    }
+
+    // Auto-load on open
+    window.addEventListener('DOMContentLoaded', loadAllFeedbacks);
+  </script>
+</body>
+</html>

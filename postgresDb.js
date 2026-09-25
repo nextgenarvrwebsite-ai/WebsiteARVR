@@ -212,6 +212,66 @@ async function verifyAndCreateTables() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       last_login TIMESTAMPTZ
     );
+
+    CREATE TABLE IF NOT EXISTS esports_games (
+      id BIGINT PRIMARY KEY,
+      name TEXT NOT NULL,
+      slug TEXT,
+      icon TEXT,
+      banner_url TEXT,
+      format TEXT,
+      scoring_type TEXT,
+      default_rules JSONB DEFAULT '{}'::jsonb,
+      description TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS esports_tournaments (
+      id BIGINT PRIMARY KEY,
+      title TEXT NOT NULL,
+      slug TEXT,
+      game_id BIGINT,
+      game_name TEXT,
+      prize_pool TEXT,
+      status TEXT,
+      start_date TEXT,
+      end_date TEXT,
+      venue TEXT,
+      banner_url TEXT,
+      registration_open INT DEFAULT 1,
+      scoring_rules JSONB DEFAULT '{}'::jsonb,
+      description TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS esports_teams (
+      id BIGINT PRIMARY KEY,
+      tournament_id BIGINT,
+      slot INT,
+      team_name TEXT NOT NULL,
+      tag TEXT,
+      logo_url TEXT,
+      captain_name TEXT,
+      captain_contact TEXT,
+      members JSONB DEFAULT '[]'::jsonb,
+      matches_played INT DEFAULT 0,
+      wins INT DEFAULT 0,
+      kills INT DEFAULT 0,
+      placement_points INT DEFAULT 0,
+      kill_points INT DEFAULT 0,
+      bonus_points INT DEFAULT 0,
+      total_points INT DEFAULT 0,
+      rank INT DEFAULT 1
+    );
+
+    CREATE TABLE IF NOT EXISTS esports_matches (
+      id BIGINT PRIMARY KEY,
+      tournament_id BIGINT,
+      match_title TEXT,
+      match_number INT,
+      map_name TEXT,
+      played_at TEXT,
+      mvp_player TEXT,
+      results JSONB DEFAULT '[]'::jsonb
+    );
   `;
 
   try {
@@ -222,7 +282,7 @@ async function verifyAndCreateTables() {
       ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS department TEXT DEFAULT '';
       ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS semester TEXT DEFAULT '';
     `).catch(() => {});
-    console.log('✅ PostgreSQL / Supabase tables verified: events, members, registrations, feedback, applications, site_content, admins');
+    console.log('✅ PostgreSQL / Supabase tables verified: events, members, registrations, feedback, applications, site_content, admins, esports');
   } catch (err) {
     console.error('Error verifying PostgreSQL tables:', err.message);
   }
@@ -289,6 +349,64 @@ export async function loadAllFromPostgres(state) {
         }
       }
 
+      // 7. Esports Games
+      const gamesRes = await pgPool.query('SELECT * FROM esports_games ORDER BY id ASC');
+      if (gamesRes.rows && gamesRes.rows.length > 0) {
+        state.esports_games = gamesRes.rows.map(r => ({
+          ...r,
+          id: Number(r.id),
+          default_rules: r.default_rules || {}
+        }));
+        totalLoaded += gamesRes.rows.length;
+      }
+
+      // 8. Esports Tournaments
+      const tournRes = await pgPool.query('SELECT * FROM esports_tournaments ORDER BY id ASC');
+      if (tournRes.rows && tournRes.rows.length > 0) {
+        state.esports_tournaments = tournRes.rows.map(r => ({
+          ...r,
+          id: Number(r.id),
+          game_id: Number(r.game_id),
+          registration_open: Number(r.registration_open || 1),
+          scoring_rules: r.scoring_rules || {}
+        }));
+        totalLoaded += tournRes.rows.length;
+      }
+
+      // 9. Esports Teams
+      const teamsRes = await pgPool.query('SELECT * FROM esports_teams ORDER BY tournament_id ASC, rank ASC');
+      if (teamsRes.rows && teamsRes.rows.length > 0) {
+        state.esports_teams = teamsRes.rows.map(r => ({
+          ...r,
+          id: Number(r.id),
+          tournament_id: Number(r.tournament_id),
+          slot: Number(r.slot || 1),
+          matches_played: Number(r.matches_played || 0),
+          wins: Number(r.wins || 0),
+          kills: Number(r.kills || 0),
+          placement_points: Number(r.placement_points || 0),
+          kill_points: Number(r.kill_points || 0),
+          bonus_points: Number(r.bonus_points || 0),
+          total_points: Number(r.total_points || 0),
+          rank: Number(r.rank || 1),
+          members: Array.isArray(r.members) ? r.members : []
+        }));
+        totalLoaded += teamsRes.rows.length;
+      }
+
+      // 10. Esports Matches
+      const matchesRes = await pgPool.query('SELECT * FROM esports_matches ORDER BY tournament_id ASC, match_number ASC');
+      if (matchesRes.rows && matchesRes.rows.length > 0) {
+        state.esports_matches = matchesRes.rows.map(r => ({
+          ...r,
+          id: Number(r.id),
+          tournament_id: Number(r.tournament_id),
+          match_number: Number(r.match_number || 1),
+          results: Array.isArray(r.results) ? r.results : []
+        }));
+        totalLoaded += matchesRes.rows.length;
+      }
+
       console.log(`📥 Loaded ${totalLoaded} records from Supabase / PostgreSQL into active server state.`);
       return true;
     } catch (err) {
@@ -347,6 +465,42 @@ export async function seedPostgresIfEmpty(state) {
           await syncPostgresSetSetting(key, value);
         }
         console.log(`🌱 Seeded initial site_content settings into Supabase / PostgreSQL.`);
+      }
+
+      // 4. Seed esports_games
+      const gamesCheck = await pgPool.query('SELECT COUNT(*) FROM esports_games');
+      if (parseInt(gamesCheck.rows[0].count, 10) === 0 && Array.isArray(state.esports_games) && state.esports_games.length > 0) {
+        for (const g of state.esports_games) {
+          await syncPostgresInsert('esports_games', g);
+        }
+        console.log(`🌱 Seeded ${state.esports_games.length} esports games into Supabase / PostgreSQL.`);
+      }
+
+      // 5. Seed esports_tournaments
+      const tournCheck = await pgPool.query('SELECT COUNT(*) FROM esports_tournaments');
+      if (parseInt(tournCheck.rows[0].count, 10) === 0 && Array.isArray(state.esports_tournaments) && state.esports_tournaments.length > 0) {
+        for (const t of state.esports_tournaments) {
+          await syncPostgresInsert('esports_tournaments', t);
+        }
+        console.log(`🌱 Seeded ${state.esports_tournaments.length} esports tournaments into Supabase / PostgreSQL.`);
+      }
+
+      // 6. Seed esports_teams
+      const teamsCheck = await pgPool.query('SELECT COUNT(*) FROM esports_teams');
+      if (parseInt(teamsCheck.rows[0].count, 10) === 0 && Array.isArray(state.esports_teams) && state.esports_teams.length > 0) {
+        for (const tm of state.esports_teams) {
+          await syncPostgresInsert('esports_teams', tm);
+        }
+        console.log(`🌱 Seeded ${state.esports_teams.length} esports squads into Supabase / PostgreSQL.`);
+      }
+
+      // 7. Seed esports_matches
+      const matchesCheck = await pgPool.query('SELECT COUNT(*) FROM esports_matches');
+      if (parseInt(matchesCheck.rows[0].count, 10) === 0 && Array.isArray(state.esports_matches) && state.esports_matches.length > 0) {
+        for (const m of state.esports_matches) {
+          await syncPostgresInsert('esports_matches', m);
+        }
+        console.log(`🌱 Seeded ${state.esports_matches.length} esports matches into Supabase / PostgreSQL.`);
       }
     } catch (err) {
       console.error('Error seeding PostgreSQL:', err.message);
@@ -519,6 +673,85 @@ export async function syncPostgresInsert(table, row) {
         ];
         await pgPool.query(query, values);
         console.log(`☁️ Synced application for ${row.full_name} to Supabase / PostgreSQL`);
+      } else if (table === 'esports_tournaments') {
+        const query = `
+          INSERT INTO esports_tournaments (
+            id, title, slug, game_id, game_name, prize_pool, status, start_date, end_date, venue, banner_url, registration_open, scoring_rules, description
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            scoring_rules = EXCLUDED.scoring_rules,
+            status = EXCLUDED.status,
+            prize_pool = EXCLUDED.prize_pool,
+            description = EXCLUDED.description
+        `;
+        await pgPool.query(query, [
+          Number(row.id), row.title || '', row.slug || '', Number(row.game_id || 1), row.game_name || '',
+          row.prize_pool || '', row.status || 'live', row.start_date || '', row.end_date || '',
+          row.venue || '', row.banner_url || '', Number(row.registration_open || 1),
+          JSON.stringify(row.scoring_rules || {}), row.description || ''
+        ]);
+        console.log(`☁️ Synced esports tournament "${row.title}" to Supabase / PostgreSQL`);
+      } else if (table === 'esports_teams') {
+        const query = `
+          INSERT INTO esports_teams (
+            id, tournament_id, slot, team_name, tag, logo_url, captain_name, captain_contact, members,
+            matches_played, wins, kills, placement_points, kill_points, bonus_points, total_points, rank
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+          ON CONFLICT (id) DO UPDATE SET
+            team_name = EXCLUDED.team_name,
+            tag = EXCLUDED.tag,
+            matches_played = EXCLUDED.matches_played,
+            wins = EXCLUDED.wins,
+            kills = EXCLUDED.kills,
+            placement_points = EXCLUDED.placement_points,
+            kill_points = EXCLUDED.kill_points,
+            bonus_points = EXCLUDED.bonus_points,
+            total_points = EXCLUDED.total_points,
+            rank = EXCLUDED.rank
+        `;
+        await pgPool.query(query, [
+          Number(row.id), Number(row.tournament_id || 1), Number(row.slot || 1), row.team_name || '',
+          row.tag || '', row.logo_url || '🎮', row.captain_name || '', row.captain_contact || '',
+          JSON.stringify(Array.isArray(row.members) ? row.members : []),
+          Number(row.matches_played || 0), Number(row.wins || 0), Number(row.kills || 0),
+          Number(row.placement_points || 0), Number(row.kill_points || 0), Number(row.bonus_points || 0),
+          Number(row.total_points || 0), Number(row.rank || 1)
+        ]);
+      } else if (table === 'esports_matches') {
+        const query = `
+          INSERT INTO esports_matches (
+            id, tournament_id, match_title, match_number, map_name, played_at, mvp_player, results
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ON CONFLICT (id) DO UPDATE SET
+            match_title = EXCLUDED.match_title,
+            match_number = EXCLUDED.match_number,
+            map_name = EXCLUDED.map_name,
+            played_at = EXCLUDED.played_at,
+            mvp_player = EXCLUDED.mvp_player,
+            results = EXCLUDED.results
+        `;
+        await pgPool.query(query, [
+          Number(row.id), Number(row.tournament_id || 1), row.match_title || '', Number(row.match_number || 1),
+          row.map_name || '', row.played_at || '', row.mvp_player || '',
+          JSON.stringify(Array.isArray(row.results) ? row.results : [])
+        ]);
+        console.log(`☁️ Synced esports match #${row.match_number} to Supabase / PostgreSQL`);
+      } else if (table === 'esports_games') {
+        const query = `
+          INSERT INTO esports_games (
+            id, name, slug, icon, banner_url, format, scoring_type, default_rules, description
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            slug = EXCLUDED.slug,
+            default_rules = EXCLUDED.default_rules
+        `;
+        await pgPool.query(query, [
+          Number(row.id), row.name || '', row.slug || '', row.icon || '', row.banner_url || '',
+          row.format || '', row.scoring_type || '', JSON.stringify(row.default_rules || {}),
+          row.description || ''
+        ]);
       }
     } catch (err) {
       console.error(`Error syncing insert to PostgreSQL (${table}):`, err.message);
@@ -543,6 +776,12 @@ export async function syncPostgresUpdate(table, predicate, updateData) {
         await syncPostgresInsert('events', updateData);
       } else if (table === 'members' && updateData.id) {
         await syncPostgresInsert('members', updateData);
+      } else if (table === 'esports_tournaments' && updateData.id) {
+        await syncPostgresInsert('esports_tournaments', updateData);
+      } else if (table === 'esports_teams' && updateData.id) {
+        await syncPostgresInsert('esports_teams', updateData);
+      } else if (table === 'esports_matches' && updateData.id) {
+        await syncPostgresInsert('esports_matches', updateData);
       }
     } catch (err) {
       console.error(`Error syncing update to PostgreSQL (${table}):`, err.message);

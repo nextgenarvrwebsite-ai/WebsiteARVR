@@ -173,22 +173,35 @@ router.get('/feedback.csv', authenticateAdmin, (req, res) => {
 
   const headers = [
     { key: 'id', label: 'Feedback ID' },
-    { key: 'event_title', label: 'Event / Session' },
-    { key: 'rating_content', label: 'Content Rating (1-5)' },
-    { key: 'rating_organization', label: 'Organization Rating (1-5)' },
-    { key: 'rating_speaker', label: 'Speaker Rating (1-5)' },
-    { getter: f => (( (f.rating_content||5) + (f.rating_organization||5) + (f.rating_speaker||5) ) / 3).toFixed(1), label: 'Average Score' },
-    { key: 'what_liked', label: 'What Worked Well' },
-    { key: 'what_improve', label: 'Suggested Improvements' },
-    { key: 'comments', label: 'Open Comments' },
-    { key: 'author_name', label: 'Submitted By' },
-    { key: 'author_email', label: 'Email' },
-    { key: 'submitted_at', label: 'Timestamp' }
+    { getter: f => f.event_title || 'General NextGen Club Feedback', label: 'Event / Session' },
+    { getter: f => f.participant_name || f.author_name || f.name || 'Anonymous Student', label: 'Participant Name' },
+    { getter: f => f.register_no || f.roll_no || '', label: 'Register Number' },
+    { getter: f => f.department || f.branch || '', label: 'Department / Branch' },
+    { getter: f => f.email || f.author_email || '', label: 'Email Address' },
+    { getter: f => f.rating_content || (f.answers && f.answers.q1) || 5, label: 'Content / Organization Rating (1-5)' },
+    { getter: f => f.rating_organization || (f.answers && f.answers.q2) || 5, label: 'Speaker / Mentor Rating (1-5)' },
+    { getter: f => f.rating_speaker || 5, label: 'Technical Depth Rating (1-5)' },
+    { getter: f => {
+      const c = Number(f.rating_content || (f.answers && f.answers.q1) || 5);
+      const o = Number(f.rating_organization || (f.answers && f.answers.q2) || 5);
+      const s = Number(f.rating_speaker || 5);
+      return ((c + o + s) / 3).toFixed(1);
+    }, label: 'Average Score' },
+    { getter: f => f.what_liked || (f.answers && f.answers.q3) || '', label: 'What Learned / Worked Well (Q3)' },
+    { getter: f => f.what_improve || (f.answers && f.answers.q4) || '', label: 'Topics for Next Session (Q4)' },
+    { getter: f => f.comments || (f.answers && f.answers.q5) || '', label: 'Additional Comments / Suggestions (Q5)' },
+    { getter: f => {
+      if (f.answers && typeof f.answers === 'object') {
+        return Object.entries(f.answers).map(([k, v]) => `${k}: ${v}`).join(' | ');
+      }
+      return '';
+    }, label: 'Answers Summary' },
+    { getter: f => f.submitted_at || f.created_at || '', label: 'Submitted Timestamp' }
   ];
 
   const csv = generateCsv(headers, feedbackList);
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-  res.setHeader('Content-Disposition', 'attachment; filename="nextgen_feedback.csv"');
+  res.setHeader('Content-Disposition', 'attachment; filename="nextgen_event_feedback.csv"');
   return res.send(csv);
 });
 

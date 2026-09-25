@@ -217,33 +217,66 @@ router.post('/:id/register', (req, res) => {
 
 // Batch sync events endpoint (from Admin portal or cloud sync)
 function handleBatchSync(req, res) {
-  const eventsList = req.body.events;
+  const eventsList = Array.isArray(req.body) ? req.body : (req.body && req.body.events);
   if (!Array.isArray(eventsList)) {
     return res.status(400).json({ error: 'Expected an array of events.' });
   }
 
-  // Sanitize each event in the list
-  const sanitized = eventsList.filter(e => e && (e.title || '').trim()).map((e, idx) => ({
-    id: e.id || (Date.now() + idx),
-    title: (e.title || '').trim(),
-    slug: e.slug || (e.title || 'event').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-    category: e.category || 'Workshop',
-    event_date: e.event_date || new Date().toISOString().split('T')[0],
-    event_time: e.event_time || '02:00 PM - 05:00 PM',
-    venue: (e.venue || '').trim(),
-    description: (e.description || '').trim(),
-    poster_url: e.poster_url || 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800',
-    is_registration_open: e.is_registration_open !== undefined ? (e.is_registration_open ? 1 : 0) : 1,
-    max_seats: parseInt(e.max_seats, 10) || 100,
-    is_team_event: e.is_team_event ? 1 : 0,
-    max_team_size: parseInt(e.max_team_size, 10) || 4,
-    tags: Array.isArray(e.tags) ? e.tags : (e.tags ? String(e.tags).split(',').map(t => t.trim()) : ['AR/VR', 'NextGen']),
-    feedbackQuestions: Array.isArray(e.feedbackQuestions) ? e.feedbackQuestions : [],
-    created_at: e.created_at || new Date().toISOString()
-  }));
+  const legacyTitles = [
+    'meta spatial hackathon 2026',
+    'unreal engine 5.5 masterclass: nanite & lumen',
+    'cyberclash: collegiate valorant championship',
+    'hands-on webxr & three.js bootcamp',
+    'hands-on spatial xr & webxr masterclass 2026'
+  ];
 
-  db.setAll('events', sanitized);
-  return res.json({ success: true, count: sanitized.length, events: sanitized });
+  const currentEvents = db.all('events');
+  const mergedMap = new Map();
+
+  // 1. Existing events in database
+  currentEvents.forEach(e => {
+    if (!e || !e.id) return;
+    const t = (e.title || '').trim().toLowerCase();
+    if (legacyTitles.includes(t) || t.includes('hands-on spatial xr') || t.includes('spatial xr & webxr')) return;
+    mergedMap.set(String(e.id), e);
+  });
+
+  // 2. Merge incoming events
+  eventsList.forEach((e, idx) => {
+    if (!e || !e.title) return;
+    const t = (e.title || '').trim().toLowerCase();
+    if (legacyTitles.includes(t) || t.includes('hands-on spatial xr') || t.includes('spatial xr & webxr')) return;
+
+    const id = e.id ? String(e.id) : String(Date.now() + idx);
+    const existing = mergedMap.get(id);
+
+    const clean = {
+      ...(existing || {}),
+      ...e,
+      id: parseInt(id, 10) || id,
+      title: (e.title || '').trim(),
+      slug: e.slug || (e.title || 'event').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      category: e.category || existing?.category || 'Workshop',
+      event_date: e.event_date || existing?.event_date || new Date().toISOString().split('T')[0],
+      event_time: e.event_time || existing?.event_time || '02:00 PM - 05:00 PM',
+      venue: (e.venue || existing?.venue || 'Room 402, Spatial VR Lab').trim(),
+      description: (e.description || existing?.description || '').trim(),
+      poster_url: e.poster_url || existing?.poster_url || 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800',
+      is_registration_open: e.is_registration_open !== undefined ? (e.is_registration_open ? 1 : 0) : (existing?.is_registration_open ?? 1),
+      max_seats: parseInt(e.max_seats, 10) || existing?.max_seats || 100,
+      is_team_event: e.is_team_event ? 1 : (existing?.is_team_event ? 1 : 0),
+      max_team_size: parseInt(e.max_team_size, 10) || existing?.max_team_size || 4,
+      tags: Array.isArray(e.tags) ? e.tags : (e.tags ? String(e.tags).split(',').map(s => s.trim()) : (existing?.tags || ['AR/VR', 'NextGen'])),
+      feedbackQuestions: Array.isArray(e.feedbackQuestions) ? e.feedbackQuestions : (existing?.feedbackQuestions || []),
+      created_at: e.created_at || existing?.created_at || new Date().toISOString()
+    };
+
+    mergedMap.set(id, clean);
+  });
+
+  const finalEvents = Array.from(mergedMap.values());
+  db.setAll('events', finalEvents);
+  return res.json({ success: true, count: finalEvents.length, events: finalEvents.map(enrichEvent) });
 }
 
 router.post('/sync', handleBatchSync);
@@ -252,7 +285,7 @@ router.post('/batch', handleBatchSync);
 // POST /api/events (Admin create event OR batch sync)
 router.post('/', (req, res, next) => {
   // If request contains an array of events, handle batch sync
-  if (req.body && Array.isArray(req.body.events)) {
+  if (Array.isArray(req.body) || (req.body && Array.isArray(req.body.events))) {
     return handleBatchSync(req, res);
   }
   // Otherwise require admin authentication for single event creation

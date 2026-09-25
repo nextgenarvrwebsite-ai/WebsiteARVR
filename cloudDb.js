@@ -179,14 +179,19 @@ function sendWebhookNotification(table, row) {
 
 export function getCloudStatus() {
   const isCloudActive = isMongoActive() || isPostgresActive();
+  const mongoStatus = getMongoStatus();
+  const postgresStatus = getPostgresStatus();
+
   let type = 'none';
-  if (isMongoActive()) type = 'mongodb';
-  else if (isPostgresActive()) type = 'supabase_postgres';
+  if (mongoStatus.isMongoConnected || mongoStatus.hasEnv) type = 'mongodb';
+  else if (postgresStatus.isPostgresConnected || postgresStatus.isSupabaseConnected) type = 'supabase_postgres';
 
   return {
     isCloudDbActive: isCloudActive,
+    isConnecting: mongoStatus.isConnecting,
+    hasCloudEnv: mongoStatus.hasEnv || postgresStatus.isPostgresConnected,
     cloudType: type,
-    mongodb: getMongoStatus(),
-    postgres: getPostgresStatus()
+    mongodb: mongoStatus,
+    postgres: postgresStatus
   };
 }

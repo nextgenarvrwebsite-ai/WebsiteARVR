@@ -4,7 +4,7 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { initDatabase } from './database.js';
+import { initDatabase, db } from './database.js';
 import { getCloudStatus } from './cloudDb.js';
 
 // Route handlers
@@ -95,6 +95,10 @@ app.get('*', (req, res, next) => {
   }
 
   const cloudInfo = getCloudStatus();
+  const eventCount = db.count('events');
+  const regCount = db.count('event_registrations');
+  const feedbackCount = db.count('feedback');
+
   res.status(200).send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -102,7 +106,7 @@ app.get('*', (req, res, next) => {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>NextGen AR/VR — Backend Cloud API</title>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
         <style>
           * { box-sizing: border-box; margin: 0; padding: 0; }
           body {
@@ -116,18 +120,18 @@ app.get('*', (req, res, next) => {
             padding: 1.5rem;
           }
           .card {
-            background: rgba(13, 17, 26, 0.9);
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            box-shadow: 0 0 35px rgba(0, 240, 255, 0.15);
+            background: rgba(13, 17, 26, 0.95);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.18);
             border-radius: 16px;
             padding: 2.5rem;
-            max-width: 620px;
+            max-width: 640px;
             width: 100%;
             text-align: center;
           }
           h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
+            font-size: 1.85rem;
             color: #FFFFFF;
             margin-bottom: 0.5rem;
           }
@@ -135,8 +139,8 @@ app.get('*', (req, res, next) => {
             display: inline-block;
             background: rgba(0, 255, 157, 0.15);
             color: #00FF9D;
-            border: 1px solid rgba(0, 255, 157, 0.35);
-            padding: 0.35rem 0.85rem;
+            border: 1px solid rgba(0, 255, 157, 0.4);
+            padding: 0.35rem 0.9rem;
             border-radius: 999px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -146,12 +150,37 @@ app.get('*', (req, res, next) => {
           .db-box {
             background: rgba(0, 240, 255, 0.05);
             border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 10px;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 1.25rem;
             margin-bottom: 1.5rem;
             text-align: left;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             color: #CBD5E1;
+          }
+          .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+          }
+          .stat-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem;
+            text-align: center;
+          }
+          .stat-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #00F0FF;
+          }
+          .stat-lbl {
+            font-size: 0.75rem;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
           }
           .btn-row { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
           .btn {
@@ -175,20 +204,69 @@ app.get('*', (req, res, next) => {
       </head>
       <body>
         <div class="card">
-          <div class="badge">● Cloud API Online & Active</div>
+          <div id="statusBadge" class="badge">● Cloud API Active</div>
           <h1>NextGen AR/VR Backend API</h1>
-          <p>This is the high-performance cloud backend server for the NextGen AR/VR Portal.</p>
+          <p>High-performance cloud backend server providing real-time data persistence, cross-browser synchronization, and event analytics.</p>
           
+          <div class="stats-grid">
+            <div class="stat-pill">
+              <div id="statEvents" class="stat-val">${eventCount}</div>
+              <div class="stat-lbl">Active Events</div>
+            </div>
+            <div class="stat-pill">
+              <div id="statRegs" class="stat-val" style="color:#00FF9D;">${regCount}</div>
+              <div class="stat-lbl">Registrations</div>
+            </div>
+            <div class="stat-pill">
+              <div id="statFeedback" class="stat-val" style="color:#FFB800;">${feedbackCount}</div>
+              <div class="stat-lbl">Feedbacks</div>
+            </div>
+          </div>
+
           <div class="db-box">
-            <div><strong>Cloud Database:</strong> ${cloudInfo.isCloudDbActive ? '<span style="color:#00FF9D">Connected to MongoDB Atlas</span>' : '<span style="color:#FFB800">Local Cache</span>'}</div>
-            <div style="margin-top:0.4rem;font-size:0.8rem;color:#64748B;">Ready to process cross-browser events, registrations, feedback, and authentication.</div>
+            <div id="dbStatusRow">
+              <strong>Cloud Database:</strong> 
+              ${cloudInfo.isCloudDbActive ? '<span style="color:#00FF9D">Connected to MongoDB Atlas</span>' : (cloudInfo.hasCloudEnv ? '<span style="color:#00F0FF">Connecting to MongoDB Atlas (Spinning up...)...</span>' : '<span style="color:#00FF9D">Local Persistent Cache</span>')}
+            </div>
+            <div id="dbSubtext" style="margin-top:0.4rem;font-size:0.8rem;color:#64748B;">
+              ${cloudInfo.mongodb?.host ? `Host: ${cloudInfo.mongodb.host} (db: ${cloudInfo.mongodb.dbName || 'test'})` : 'Ready to synchronize cross-browser events, registrations, and feedback.'}
+            </div>
           </div>
 
           <div class="btn-row">
-            <a href="/api/events" class="btn">View Live Events JSON</a>
-            <a href="/api/health" class="btn btn-secondary">API Health Status</a>
+            <a href="/api/events" class="btn">View Live Events</a>
+            <a href="/api/feedback/all" class="btn btn-secondary">All Feedbacks</a>
+            <a href="/api/health" class="btn btn-secondary">API Health</a>
           </div>
         </div>
+
+        <script>
+          // Client-side auto-refresher for cold-start database connection state
+          async function updateLiveStatus() {
+            try {
+              const res = await fetch('/api/health');
+              if (!res.ok) return;
+              const data = await res.json();
+              if (data && data.cloud) {
+                const isConn = data.cloud.isCloudDbActive || data.cloud.mongodb?.isMongoConnected;
+                const dbRow = document.getElementById('dbStatusRow');
+                const dbSub = document.getElementById('dbSubtext');
+                const badge = document.getElementById('statusBadge');
+                if (isConn && dbRow) {
+                  dbRow.innerHTML = '<strong>Cloud Database:</strong> <span style="color:#00FF9D">● Connected to MongoDB Atlas</span>';
+                  if (data.cloud.mongodb?.host) {
+                    dbSub.textContent = 'Connected host: ' + data.cloud.mongodb.host + ' | Database: ' + (data.cloud.mongodb.dbName || 'test');
+                  }
+                  badge.style.borderColor = 'rgba(0, 255, 157, 0.6)';
+                  badge.style.color = '#00FF9D';
+                  badge.textContent = '● MongoDB Atlas Online & Synchronized';
+                }
+              }
+            } catch (e) {}
+          }
+          setInterval(updateLiveStatus, 2500);
+          updateLiveStatus();
+        </script>
       </body>
     </html>
   `);

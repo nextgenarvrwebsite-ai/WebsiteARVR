@@ -246,34 +246,42 @@ router.get('/tournaments/:id/export.csv', (req, res) => {
 router.post('/calculate', (req, res) => {
   const {
     game = 'bgmi',
+    scoring_type,
     placement = 1,
     kills = 0,
     kill_multiplier = 1,
     win_bonus = 0,
+    is_win = null,
     custom_placement_scale = null
   } = req.body;
 
   const numPlacement = parseInt(placement, 10) || 1;
   const numKills = parseInt(kills, 10) || 0;
   const kMult = parseFloat(kill_multiplier) || 1;
-  const wBonus = parseFloat(win_bonus) || 0;
+  let wBonus = parseFloat(win_bonus) || 0;
 
   // Default placement scales if not custom
-  const defaultScale = game === 'freefire' 
-    ? { 1: 12, 2: 9, 3: 8, 4: 7, 5: 6, 6: 5, 7: 4, 8: 3, 9: 2, 10: 1, 11: 0, 12: 0 }
-    : { 1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0 };
+  let defaultScale = { 1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0 };
+  if (scoring_type === 'battle_royale') {
+    defaultScale = { 1: 15, 2: 12, 3: 10, 4: 8, 5: 6, 6: 4, 7: 2, 8: 1 };
+    if (wBonus === 0 && (is_win || numPlacement === 1)) {
+      wBonus = 5;
+    }
+  } else if (game === 'freefire') {
+    defaultScale = { 1: 12, 2: 9, 3: 8, 4: 7, 5: 6, 6: 5, 7: 4, 8: 3, 9: 2, 10: 1, 11: 0, 12: 0 };
+  }
 
   const scale = custom_placement_scale || defaultScale;
   const placementPoints = scale[numPlacement] !== undefined ? scale[numPlacement] : 0;
   const killPoints = numKills * kMult;
-  const isWin = numPlacement === 1;
-  const bonusPoints = isWin ? wBonus : 0;
+  const calculatedWin = is_win !== null ? !!is_win : numPlacement === 1;
+  const bonusPoints = calculatedWin ? wBonus : 0;
   const total = placementPoints + killPoints + bonusPoints;
 
   const winLabel = game === 'freefire' ? 'Booyah! 🔥' : 'WWCD! 🍗';
   const formula = `[Placement: Rank #${numPlacement} = ${placementPoints} Pts] + [${numKills} Kills × ${kMult} = ${killPoints} Kill Pts]${bonusPoints > 0 ? ` + [Win Bonus = ${bonusPoints} Pts]` : ''} = ${total} Total Points`;
 
-  return res.json({
+  const output = {
     game,
     placement: numPlacement,
     kills: numKills,
@@ -281,9 +289,14 @@ router.post('/calculate', (req, res) => {
     kill_points: killPoints,
     bonus_points: bonusPoints,
     total_points: total,
-    is_win: isWin,
+    is_win: calculatedWin,
     win_label: winLabel,
     formula
+  };
+
+  return res.json({
+    ...output,
+    result: output
   });
 });
 
@@ -419,6 +432,189 @@ router.put('/teams/:id/adjust-points', authenticateAdmin, (req, res) => {
   logAdminAction(req.admin.username, 'ADJUST_TEAM_POINTS', { team_id: teamId, team_name: team.team_name, newTotal, reason });
 
   return res.json({ message: 'Team points adjusted successfully', team: updated });
+});
+
+// PUT /api/esports/teams/:id (Admin edit squad details)
+router.put('/teams/:id', authenticateAdmin, (req, res) => {
+  const teamId = parseInt(req.params.id, 10);
+  const team = db.get('esports_teams', t => t.id === teamId);
+  if (!team) {
+    return res.status(404).json({ error: 'Team not found.' });
+  }
+
+  const { team_name, tag, logo_url, captain_name, captain_contact, members, slot } = req.body;
+  const updateData = {};
+  if (team_name) updateData.team_name = team_name.trim();
+  if (tag) updateData.tag = tag.trim().toUpperCase();
+  if (logo_url) updateData.logo_url = logo_url;
+  if (captain_name) updateData.captain_name = captain_name.trim();
+  if (captain_contact !== undefined) updateData.captain_contact = captain_contact;
+  if (members !== undefined) {
+    updateData.members = Array.isArray(members) ? members : String(members).split(',').map(m => m.trim());
+  }
+  if (slot !== undefined) updateData.slot = parseInt(slot, 10);
+
+  const updated = db.update('esports_teams', t => t.id === teamId, updateData);
+  const updatedLeaderboard = recalculateLeaderboard(team.tournament_id);
+  logAdminAction(req.admin.username, 'UPDATE_ESPORTS_TEAM', { team_id: teamId, team_name: updated.team_name });
+
+  return res.json({ message: 'Team updated successfully', team: updated, leaderboard: updatedLeaderboard });
+});
+
+// DELETE /api/esports/teams/:id (Admin delete / remove team from tournament)
+router.delete('/teams/:id', authenticateAdmin, (req, res) => {
+  const teamId = parseInt(req.params.id, 10);
+  const team = db.get('esports_teams', t => t.id === teamId);
+  if (!team) {
+    return res.status(404).json({ error: 'Team not found.' });
+  }
+  const tournId = team.tournament_id;
+
+  // 1. Remove team from database
+  db.delete('esports_teams', t => t.id === teamId);
+
+  // 2. Remove team from any recorded match result arrays
+  const matches = db.all('esports_matches', m => m.tournament_id === tournId);
+  matches.forEach(m => {
+    if (Array.isArray(m.results)) {
+      const filtered = m.results.filter(r => r.team_id !== teamId);
+      db.update('esports_matches', match => match.id === m.id, { results: filtered });
+    }
+  });
+
+  // 3. Recalculate standings immediately
+  const updatedLeaderboard = recalculateLeaderboard(tournId);
+  logAdminAction(req.admin.username, 'DELETE_ESPORTS_TEAM', { team_id: teamId, team_name: team.team_name, tournament_id: tournId });
+
+  return res.json({ 
+    message: `Team "${team.team_name}" was successfully removed from tournament.`, 
+    leaderboard: updatedLeaderboard 
+  });
+});
+
+// POST /api/esports/tournaments (Admin create new tournament for different event)
+router.post('/tournaments', authenticateAdmin, (req, res) => {
+  const { title, game_id, game_name, prize_pool, banner_url, venue, description, scoring_rules, start_date, end_date, initial_teams } = req.body;
+
+  if (!title || !title.trim()) {
+    return res.status(400).json({ error: 'Tournament title is required.' });
+  }
+
+  const gId = parseInt(game_id, 10) || 1;
+  const game = db.get('esports_games', g => g.id === gId);
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+  const defaultRules = gId === 2
+    ? {
+        system_name: 'Official FFWS / FFIC (12-Point)',
+        placement_scale: { 1: 12, 2: 9, 3: 8, 4: 7, 5: 6, 6: 5, 7: 4, 8: 3, 9: 2, 10: 1, 11: 0, 12: 0 },
+        kill_multiplier: 1,
+        win_bonus: 0,
+        win_title: 'BOOYAH 🔥'
+      }
+    : {
+        system_name: 'Official BGIS / BMPS (10-Point)',
+        placement_scale: { 1: 10, 2: 6, 3: 5, 4: 4, 5: 3, 6: 2, 7: 1, 8: 1, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0 },
+        kill_multiplier: 1,
+        win_bonus: 0,
+        win_title: 'WWCD 🍗'
+      };
+
+  const defaultBanner = gId === 2
+    ? 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&q=80&w=1200'
+    : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200';
+
+  const newTournament = db.insert('esports_tournaments', {
+    title: title.trim(),
+    slug,
+    game_id: gId,
+    game_name: game ? game.name : (game_name || (gId === 2 ? 'Free Fire MAX' : 'BGMI (Battlegrounds Mobile India)')),
+    prize_pool: prize_pool || '₹50,000 INR',
+    status: 'live',
+    start_date: start_date || new Date().toISOString().slice(0, 10),
+    end_date: end_date || '',
+    venue: venue || 'NextGen Spatial Esports Lab & Live Stream',
+    banner_url: banner_url || defaultBanner,
+    registration_open: 1,
+    scoring_rules: scoring_rules || defaultRules,
+    description: description || `Premier competitive collegiate championship.`
+  });
+
+  // If initial squads were provided
+  if (Array.isArray(initial_teams)) {
+    initial_teams.forEach((tm, idx) => {
+      db.insert('esports_teams', {
+        tournament_id: newTournament.id,
+        slot: idx + 1,
+        team_name: tm.team_name || tm,
+        tag: tm.tag || String(tm.team_name || tm).slice(0, 4).toUpperCase(),
+        logo_url: tm.logo_url || '🎮',
+        captain_name: tm.captain_name || `Captain ${idx + 1}`,
+        captain_contact: tm.captain_contact || '',
+        members: tm.members || [],
+        matches_played: 0,
+        wins: 0,
+        kills: 0,
+        placement_points: 0,
+        kill_points: 0,
+        bonus_points: 0,
+        total_points: 0,
+        rank: idx + 1
+      });
+    });
+  }
+
+  logAdminAction(req.admin.username, 'CREATE_TOURNAMENT', { tournament_id: newTournament.id, title: newTournament.title });
+
+  return res.status(201).json({ message: 'Tournament created successfully!', tournament: newTournament });
+});
+
+// PUT /api/esports/tournaments/:id (Admin rename tournament, change photo & details)
+router.put('/tournaments/:id', authenticateAdmin, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const tournament = db.get('esports_tournaments', t => t.id === id);
+  if (!tournament) {
+    return res.status(404).json({ error: 'Tournament not found.' });
+  }
+
+  const { title, prize_pool, status, banner_url, venue, description, game_id, game_name, start_date, end_date } = req.body;
+
+  const updateData = {};
+  if (title && title.trim()) {
+    updateData.title = title.trim();
+    updateData.slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+  if (prize_pool !== undefined) updateData.prize_pool = prize_pool;
+  if (status !== undefined) updateData.status = status;
+  if (banner_url !== undefined) updateData.banner_url = banner_url;
+  if (venue !== undefined) updateData.venue = venue;
+  if (description !== undefined) updateData.description = description;
+  if (game_id !== undefined) updateData.game_id = parseInt(game_id, 10);
+  if (game_name !== undefined) updateData.game_name = game_name;
+  if (start_date !== undefined) updateData.start_date = start_date;
+  if (end_date !== undefined) updateData.end_date = end_date;
+
+  const updatedTournament = db.update('esports_tournaments', t => t.id === id, updateData);
+  logAdminAction(req.admin.username, 'UPDATE_TOURNAMENT', { tournament_id: id, title: updatedTournament.title });
+
+  return res.json({ message: 'Tournament updated successfully!', tournament: updatedTournament });
+});
+
+// DELETE /api/esports/tournaments/:id (Admin delete tournament)
+router.delete('/tournaments/:id', authenticateAdmin, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const tournament = db.get('esports_tournaments', t => t.id === id);
+  if (!tournament) {
+    return res.status(404).json({ error: 'Tournament not found.' });
+  }
+
+  // Delete associated teams and matches
+  db.delete('esports_teams', t => t.tournament_id === id);
+  db.delete('esports_matches', m => m.tournament_id === id);
+  db.delete('esports_tournaments', t => t.id === id);
+
+  logAdminAction(req.admin.username, 'DELETE_TOURNAMENT', { tournament_id: id, title: tournament.title });
+  return res.json({ message: `Tournament "${tournament.title}" and its squads/matches have been deleted.` });
 });
 
 // DELETE /api/esports/matches/:id (Delete a match and recalculate standings)

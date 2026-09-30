@@ -164,7 +164,7 @@ async function verifyAndCreateTables() {
 
     CREATE TABLE IF NOT EXISTS feedback (
       id SERIAL PRIMARY KEY,
-      event_id BIGINT,
+      event_id TEXT,
       event_title TEXT,
       participant_name TEXT,
       register_no TEXT,
@@ -179,6 +179,11 @@ async function verifyAndCreateTables() {
       answers JSONB DEFAULT '{}'::jsonb,
       submitted_at TIMESTAMPTZ DEFAULT NOW()
     );
+
+    // Safely migrate event_id to TEXT if previously BIGINT
+    try {
+      await pgPool.query('ALTER TABLE feedback ALTER COLUMN event_id TYPE TEXT USING event_id::text;');
+    } catch (e) {}
 
     CREATE TABLE IF NOT EXISTS applications (
       id SERIAL PRIMARY KEY,
@@ -325,7 +330,7 @@ export async function loadAllFromPostgres(state) {
       // 4. Feedback
       const fbRes = await pgPool.query('SELECT * FROM feedback ORDER BY id ASC');
       if (fbRes.rows && fbRes.rows.length > 0) {
-        state.feedback = fbRes.rows.map(r => ({ ...r, id: Number(r.id), event_id: Number(r.event_id) }));
+        state.feedback = fbRes.rows.map(r => ({ ...r, id: Number(r.id), event_id: String(r.event_id || 'general') }));
         totalLoaded += fbRes.rows.length;
       }
 
@@ -636,7 +641,7 @@ export async function syncPostgresInsert(table, row) {
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         `;
         const values = [
-          row.event_id ? Number(row.event_id) : null,
+          row.event_id ? String(row.event_id) : 'general',
           row.event_title || '',
           row.participant_name || '',
           row.register_no || '',

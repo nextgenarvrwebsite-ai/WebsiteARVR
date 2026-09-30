@@ -129,6 +129,49 @@ const EsportsModel = mongoose.model('EsportsGame', new mongoose.Schema({
   description: String
 }, genericSchemaOptions), 'esports_games');
 
+const AllianceOneRegistrationModel = mongoose.model('AllianceOneRegistration', new mongoose.Schema({
+  id: { type: Number, index: true },
+  event_id: String,
+  event_name: String,
+  game_name: String,
+  is_individual: Boolean,
+  team_name: String,
+  team_lead_name: String,
+  participant_name: String,
+  team_lead_ingame_id: String,
+  lead_ingame_id: String,
+  team_lead_email: String,
+  team_lead_phone: String,
+  college: String,
+  teammate_2_name: String,
+  teammate_2_ingame_id: String,
+  teammate_3_name: String,
+  teammate_3_ingame_id: String,
+  teammate_4_name: String,
+  teammate_4_ingame_id: String,
+  teammate_5_name: String,
+  teammate_5_ingame_id: String,
+  project_title: String,
+  project_track: String,
+  bank_account_number: String,
+  bank_account_holder_name: String,
+  bank_ifsc: String,
+  bank_branch: String,
+  bank_linked_mobile: String,
+  upi_id: String,
+  passbook_preview: String,
+  bank_details_confirmed: Boolean,
+  timestamp: String,
+  created_at: String
+}, genericSchemaOptions), 'alliance_one_registrations');
+
+const AllianceOneSettingsModel = mongoose.model('AllianceOneSetting', new mongoose.Schema({
+  key: { type: String, required: true, unique: true, index: true },
+  is_locked: Boolean,
+  locked_at: String,
+  updated_at: String
+}, genericSchemaOptions), 'alliance_one_settings');
+
 const MODEL_MAP = {
   events: EventModel,
   event_registrations: RegistrationModel,
@@ -137,7 +180,9 @@ const MODEL_MAP = {
   applications: ApplicationModel,
   admins: AdminModel,
   audit_logs: AuditLogModel,
-  esports_games: EsportsModel
+  esports_games: EsportsModel,
+  alliance_one_registrations: AllianceOneRegistrationModel,
+  alliance_one_settings: AllianceOneSettingsModel
 };
 
 /**
@@ -289,10 +334,10 @@ export async function syncMongoUpdate(table, predicate, updateData) {
   try {
     const Model = MODEL_MAP[table];
     if (Model) {
-      const query = updateData.id ? { id: updateData.id } : {};
-      if (query.id) {
+      const query = updateData.id ? { id: updateData.id } : (updateData.key ? { key: updateData.key } : null);
+      if (query) {
         await Model.updateOne(query, { $set: updateData }, { upsert: true });
-        console.log(`☁️ Synced [${table}] update (ID: ${updateData.id}) to MongoDB Atlas`);
+        console.log(`☁️ Synced [${table}] update (${query.id ? `ID: ${query.id}` : `Key: ${query.key}`}) to MongoDB Atlas`);
       }
     }
   } catch (err) {
@@ -307,9 +352,12 @@ export async function syncMongoDelete(table, item) {
   if (!isMongoActive() || !item) return;
   try {
     const Model = MODEL_MAP[table];
-    if (Model && item.id) {
-      await Model.deleteOne({ id: item.id });
-      console.log(`☁️ Synced [${table}] deletion (ID: ${item.id}) to MongoDB Atlas`);
+    if (Model) {
+      const query = item.id ? { id: item.id } : (item.key ? { key: item.key } : null);
+      if (query) {
+        await Model.deleteOne(query);
+        console.log(`☁️ Synced [${table}] deletion (${query.id ? `ID: ${query.id}` : `Key: ${query.key}`}) to MongoDB Atlas`);
+      }
     }
   } catch (err) {
     console.error(`MongoDB delete error (${table}):`, err.message);

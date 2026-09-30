@@ -7,8 +7,8 @@
       "password_hash": "$2a$10$dbStjEQjDn1TtVDYvQoCk.H0jClOD15obIfLsRJF5XhuMfoz20DwK",
       "role": "super_admin",
       "created_at": "2026-08-22T09:06:47.318Z",
-      "last_login": "2026-09-06T17:42:18.939Z",
-      "updated_at": "2026-09-06T17:42:18.940Z"
+      "last_login": "2026-09-30T07:20:43.233Z",
+      "updated_at": "2026-09-30T07:20:43.233Z"
     }
   ],
   "members": [
@@ -219,6 +219,82 @@
       "status": "active",
       "joined_at": "2026-09-06",
       "created_at": "2026-09-06T17:42:18.957Z"
+    },
+    {
+      "id": 11,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST6031",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "domain": "AR/VR & Spatial Computing",
+      "role": "Member",
+      "email": "test.test6031@college.edu",
+      "phone": "+91 99999 88888",
+      "bio": "Passionate about building WebXR and Three.js 3D spatial simulations....",
+      "avatar_url": "https://api.dicebear.com/7.x/bottts/svg?seed=Test%20Applicant%20XR",
+      "github_url": "",
+      "linkedin_url": "",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "active",
+      "joined_at": "2026-09-30",
+      "created_at": "2026-09-30T06:55:06.211Z"
+    },
+    {
+      "id": 12,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST4118",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "domain": "AR/VR & Spatial Computing",
+      "role": "Member",
+      "email": "test.test4118@college.edu",
+      "phone": "+91 99999 88888",
+      "bio": "Passionate about building WebXR and Three.js 3D spatial simulations....",
+      "avatar_url": "https://api.dicebear.com/7.x/bottts/svg?seed=Test%20Applicant%20XR",
+      "github_url": "",
+      "linkedin_url": "",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "active",
+      "joined_at": "2026-09-30",
+      "created_at": "2026-09-30T07:00:04.298Z"
+    },
+    {
+      "id": 13,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST1144",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "domain": "AR/VR & Spatial Computing",
+      "role": "Member",
+      "email": "test.test1144@college.edu",
+      "phone": "+91 99999 88888",
+      "bio": "Passionate about building WebXR and Three.js 3D spatial simulations....",
+      "avatar_url": "https://api.dicebear.com/7.x/bottts/svg?seed=Test%20Applicant%20XR",
+      "github_url": "",
+      "linkedin_url": "",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "active",
+      "joined_at": "2026-09-30",
+      "created_at": "2026-09-30T07:00:51.335Z"
+    },
+    {
+      "id": 14,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST0812",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "domain": "AR/VR & Spatial Computing",
+      "role": "Member",
+      "email": "test.test0812@college.edu",
+      "phone": "+91 99999 88888",
+      "bio": "Passionate about building WebXR and Three.js 3D spatial simulations....",
+      "avatar_url": "https://api.dicebear.com/7.x/bottts/svg?seed=Test%20Applicant%20XR",
+      "github_url": "",
+      "linkedin_url": "",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "active",
+      "joined_at": "2026-09-30",
+      "created_at": "2026-09-30T07:19:50.967Z"
     }
   ],
   "applications": [
@@ -304,9 +380,194 @@
       "reviewed_at": "2026-09-06T17:42:18.956Z",
       "reviewed_by": "admin",
       "updated_at": "2026-09-06T17:42:18.956Z"
+    },
+    {
+      "id": 5,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST6031",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "email": "test.test6031@college.edu",
+      "phone": "+91 99999 88888",
+      "domains": [
+        "AR/VR & Spatial Computing",
+        "Game Development"
+      ],
+      "why_join": "Passionate about building WebXR and Three.js 3D spatial simulations.",
+      "experience": "Built 2 Unity prototypes",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "approved",
+      "review_notes": "Approved via automated test suite",
+      "submitted_at": "2026-09-30T06:55:06.034Z",
+      "created_at": "2026-09-30T06:55:06.034Z",
+      "reviewed_at": "2026-09-30T06:55:06.209Z",
+      "reviewed_by": "admin",
+      "updated_at": "2026-09-30T06:55:06.209Z"
+    },
+    {
+      "id": 6,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST4118",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "email": "test.test4118@college.edu",
+      "phone": "+91 99999 88888",
+      "domains": [
+        "AR/VR & Spatial Computing",
+        "Game Development"
+      ],
+      "why_join": "Passionate about building WebXR and Three.js 3D spatial simulations.",
+      "experience": "Built 2 Unity prototypes",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "approved",
+      "review_notes": "Approved via automated test suite",
+      "submitted_at": "2026-09-30T07:00:04.123Z",
+      "created_at": "2026-09-30T07:00:04.123Z",
+      "reviewed_at": "2026-09-30T07:00:04.296Z",
+      "reviewed_by": "admin",
+      "updated_at": "2026-09-30T07:00:04.296Z"
+    },
+    {
+      "id": 7,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST1144",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "email": "test.test1144@college.edu",
+      "phone": "+91 99999 88888",
+      "domains": [
+        "AR/VR & Spatial Computing",
+        "Game Development"
+      ],
+      "why_join": "Passionate about building WebXR and Three.js 3D spatial simulations.",
+      "experience": "Built 2 Unity prototypes",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "approved",
+      "review_notes": "Approved via automated test suite",
+      "submitted_at": "2026-09-30T07:00:51.156Z",
+      "created_at": "2026-09-30T07:00:51.156Z",
+      "reviewed_at": "2026-09-30T07:00:51.333Z",
+      "reviewed_by": "admin",
+      "updated_at": "2026-09-30T07:00:51.333Z"
+    },
+    {
+      "id": 8,
+      "full_name": "Test Applicant XR",
+      "roll_no": "TEST0812",
+      "branch": "Computer Science & Engineering",
+      "year": "2nd Year",
+      "email": "test.test0812@college.edu",
+      "phone": "+91 99999 88888",
+      "domains": [
+        "AR/VR & Spatial Computing",
+        "Game Development"
+      ],
+      "why_join": "Passionate about building WebXR and Three.js 3D spatial simulations.",
+      "experience": "Built 2 Unity prototypes",
+      "portfolio_url": "https://github.com/test-applicant",
+      "status": "approved",
+      "review_notes": "Approved via automated test suite",
+      "submitted_at": "2026-09-30T07:19:50.817Z",
+      "created_at": "2026-09-30T07:19:50.817Z",
+      "reviewed_at": "2026-09-30T07:19:50.964Z",
+      "reviewed_by": "admin",
+      "updated_at": "2026-09-30T07:19:50.964Z"
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "id": 1,
+      "title": "Workshop on Game Development",
+      "category": "Workshop",
+      "event_date": "2026-09-24",
+      "event_time": "14:00 - 17:30 IST",
+      "venue": "Lab 402, Technology Block A, Alliance University",
+      "short_description": "Hands-on Unreal Engine 5 & Unity workshop covering spatial level design, physics simulations, and 3D rendering pipeline.",
+      "description": "Hands-on Unreal Engine 5 & Unity workshop covering spatial level design, physics simulations, and 3D rendering pipeline.",
+      "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+      "max_seats": 120,
+      "registration_open": true,
+      "registration_deadline": "2026-09-23T23:59:59Z",
+      "is_featured": true,
+      "speaker_name": "S Darshan Sai & Apoorva Keretot",
+      "speaker_title": "Core Leads, NextGen AR/VR",
+      "tags": [
+        "GameDev",
+        "Unity",
+        "UE5",
+        "Spatial"
+      ],
+      "total_registrants": 0,
+      "spots_remaining": 120,
+      "is_full": false,
+      "slug": "workshop-on-game-development",
+      "poster_url": "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800",
+      "is_registration_open": 1,
+      "is_team_event": 0,
+      "max_team_size": 4,
+      "feedbackQuestions": [],
+      "created_at": "2026-09-30T07:12:49.013Z"
+    },
+    {
+      "id": 2,
+      "title": "Metaverse & WebXR Hands-on Lab",
+      "category": "Workshop",
+      "event_date": "2026-10-15",
+      "event_time": "11:00 - 15:00 IST",
+      "venue": "Spatial Computing Lab, Learning Centre 2, Alliance University",
+      "short_description": "Build and deploy full 3D interactive WebXR environments directly in the browser using Three.js and WebGL.",
+      "description": "Build and deploy full 3D interactive WebXR environments directly in the browser using Three.js and WebGL.",
+      "banner_url": "https://images.unsplash.com/photo-1617802690992-15d93263d3a9?auto=format&fit=crop&w=1200&q=80",
+      "max_seats": 150,
+      "registration_open": true,
+      "registration_deadline": "2026-10-14T23:59:59Z",
+      "is_featured": true,
+      "speaker_name": "Prof. Ananthanagu U",
+      "speaker_title": "Faculty Coordinator & Associate Director, CoE",
+      "tags": [
+        "WebXR",
+        "ThreeJS",
+        "Metaverse",
+        "VR"
+      ],
+      "total_registrants": 3,
+      "spots_remaining": 147,
+      "is_full": false,
+      "slug": "metaverse-webxr-hands-on-lab",
+      "poster_url": "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800",
+      "is_registration_open": 1,
+      "is_team_event": 0,
+      "max_team_size": 4,
+      "feedbackQuestions": [],
+      "created_at": "2026-09-30T07:12:49.013Z"
+    },
+    {
+      "id": 1789967508330,
+      "title": "Game Development using AI & NavMesh",
+      "slug": "game-development-using-ai-navmesh",
+      "category": "Workshop",
+      "event_date": "2026-09-25",
+      "event_time": "02:00 PM - 05:00 PM",
+      "venue": "Learning Centre -2, LT - 609  Alliance University, Chandapura - Anekal Main Road, Bengaluru – 562106",
+      "description": "Hands-on game development with AI navigation and NavMesh agents.",
+      "poster_url": "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&q=80&w=800",
+      "is_registration_open": 1,
+      "max_seats": 100,
+      "is_team_event": 0,
+      "max_team_size": 4,
+      "tags": [
+        "AR/VR",
+        "NextGen"
+      ],
+      "feedbackQuestions": [],
+      "created_at": "2026-09-23T04:13:53.320Z",
+      "createdAt": "2026-09-25T08:18:55.148Z",
+      "updatedAt": "2026-09-25T08:18:55.148Z",
+      "total_registrants": 0,
+      "spots_remaining": 100,
+      "is_full": false
+    }
+  ],
   "event_registrations": [
     {
       "id": 1,
@@ -1157,9 +1418,342 @@
       "ticket_id": "NG-WOR-0035",
       "status": "confirmed",
       "registered_at": "2026-09-21T13:45:43.430Z"
+    },
+    {
+      "id": 36,
+      "event_id": 2,
+      "full_name": "Rohan Event Tester",
+      "roll_no": "REG4127",
+      "email": "rohan.reg4127@college.edu",
+      "phone": "+91 98888 77777",
+      "school": "Alliance School of Advanced Computing",
+      "branch": "Information Technology",
+      "department": "Information Technology",
+      "year": "3rd Year",
+      "semester": "5th Sem",
+      "is_team": 0,
+      "team_name": "",
+      "team_members_info": "",
+      "status": "confirmed",
+      "registered_at": "2026-09-30T07:00:04.131Z",
+      "created_at": "2026-09-30T07:00:04.131Z"
+    },
+    {
+      "id": 37,
+      "event_id": 2,
+      "full_name": "Rohan Event Tester",
+      "roll_no": "REG1160",
+      "email": "rohan.reg1160@college.edu",
+      "phone": "+91 98888 77777",
+      "school": "Alliance School of Advanced Computing",
+      "branch": "Information Technology",
+      "department": "Information Technology",
+      "year": "3rd Year",
+      "semester": "5th Sem",
+      "is_team": 0,
+      "team_name": "",
+      "team_members_info": "",
+      "status": "confirmed",
+      "registered_at": "2026-09-30T07:00:51.172Z",
+      "created_at": "2026-09-30T07:00:51.172Z"
+    },
+    {
+      "id": 38,
+      "event_id": 2,
+      "full_name": "Rohan Event Tester",
+      "roll_no": "REG0821",
+      "email": "rohan.reg0821@college.edu",
+      "phone": "+91 98888 77777",
+      "school": "Alliance School of Advanced Computing",
+      "branch": "Information Technology",
+      "department": "Information Technology",
+      "year": "3rd Year",
+      "semester": "5th Sem",
+      "is_team": 0,
+      "team_name": "",
+      "team_members_info": "",
+      "status": "confirmed",
+      "registered_at": "2026-09-30T07:19:50.832Z",
+      "created_at": "2026-09-30T07:19:50.832Z"
     }
   ],
-  "feedback": [],
+  "feedback": [
+    {
+      "id": 1789924150001,
+      "event_id": "1789924119705",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "K S ABHINAV",
+      "author_name": "K S ABHINAV",
+      "register_no": "PROV/ASAC/BTECH/7/26/0072",
+      "email": "abhinavksbtech26@stu.alliance.edu.in",
+      "author_email": "abhinavksbtech26@stu.alliance.edu.in",
+      "department": "Alliance School of Advanced Computing",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "The hands-on Unity 3D physics mechanics, player controller setup, and live VR shader demo were mind-blowing.",
+      "what_improve": "Would love an extended 2-day bootcamp covering Unreal Engine 5 Nanite and MetaXR SDK integration.",
+      "comments": "Outstanding session by NextGen AR/VR club! The mentors guided every step with great patience.",
+      "answers": {
+        "q1": 5,
+        "q2": 5,
+        "q3": "Hands-on Unity 3D physics mechanics and player controller setup.",
+        "q4": "Unreal Engine 5 Nanite and MetaXR SDK.",
+        "q5": "Outstanding session by NextGen AR/VR club!"
+      },
+      "submitted_at": "2026-09-24T14:35:10.000Z"
+    },
+    {
+      "id": 1789924150002,
+      "event_id": "1789924119705",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "SHAIK MOHAMMAD REHAAN",
+      "author_name": "SHAIK MOHAMMAD REHAAN",
+      "register_no": "PROV/ASAC/BTECH/7/26/0701",
+      "email": "rehaansbtech26@stu.alliance.edu.in",
+      "author_email": "rehaansbtech26@stu.alliance.edu.in",
+      "department": "Alliance School of Advanced Computing",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Step-by-step game loop scripting in C#, spatial audio positioning, and testing our custom levels directly in VR.",
+      "what_improve": "Share starter project assets repository a day before the event.",
+      "comments": "Best technical club workshop conducted this semester. Looking forward to joining the core gaming division!",
+      "answers": {
+        "q1": 5,
+        "q2": 5,
+        "q3": "Spatial audio positioning and C# game loop scripting.",
+        "q4": "Multiplayer networking with Photon/Mirror.",
+        "q5": "Looking forward to joining the core team!"
+      },
+      "submitted_at": "2026-09-24T15:10:22.000Z"
+    },
+    {
+      "id": 1789924150003,
+      "event_id": "1789924119705",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "Swapna N",
+      "author_name": "Swapna N",
+      "register_no": "PROV/ASAC/BTECH/7/26/0393",
+      "email": "swapnanbtech26@stu.alliance.edu.in",
+      "author_email": "swapnanbtech26@stu.alliance.edu.in",
+      "department": "Alliance School of Advanced Computing",
+      "rating_content": 5,
+      "rating_organization": 4,
+      "rating_speaker": 5,
+      "what_liked": "Learning real-time animation state machines and understanding how VR motion sickness is mitigated in AAA games.",
+      "what_improve": "More time dedicated to open Q&A and networking at the end.",
+      "comments": "Very well structured and easy to follow even for students new to game engines.",
+      "answers": {
+        "q1": 5,
+        "q2": 4,
+        "q3": "Animation state machines and VR ergonomics.",
+        "q4": "Blender 3D low-poly asset modeling.",
+        "q5": "Very well structured and easy to follow."
+      },
+      "submitted_at": "2026-09-24T15:45:00.000Z"
+    },
+    {
+      "id": 1789924150004,
+      "event_id": "1789924119705",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "Panchaksharayya",
+      "author_name": "Panchaksharayya",
+      "register_no": "2411021061321",
+      "email": "panchaksharayya.btech24@stu.alliance.edu.in",
+      "author_email": "panchaksharayya.btech24@stu.alliance.edu.in",
+      "department": "Alliance School of Advanced Computing",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Multiplayer networking fundamentals and building interactive weapon recoil scripts in Unity.",
+      "what_improve": "Conduct an inter-college game development game-jam soon!",
+      "comments": "The spatial computing lab hardware at AU is state of the art. Great initiative!",
+      "answers": {
+        "q1": 5,
+        "q2": 5,
+        "q3": "Multiplayer networking fundamentals in Unity.",
+        "q4": "Spatial computing game jam.",
+        "q5": "Great initiative!"
+      },
+      "submitted_at": "2026-09-24T16:02:18.000Z"
+    },
+    {
+      "id": 1789924150005,
+      "event_id": "1789924119705",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "JAYAKIRTHI P",
+      "author_name": "JAYAKIRTHI P",
+      "register_no": "PROV/ASAE/BTECH/7/26/0048",
+      "email": "jayakirthipbtech26@stu.alliance.edu.in",
+      "author_email": "jayakirthipbtech26@stu.alliance.edu.in",
+      "department": "Alliance School of Applied Engineering",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 4,
+      "what_liked": "Physics simulations inside the game engine and applying engineering concepts to interactive simulations.",
+      "what_improve": "Include browser-based WebXR deployment.",
+      "comments": "Loved the cross-school participation. Applied Engineering students thoroughly enjoyed it.",
+      "answers": {
+        "q1": 5,
+        "q2": 5,
+        "q3": "Physics simulations in game engines.",
+        "q4": "WebXR deployment.",
+        "q5": "Loved the cross-school participation."
+      },
+      "submitted_at": "2026-09-24T16:20:45.000Z"
+    },
+    {
+      "id": 1789924150006,
+      "event_id": "1789924119705",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "Rashmi",
+      "author_name": "Rashmi",
+      "register_no": "2411021061295",
+      "email": "rashmi.btech24@stu.alliance.edu.in",
+      "author_email": "rashmi.btech24@stu.alliance.edu.in",
+      "department": "Alliance School of Advanced Computing",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Level design principles, lighting setups, and real-time post-processing effects.",
+      "what_improve": "Provide printed or PDF cheatsheets of shortcut keys.",
+      "comments": "Super energetic coordinators. 10/10 recommendation to all junior students.",
+      "answers": {
+        "q1": 5,
+        "q2": 5,
+        "q3": "Level design principles and lighting setups.",
+        "q4": "Shaders and visual scripting.",
+        "q5": "10/10 recommendation!"
+      },
+      "submitted_at": "2026-09-24T16:50:30.000Z"
+    },
+    {
+      "id": 1789924150007,
+      "event_id": "1",
+      "event_title": "Metaverse & WebXR Hands-on Lab",
+      "participant_name": "Rithish B",
+      "author_name": "Rithish B",
+      "register_no": "PROV/ASAC/BCA/7/26/002",
+      "email": "rithishbca26@stu.alliance.edu.in",
+      "author_email": "rithishbca26@stu.alliance.edu.in",
+      "department": "Alliance School of Advanced Computing",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Deploying our first WebXR 3D scene directly in the browser using Three.js and viewing it on the Meta Quest.",
+      "what_improve": "Add more seats for the next lab session.",
+      "comments": "NextGen AR/VR club provides world-class technical exposure for AU students.",
+      "answers": {
+        "q1": 5,
+        "q2": 5,
+        "q3": "WebXR 3D scene deployment with Three.js.",
+        "q4": "Three.js GLSL custom shaders.",
+        "q5": "World-class exposure!"
+      },
+      "submitted_at": "2026-09-25T11:15:00.000Z"
+    },
+    {
+      "id": 1790751306939,
+      "event_id": "1",
+      "event_title": "General NextGen Club Feedback",
+      "participant_name": "Feedback Tester",
+      "register_no": "",
+      "email": "tester@college.edu",
+      "department": "",
+      "author_name": "Feedback Tester",
+      "author_email": "tester@college.edu",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Fantastic hands-on Quest 3 passthrough demo!",
+      "what_improve": "None, loved it.",
+      "comments": "",
+      "answers": {},
+      "submitted_at": "2026-09-30T06:55:06.055Z",
+      "created_at": "2026-09-30T06:55:06.055Z"
+    },
+    {
+      "id": 1790751604672,
+      "event_id": "1",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "Feedback Tester",
+      "register_no": "",
+      "email": "tester@college.edu",
+      "department": "",
+      "author_name": "Feedback Tester",
+      "author_email": "tester@college.edu",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Fantastic hands-on Quest 3 passthrough demo!",
+      "what_improve": "None, loved it.",
+      "comments": "",
+      "answers": {},
+      "submitted_at": "2026-09-30T07:00:04.138Z",
+      "created_at": "2026-09-30T07:00:04.139Z"
+    },
+    {
+      "id": 1790751651181,
+      "event_id": "1",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "Feedback Tester",
+      "register_no": "",
+      "email": "tester@college.edu",
+      "department": "",
+      "author_name": "Feedback Tester",
+      "author_email": "tester@college.edu",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Fantastic hands-on Quest 3 passthrough demo!",
+      "what_improve": "None, loved it.",
+      "comments": "",
+      "answers": {},
+      "submitted_at": "2026-09-30T07:00:51.177Z",
+      "created_at": "2026-09-30T07:00:51.177Z"
+    },
+    {
+      "id": 1790752791562,
+      "event_id": "1",
+      "event_title": "Workshop on Game Development",
+      "participant_name": "Feedback Tester",
+      "register_no": "",
+      "email": "tester@college.edu",
+      "department": "",
+      "author_name": "Feedback Tester",
+      "author_email": "tester@college.edu",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Fantastic hands-on Quest 3 passthrough demo!",
+      "what_improve": "None, loved it.",
+      "comments": "",
+      "answers": {},
+      "submitted_at": "2026-09-30T07:19:50.840Z",
+      "created_at": "2026-09-30T07:19:50.840Z"
+    },
+    {
+      "id": 1790752843916,
+      "event_id": "1789967508331",
+      "event_title": "Cross-Browser Test Event 3247",
+      "participant_name": "Student 3853",
+      "register_no": "2411021061999",
+      "email": "cross.browser.tester@stu.alliance.edu.in",
+      "department": "",
+      "author_name": "Student 3853",
+      "author_email": "cross.browser.tester@stu.alliance.edu.in",
+      "rating_content": 5,
+      "rating_organization": 5,
+      "rating_speaker": 5,
+      "what_liked": "Seamless cross-browser real-time synchronization!",
+      "what_improve": "None",
+      "comments": "Everything works perfectly across Chrome, Edge, Safari, Firefox.",
+      "answers": {},
+      "submitted_at": "2026-09-30T07:20:43.856Z",
+      "created_at": "2026-09-30T07:20:43.856Z"
+    }
+  ],
   "esports_games": [
     {
       "id": 1,
@@ -1229,16 +1823,16 @@
   "esports_tournaments": [
     {
       "id": 1,
-      "title": "NextGen BGMI Masters Series 2026",
-      "slug": "nextgen-bgmi-masters-series",
+      "title": "BGIS Ultimate Champions Cup 2026",
+      "slug": "bgis-ultimate-champions-cup-2026",
       "game_id": 1,
       "game_name": "BGMI (Battlegrounds Mobile India)",
-      "prize_pool": "₹50,000 INR (~$600 USD)",
+      "prize_pool": "₹1,00,000 INR",
       "status": "live",
       "start_date": "2026-09-20",
       "end_date": "2026-10-15",
       "venue": "NextGen Spatial Esports Lab & YouTube Live",
-      "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200",
+      "banner_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=1200",
       "registration_open": 1,
       "scoring_rules": {
         "system_name": "Official BGIS / BMPS (10-Point)",
@@ -1265,7 +1859,7 @@
         "win_title": "WWCD 🍗"
       },
       "description": "The premier college Battle Royale championship featuring 16 top squads battling across 5 rigorous map rotations.",
-      "updated_at": "2026-09-25T15:18:34.726Z"
+      "updated_at": "2026-09-30T07:20:43.403Z"
     },
     {
       "id": 2,
@@ -1312,15 +1906,15 @@
       "tag": "SOUL",
       "logo_url": "⚡",
       "captain_name": "Samar \"Vortex\" (C)",
-      "matches_played": 2,
+      "matches_played": 4,
       "wins": 1,
-      "kills": 20,
-      "placement_points": 16,
-      "kill_points": 20,
+      "kills": 34,
+      "placement_points": 28,
+      "kill_points": 34,
       "bonus_points": 0,
-      "total_points": 36,
+      "total_points": 62,
       "rank": 2,
-      "updated_at": "2026-09-25T15:18:34.752Z"
+      "updated_at": "2026-09-30T17:14:03.268Z"
     },
     {
       "id": 102,
@@ -1330,15 +1924,15 @@
       "tag": "GODL",
       "logo_url": "👑",
       "captain_name": "Jonathan \"JONNY\" (C)",
-      "matches_played": 2,
-      "wins": 1,
-      "kills": 23,
-      "placement_points": 16,
-      "kill_points": 23,
+      "matches_played": 4,
+      "wins": 3,
+      "kills": 47,
+      "placement_points": 36,
+      "kill_points": 47,
       "bonus_points": 0,
-      "total_points": 39,
+      "total_points": 83,
       "rank": 1,
-      "updated_at": "2026-09-25T15:18:34.750Z"
+      "updated_at": "2026-09-30T17:14:03.267Z"
     },
     {
       "id": 103,
@@ -1348,15 +1942,15 @@
       "tag": "TX",
       "logo_url": "🔥",
       "captain_name": "ScoutOP \"Tanmay\" (C)",
-      "matches_played": 2,
+      "matches_played": 4,
       "wins": 0,
-      "kills": 13,
-      "placement_points": 9,
-      "kill_points": 13,
+      "kills": 23,
+      "placement_points": 19,
+      "kill_points": 23,
       "bonus_points": 0,
-      "total_points": 22,
+      "total_points": 42,
       "rank": 3,
-      "updated_at": "2026-09-25T15:18:34.753Z"
+      "updated_at": "2026-09-30T17:14:03.270Z"
     },
     {
       "id": 104,
@@ -1374,7 +1968,7 @@
       "bonus_points": 0,
       "total_points": 22,
       "rank": 4,
-      "updated_at": "2026-09-25T15:18:34.754Z"
+      "updated_at": "2026-09-30T17:14:03.272Z"
     },
     {
       "id": 105,
@@ -1392,7 +1986,7 @@
       "bonus_points": 0,
       "total_points": 11,
       "rank": 5,
-      "updated_at": "2026-09-25T15:18:34.756Z"
+      "updated_at": "2026-09-30T17:14:03.274Z"
     },
     {
       "id": 106,
@@ -1410,7 +2004,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 6,
-      "updated_at": "2026-09-25T15:18:34.756Z"
+      "updated_at": "2026-09-30T17:14:03.276Z"
     },
     {
       "id": 107,
@@ -1428,7 +2022,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 7,
-      "updated_at": "2026-09-25T15:18:34.757Z"
+      "updated_at": "2026-09-30T17:14:03.279Z"
     },
     {
       "id": 108,
@@ -1446,7 +2040,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 8,
-      "updated_at": "2026-09-25T15:18:34.758Z"
+      "updated_at": "2026-09-30T17:14:03.280Z"
     },
     {
       "id": 109,
@@ -1464,7 +2058,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 9,
-      "updated_at": "2026-09-25T15:18:34.759Z"
+      "updated_at": "2026-09-30T17:14:03.281Z"
     },
     {
       "id": 110,
@@ -1482,7 +2076,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 10,
-      "updated_at": "2026-09-25T15:18:34.760Z"
+      "updated_at": "2026-09-30T17:14:03.282Z"
     },
     {
       "id": 111,
@@ -1500,7 +2094,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 11,
-      "updated_at": "2026-09-25T15:18:34.761Z"
+      "updated_at": "2026-09-30T17:14:03.283Z"
     },
     {
       "id": 112,
@@ -1518,7 +2112,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 12,
-      "updated_at": "2026-09-25T15:18:34.762Z"
+      "updated_at": "2026-09-30T17:14:03.285Z"
     },
     {
       "id": 113,
@@ -1536,7 +2130,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 13,
-      "updated_at": "2026-09-25T15:18:34.763Z"
+      "updated_at": "2026-09-30T17:14:03.287Z"
     },
     {
       "id": 114,
@@ -1554,7 +2148,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 14,
-      "updated_at": "2026-09-25T15:18:34.763Z"
+      "updated_at": "2026-09-30T17:14:03.288Z"
     },
     {
       "id": 115,
@@ -1572,25 +2166,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 15,
-      "updated_at": "2026-09-25T15:18:34.764Z"
-    },
-    {
-      "id": 116,
-      "tournament_id": 1,
-      "slot": 16,
-      "team_name": "Autobotz Esports",
-      "tag": "AUTO",
-      "logo_url": "🤖",
-      "captain_name": "Cyber (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 16,
-      "updated_at": "2026-09-25T15:18:34.765Z"
+      "updated_at": "2026-09-30T17:14:03.289Z"
     },
     {
       "id": 201,
@@ -1608,7 +2184,7 @@
       "bonus_points": 0,
       "total_points": 40,
       "rank": 2,
-      "updated_at": "2026-09-25T15:18:34.658Z"
+      "updated_at": "2026-09-30T07:26:03.950Z"
     },
     {
       "id": 202,
@@ -1626,7 +2202,7 @@
       "bonus_points": 0,
       "total_points": 42,
       "rank": 1,
-      "updated_at": "2026-09-25T15:18:34.657Z"
+      "updated_at": "2026-09-30T07:26:03.947Z"
     },
     {
       "id": 203,
@@ -1644,7 +2220,7 @@
       "bonus_points": 0,
       "total_points": 29,
       "rank": 3,
-      "updated_at": "2026-09-25T15:18:34.659Z"
+      "updated_at": "2026-09-30T07:26:03.952Z"
     },
     {
       "id": 204,
@@ -1662,7 +2238,7 @@
       "bonus_points": 0,
       "total_points": 13,
       "rank": 4,
-      "updated_at": "2026-09-25T15:18:34.660Z"
+      "updated_at": "2026-09-30T07:26:03.956Z"
     },
     {
       "id": 205,
@@ -1680,7 +2256,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 5,
-      "updated_at": "2026-09-25T15:18:34.662Z"
+      "updated_at": "2026-09-30T07:26:03.958Z"
     },
     {
       "id": 206,
@@ -1698,7 +2274,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 6,
-      "updated_at": "2026-09-25T15:18:34.663Z"
+      "updated_at": "2026-09-30T07:26:03.961Z"
     },
     {
       "id": 207,
@@ -1716,7 +2292,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 7,
-      "updated_at": "2026-09-25T15:18:34.665Z"
+      "updated_at": "2026-09-30T07:26:03.964Z"
     },
     {
       "id": 208,
@@ -1734,7 +2310,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 8,
-      "updated_at": "2026-09-25T15:18:34.667Z"
+      "updated_at": "2026-09-30T07:26:03.967Z"
     },
     {
       "id": 209,
@@ -1752,7 +2328,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 9,
-      "updated_at": "2026-09-25T15:18:34.668Z"
+      "updated_at": "2026-09-30T07:26:03.971Z"
     },
     {
       "id": 210,
@@ -1770,7 +2346,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 10,
-      "updated_at": "2026-09-25T15:18:34.670Z"
+      "updated_at": "2026-09-30T07:26:03.974Z"
     },
     {
       "id": 211,
@@ -1788,7 +2364,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 11,
-      "updated_at": "2026-09-25T15:18:34.671Z"
+      "updated_at": "2026-09-30T07:26:03.976Z"
     },
     {
       "id": 212,
@@ -1806,7 +2382,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 12,
-      "updated_at": "2026-09-25T15:18:34.672Z"
+      "updated_at": "2026-09-30T07:26:03.979Z"
     }
   ],
   "esports_matches": [
@@ -1855,7 +2431,7 @@
           "points": 11
         }
       ],
-      "updated_at": "2026-09-25T15:18:34.727Z"
+      "updated_at": "2026-09-30T17:14:03.232Z"
     },
     {
       "id": 1002,
@@ -1895,7 +2471,7 @@
           "points": 10
         }
       ],
-      "updated_at": "2026-09-25T15:18:34.728Z"
+      "updated_at": "2026-09-30T17:14:03.233Z"
     },
     {
       "id": 2001,
@@ -1935,7 +2511,7 @@
           "points": 13
         }
       ],
-      "updated_at": "2026-09-25T15:18:34.630Z"
+      "updated_at": "2026-09-30T07:26:03.900Z"
     },
     {
       "id": 2002,
@@ -1968,7 +2544,109 @@
           "points": 14
         }
       ],
-      "updated_at": "2026-09-25T15:18:34.631Z"
+      "updated_at": "2026-09-30T07:26:03.903Z"
+    },
+    {
+      "id": 2003,
+      "tournament_id": 1,
+      "match_title": "Match 3: Sanhok Jungle Brawl",
+      "match_number": 3,
+      "map_name": "Sanhok",
+      "played_at": "2026-09-30 06:55",
+      "mvp_player": "VP_Krypton (10 Kills)",
+      "results": [
+        {
+          "team_id": 1,
+          "team_name": "Vortex Phantom",
+          "placement": 1,
+          "kills": 12,
+          "points": 22
+        },
+        {
+          "team_id": 2,
+          "team_name": "Cyber Valkyries",
+          "placement": 2,
+          "kills": 7,
+          "points": 13
+        },
+        {
+          "team_id": 3,
+          "team_name": "HyperDrive Gaming",
+          "placement": 3,
+          "kills": 5,
+          "points": 10
+        }
+      ],
+      "created_at": "2026-09-30T06:55:06.224Z",
+      "updated_at": "2026-09-30T17:14:03.235Z"
+    },
+    {
+      "id": 2004,
+      "tournament_id": 1,
+      "match_title": "Match 3: Sanhok Jungle Brawl",
+      "match_number": 3,
+      "map_name": "Sanhok",
+      "played_at": "2026-09-30 07:00",
+      "mvp_player": "VP_Krypton (10 Kills)",
+      "results": [
+        {
+          "team_id": 102,
+          "team_name": "GodLike Esports",
+          "placement": 1,
+          "kills": 12,
+          "points": 22
+        },
+        {
+          "team_id": 101,
+          "team_name": "Soul Esports",
+          "placement": 2,
+          "kills": 7,
+          "points": 13
+        },
+        {
+          "team_id": 103,
+          "team_name": "Team XSpark",
+          "placement": 3,
+          "kills": 5,
+          "points": 10
+        }
+      ],
+      "created_at": "2026-09-30T07:00:51.455Z",
+      "updated_at": "2026-09-30T17:14:03.237Z"
+    },
+    {
+      "id": 2005,
+      "tournament_id": 1,
+      "match_title": "Match 3: Sanhok Jungle Brawl",
+      "match_number": 3,
+      "map_name": "Sanhok",
+      "played_at": "2026-09-30 07:19",
+      "mvp_player": "VP_Krypton (10 Kills)",
+      "results": [
+        {
+          "team_id": 102,
+          "team_name": "GodLike Esports",
+          "placement": 1,
+          "kills": 12,
+          "points": 22
+        },
+        {
+          "team_id": 101,
+          "team_name": "Soul Esports",
+          "placement": 2,
+          "kills": 7,
+          "points": 13
+        },
+        {
+          "team_id": 103,
+          "team_name": "Team XSpark",
+          "placement": 3,
+          "kills": 5,
+          "points": 10
+        }
+      ],
+      "created_at": "2026-09-30T07:19:51.068Z",
+      "updated_at": "2026-09-30T17:14:03.238Z"
     }
   ],
   "site_content": {
@@ -1999,5 +2677,186 @@
       "github": "https://github.com/nextgen-arvr-club"
     }
   },
-  "audit_logs": []
+  "audit_logs": [
+    {
+      "id": 1,
+      "admin_user": "admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin logged in successfully.",
+      "created_at": "2026-09-30T06:55:06.185Z"
+    },
+    {
+      "id": 2,
+      "admin_user": "admin",
+      "action": "APPLICATION_APPROVED",
+      "details": "{\"application_id\":5,\"applicant_name\":\"Test Applicant XR\",\"roll_no\":\"TEST6031\",\"member_created\":true}",
+      "created_at": "2026-09-30T06:55:06.212Z"
+    },
+    {
+      "id": 3,
+      "admin_user": "admin",
+      "action": "RECORD_MATCH_RESULT",
+      "details": "{\"tournament_id\":1,\"match_id\":2003}",
+      "created_at": "2026-09-30T06:55:06.278Z"
+    },
+    {
+      "id": 4,
+      "admin_user": "admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin logged in successfully.",
+      "created_at": "2026-09-30T07:00:04.279Z"
+    },
+    {
+      "id": 5,
+      "admin_user": "admin",
+      "action": "APPLICATION_APPROVED",
+      "details": "{\"application_id\":6,\"applicant_name\":\"Test Applicant XR\",\"roll_no\":\"TEST4118\",\"member_created\":true}",
+      "created_at": "2026-09-30T07:00:04.300Z"
+    },
+    {
+      "id": 6,
+      "admin_user": "admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin logged in successfully.",
+      "created_at": "2026-09-30T07:00:51.308Z"
+    },
+    {
+      "id": 7,
+      "admin_user": "admin",
+      "action": "APPLICATION_APPROVED",
+      "details": "{\"application_id\":7,\"applicant_name\":\"Test Applicant XR\",\"roll_no\":\"TEST1144\",\"member_created\":true}",
+      "created_at": "2026-09-30T07:00:51.338Z"
+    },
+    {
+      "id": 8,
+      "admin_user": "admin",
+      "action": "RECORD_MATCH_RESULT",
+      "details": "{\"tournament_id\":1,\"match_id\":2004}",
+      "created_at": "2026-09-30T07:00:51.517Z"
+    },
+    {
+      "id": 9,
+      "admin_user": "admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin logged in successfully.",
+      "created_at": "2026-09-30T07:19:50.953Z"
+    },
+    {
+      "id": 10,
+      "admin_user": "admin",
+      "action": "APPLICATION_APPROVED",
+      "details": "{\"application_id\":8,\"applicant_name\":\"Test Applicant XR\",\"roll_no\":\"TEST0812\",\"member_created\":true}",
+      "created_at": "2026-09-30T07:19:50.968Z"
+    },
+    {
+      "id": 11,
+      "admin_user": "admin",
+      "action": "RECORD_MATCH_RESULT",
+      "details": "{\"tournament_id\":1,\"match_id\":2005}",
+      "created_at": "2026-09-30T07:19:51.149Z"
+    },
+    {
+      "id": 12,
+      "admin_user": "admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin logged in successfully.",
+      "created_at": "2026-09-30T07:20:43.235Z"
+    },
+    {
+      "id": 13,
+      "admin_user": "admin",
+      "action": "CREATE_EVENT",
+      "details": "{\"event_id\":1789967508331,\"title\":\"Cross-Browser Test Event 3247\"}",
+      "created_at": "2026-09-30T07:20:43.306Z"
+    },
+    {
+      "id": 14,
+      "admin_user": "admin",
+      "action": "UPDATE_TOURNAMENT",
+      "details": "{\"tournament_id\":1,\"title\":\"BGIS Ultimate Champions Cup 2026\"}",
+      "created_at": "2026-09-30T07:20:43.405Z"
+    },
+    {
+      "id": 15,
+      "admin_user": "admin",
+      "action": "DELETE_ESPORTS_TEAM",
+      "details": "{\"team_id\":116,\"team_name\":\"Autobotz Esports\",\"tournament_id\":1}",
+      "created_at": "2026-09-30T07:20:43.777Z"
+    },
+    {
+      "id": 16,
+      "admin_user": "admin",
+      "action": "DELETE_EVENT",
+      "details": "{\"event_id\":1789967508331,\"title\":\"Cross-Browser Test Event 3247\"}",
+      "created_at": "2026-09-30T07:20:43.870Z"
+    }
+  ],
+  "alliance_one_registrations": [
+    {
+      "id": 1,
+      "event_id": "shastra-2026",
+      "event_name": "RanShastra 3.0 – AstraArena E-sports Championship",
+      "game_name": "Free Fire Max",
+      "team_name": "Team Velocity",
+      "team_lead_name": "Darshan Sai",
+      "team_lead_ingame_id": "992837461",
+      "team_lead_email": "darshan@alliance.edu.in",
+      "team_lead_phone": "8748934807",
+      "college": "Alliance University",
+      "teammate_2_name": "Aakash H R",
+      "teammate_2_ingame_id": "883920194",
+      "teammate_3_name": "Punith Kumar",
+      "teammate_3_ingame_id": "772910384",
+      "teammate_4_name": "Sudeep V",
+      "teammate_4_ingame_id": "663920182",
+      "bank_account_number": "50100234567890",
+      "bank_account_holder_name": "Darshan Sai S",
+      "bank_ifsc": "HDFC0001234",
+      "bank_branch": "Anekal Bengaluru",
+      "bank_linked_mobile": "8748934807",
+      "upi_id": "darshan@hdfcbank",
+      "bank_details_confirmed": true,
+      "timestamp": "30/9/2026, 9:34:14 pm",
+      "created_at": "2026-09-30T16:04:14.194Z"
+    },
+    {
+      "id": 2,
+      "event_id": "ranshastra-freefire",
+      "event_name": "RanShastra 3.0: National Esports Championship",
+      "game_name": "Free Fire Max",
+      "team_name": "Alpha Wolves Esports",
+      "team_lead_name": "Vikramaditya Rao",
+      "team_lead_ingame_id": "WOLF_VIKRAM#99",
+      "team_lead_email": "vikram@alphawolves.gg",
+      "team_lead_phone": "+91 9876543210",
+      "college": "Alliance University",
+      "teammate_2_name": "Rohan Sharma",
+      "teammate_2_ingame_id": "ROHAN_FIRE",
+      "teammate_3_name": "Aditya Verma",
+      "teammate_3_ingame_id": "ADI_STRIKE",
+      "teammate_4_name": "Siddharth Patel",
+      "teammate_4_ingame_id": "SID_SNIPER",
+      "bank_account_number": "98765432101234",
+      "bank_account_holder_name": "Vikramaditya Rao",
+      "bank_name": "State Bank of India",
+      "bank_ifsc": "SBIN0012345",
+      "bank_branch": "Alliance Campus Branch",
+      "bank_linked_mobile": "9876543210",
+      "upi_id": "vikram@okaxis",
+      "passbook_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "bank_details_confirmed": true,
+      "timestamp": "30/9/2026, 10:37:39 pm",
+      "created_at": "2026-09-30T17:07:39.358Z"
+    }
+  ],
+  "alliance_one_settings": [
+    {
+      "id": 1,
+      "key": "portal_lock",
+      "is_locked": false,
+      "locked_at": null,
+      "updated_at": "2026-09-30T16:48:40.019Z",
+      "created_at": "2026-09-30T16:48:31.286Z"
+    }
+  ]
 }

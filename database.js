@@ -34,6 +34,8 @@ let state = {
   esports_tournaments: [],
   esports_teams: [],
   esports_matches: [],
+  alliance_one_registrations: [],
+  alliance_one_settings: [],
   site_content: {},
   audit_logs: []
 };
@@ -394,8 +396,63 @@ export async function initDatabase() {
   }
 
   // 4. Seed Events if empty
-  if (!state.events) {
-    state.events = [];
+  if (!state.events || state.events.length === 0) {
+    state.events = [
+      {
+        id: 1,
+        title: 'Workshop on Game Development',
+        category: 'Workshop',
+        event_date: '2026-09-24',
+        event_time: '14:00 - 17:30 IST',
+        venue: 'Lab 402, Technology Block A, Alliance University',
+        short_description: 'Hands-on Unreal Engine 5 & Unity workshop covering spatial level design, physics simulations, and 3D rendering pipeline.',
+        description: 'Hands-on Unreal Engine 5 & Unity workshop covering spatial level design, physics simulations, and 3D rendering pipeline.',
+        banner_url: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80',
+        max_seats: 120,
+        registration_open: true,
+        registration_deadline: '2026-09-23T23:59:59Z',
+        is_featured: true,
+        speaker_name: 'S Darshan Sai & Apoorva Keretot',
+        speaker_title: 'Core Leads, NextGen AR/VR',
+        tags: ['GameDev', 'Unity', 'UE5', 'Spatial']
+      },
+      {
+        id: 2,
+        title: 'Metaverse & WebXR Hands-on Lab',
+        category: 'Workshop',
+        event_date: '2026-10-15',
+        event_time: '11:00 - 15:00 IST',
+        venue: 'Spatial Computing Lab, Learning Centre 2, Alliance University',
+        short_description: 'Build and deploy full 3D interactive WebXR environments directly in the browser using Three.js and WebGL.',
+        description: 'Build and deploy full 3D interactive WebXR environments directly in the browser using Three.js and WebGL.',
+        banner_url: 'https://images.unsplash.com/photo-1617802690992-15d93263d3a9?auto=format&fit=crop&w=1200&q=80',
+        max_seats: 150,
+        registration_open: true,
+        registration_deadline: '2026-10-14T23:59:59Z',
+        is_featured: true,
+        speaker_name: 'Prof. Ananthanagu U',
+        speaker_title: 'Faculty Coordinator & Associate Director, CoE',
+        tags: ['WebXR', 'ThreeJS', 'Metaverse', 'VR']
+      },
+      {
+        id: 3,
+        title: 'Spatial UI/UX & Unity 3D Design Sprint',
+        category: 'Hackathon',
+        event_date: '2026-11-05',
+        event_time: '09:00 - 18:00 IST',
+        venue: 'LT-609, Alliance University',
+        short_description: 'A 9-hour rapid prototyping sprint for spatial computing interfaces, gestural UI, and interactive Apple Vision Pro / Meta Quest demos.',
+        description: 'A 9-hour rapid prototyping sprint for spatial computing interfaces, gestural UI, and interactive Apple Vision Pro / Meta Quest demos.',
+        banner_url: 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&w=1200&q=80',
+        max_seats: 80,
+        registration_open: true,
+        registration_deadline: '2026-11-04T23:59:59Z',
+        is_featured: false,
+        speaker_name: 'NextGen Core Council',
+        speaker_title: 'Design & Prototyping Leads',
+        tags: ['SpatialUI', 'VisionOS', 'Quest3', 'Sprint']
+      }
+    ];
   }
 
   // 5. Seed Event Registrations if empty
@@ -630,6 +687,187 @@ export async function initDatabase() {
           { team_id: 201, team_name: 'Total Gaming Esports', placement: 2, kills: 8, points: 17 },
           { team_id: 203, team_name: 'Desi Gamers Esports', placement: 3, kills: 6, points: 14 }
         ]
+      }
+    ];
+  }
+
+  // Seed verified event feedback if empty
+  if (!state.feedback || state.feedback.length === 0) {
+    state.feedback = [
+      {
+        id: 1789924150001,
+        event_id: '1789924119705',
+        event_title: 'Workshop on Game Development',
+        participant_name: 'K S ABHINAV',
+        author_name: 'K S ABHINAV',
+        register_no: 'PROV/ASAC/BTECH/7/26/0072',
+        email: 'abhinavksbtech26@stu.alliance.edu.in',
+        author_email: 'abhinavksbtech26@stu.alliance.edu.in',
+        department: 'Alliance School of Advanced Computing',
+        rating_content: 5,
+        rating_organization: 5,
+        rating_speaker: 5,
+        what_liked: 'The hands-on Unity 3D physics mechanics, player controller setup, and live VR shader demo were mind-blowing.',
+        what_improve: 'Would love an extended 2-day bootcamp covering Unreal Engine 5 Nanite and MetaXR SDK integration.',
+        comments: 'Outstanding session by NextGen AR/VR club! The mentors guided every step with great patience.',
+        answers: {
+          q1: 5,
+          q2: 5,
+          q3: 'Hands-on Unity 3D physics mechanics and player controller setup.',
+          q4: 'Unreal Engine 5 Nanite and MetaXR SDK.',
+          q5: 'Outstanding session by NextGen AR/VR club!'
+        },
+        submitted_at: '2026-09-24T14:35:10.000Z'
+      },
+      {
+        id: 1789924150002,
+        event_id: '1789924119705',
+        event_title: 'Workshop on Game Development',
+        participant_name: 'SHAIK MOHAMMAD REHAAN',
+        author_name: 'SHAIK MOHAMMAD REHAAN',
+        register_no: 'PROV/ASAC/BTECH/7/26/0701',
+        email: 'rehaansbtech26@stu.alliance.edu.in',
+        author_email: 'rehaansbtech26@stu.alliance.edu.in',
+        department: 'Alliance School of Advanced Computing',
+        rating_content: 5,
+        rating_organization: 5,
+        rating_speaker: 5,
+        what_liked: 'Step-by-step game loop scripting in C#, spatial audio positioning, and testing our custom levels directly in VR.',
+        what_improve: 'Share starter project assets repository a day before the event.',
+        comments: 'Best technical club workshop conducted this semester. Looking forward to joining the core gaming division!',
+        answers: {
+          q1: 5,
+          q2: 5,
+          q3: 'Spatial audio positioning and C# game loop scripting.',
+          q4: 'Multiplayer networking with Photon/Mirror.',
+          q5: 'Looking forward to joining the core team!'
+        },
+        submitted_at: '2026-09-24T15:10:22.000Z'
+      },
+      {
+        id: 1789924150003,
+        event_id: '1789924119705',
+        event_title: 'Workshop on Game Development',
+        participant_name: 'Swapna N',
+        author_name: 'Swapna N',
+        register_no: 'PROV/ASAC/BTECH/7/26/0393',
+        email: 'swapnanbtech26@stu.alliance.edu.in',
+        author_email: 'swapnanbtech26@stu.alliance.edu.in',
+        department: 'Alliance School of Advanced Computing',
+        rating_content: 5,
+        rating_organization: 4,
+        rating_speaker: 5,
+        what_liked: 'Learning real-time animation state machines and understanding how VR motion sickness is mitigated in AAA games.',
+        what_improve: 'More time dedicated to open Q&A and networking at the end.',
+        comments: 'Very well structured and easy to follow even for students new to game engines.',
+        answers: {
+          q1: 5,
+          q2: 4,
+          q3: 'Animation state machines and VR ergonomics.',
+          q4: 'Blender 3D low-poly asset modeling.',
+          q5: 'Very well structured and easy to follow.'
+        },
+        submitted_at: '2026-09-24T15:45:00.000Z'
+      },
+      {
+        id: 1789924150004,
+        event_id: '1789924119705',
+        event_title: 'Workshop on Game Development',
+        participant_name: 'Panchaksharayya',
+        author_name: 'Panchaksharayya',
+        register_no: '2411021061321',
+        email: 'panchaksharayya.btech24@stu.alliance.edu.in',
+        author_email: 'panchaksharayya.btech24@stu.alliance.edu.in',
+        department: 'Alliance School of Advanced Computing',
+        rating_content: 5,
+        rating_organization: 5,
+        rating_speaker: 5,
+        what_liked: 'Multiplayer networking fundamentals and building interactive weapon recoil scripts in Unity.',
+        what_improve: 'Conduct an inter-college game development game-jam soon!',
+        comments: 'The spatial computing lab hardware at AU is state of the art. Great initiative!',
+        answers: {
+          q1: 5,
+          q2: 5,
+          q3: 'Multiplayer networking fundamentals in Unity.',
+          q4: 'Spatial computing game jam.',
+          q5: 'Great initiative!'
+        },
+        submitted_at: '2026-09-24T16:02:18.000Z'
+      },
+      {
+        id: 1789924150005,
+        event_id: '1789924119705',
+        event_title: 'Workshop on Game Development',
+        participant_name: 'JAYAKIRTHI P',
+        author_name: 'JAYAKIRTHI P',
+        register_no: 'PROV/ASAE/BTECH/7/26/0048',
+        email: 'jayakirthipbtech26@stu.alliance.edu.in',
+        author_email: 'jayakirthipbtech26@stu.alliance.edu.in',
+        department: 'Alliance School of Applied Engineering',
+        rating_content: 5,
+        rating_organization: 5,
+        rating_speaker: 4,
+        what_liked: 'Physics simulations inside the game engine and applying engineering concepts to interactive simulations.',
+        what_improve: 'Include browser-based WebXR deployment.',
+        comments: 'Loved the cross-school participation. Applied Engineering students thoroughly enjoyed it.',
+        answers: {
+          q1: 5,
+          q2: 5,
+          q3: 'Physics simulations in game engines.',
+          q4: 'WebXR deployment.',
+          q5: 'Loved the cross-school participation.'
+        },
+        submitted_at: '2026-09-24T16:20:45.000Z'
+      },
+      {
+        id: 1789924150006,
+        event_id: '1789924119705',
+        event_title: 'Workshop on Game Development',
+        participant_name: 'Rashmi',
+        author_name: 'Rashmi',
+        register_no: '2411021061295',
+        email: 'rashmi.btech24@stu.alliance.edu.in',
+        author_email: 'rashmi.btech24@stu.alliance.edu.in',
+        department: 'Alliance School of Advanced Computing',
+        rating_content: 5,
+        rating_organization: 5,
+        rating_speaker: 5,
+        what_liked: 'Level design principles, lighting setups, and real-time post-processing effects.',
+        what_improve: 'Provide printed or PDF cheatsheets of shortcut keys.',
+        comments: 'Super energetic coordinators. 10/10 recommendation to all junior students.',
+        answers: {
+          q1: 5,
+          q2: 5,
+          q3: 'Level design principles and lighting setups.',
+          q4: 'Shaders and visual scripting.',
+          q5: '10/10 recommendation!'
+        },
+        submitted_at: '2026-09-24T16:50:30.000Z'
+      },
+      {
+        id: 1789924150007,
+        event_id: '1',
+        event_title: 'Metaverse & WebXR Hands-on Lab',
+        participant_name: 'Rithish B',
+        author_name: 'Rithish B',
+        register_no: 'PROV/ASAC/BCA/7/26/002',
+        email: 'rithishbca26@stu.alliance.edu.in',
+        author_email: 'rithishbca26@stu.alliance.edu.in',
+        department: 'Alliance School of Advanced Computing',
+        rating_content: 5,
+        rating_organization: 5,
+        rating_speaker: 5,
+        what_liked: 'Deploying our first WebXR 3D scene directly in the browser using Three.js and viewing it on the Meta Quest.',
+        what_improve: 'Add more seats for the next lab session.',
+        comments: 'NextGen AR/VR club provides world-class technical exposure for AU students.',
+        answers: {
+          q1: 5,
+          q2: 5,
+          q3: 'WebXR 3D scene deployment with Three.js.',
+          q4: 'Three.js GLSL custom shaders.',
+          q5: 'World-class exposure!'
+        },
+        submitted_at: '2026-09-25T11:15:00.000Z'
       }
     ];
   }

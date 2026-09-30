@@ -566,6 +566,38 @@
       "total_registrants": 0,
       "spots_remaining": 100,
       "is_full": false
+    },
+    {
+      "id": 3,
+      "title": "Spatial UI/UX & Unity 3D Design Sprint",
+      "category": "Hackathon",
+      "event_date": "2026-11-05",
+      "event_time": "09:00 - 18:00 IST",
+      "venue": "LT-609, Alliance University",
+      "short_description": "A 9-hour rapid prototyping sprint for spatial computing interfaces, gestural UI, and interactive Apple Vision Pro / Meta Quest demos.",
+      "description": "A 9-hour rapid prototyping sprint for spatial computing interfaces, gestural UI, and interactive Apple Vision Pro / Meta Quest demos.",
+      "banner_url": "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&w=1200&q=80",
+      "poster_url": "https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?auto=format&fit=crop&w=1200&q=80",
+      "max_seats": 80,
+      "spots_remaining": 80,
+      "total_registrants": 0,
+      "is_registration_open": 1,
+      "registration_open": true,
+      "registration_deadline": "2026-11-04T23:59:59Z",
+      "is_featured": false,
+      "speaker_name": "NextGen Core Council",
+      "speaker_title": "Design & Prototyping Leads",
+      "tags": [
+        "SpatialUI",
+        "VisionOS",
+        "Quest3",
+        "Sprint"
+      ],
+      "slug": "spatial-ui-ux-unity-3d-design-sprint",
+      "is_team_event": 0,
+      "max_team_size": 4,
+      "feedbackQuestions": [],
+      "created_at": "2026-09-30T17:15:14.525Z"
     }
   ],
   "event_registrations": [
@@ -1914,7 +1946,7 @@
       "bonus_points": 0,
       "total_points": 62,
       "rank": 2,
-      "updated_at": "2026-09-30T17:14:03.268Z"
+      "updated_at": "2026-09-30T17:20:29.513Z"
     },
     {
       "id": 102,
@@ -1932,7 +1964,7 @@
       "bonus_points": 0,
       "total_points": 83,
       "rank": 1,
-      "updated_at": "2026-09-30T17:14:03.267Z"
+      "updated_at": "2026-09-30T17:20:29.510Z"
     },
     {
       "id": 103,
@@ -1950,7 +1982,7 @@
       "bonus_points": 0,
       "total_points": 42,
       "rank": 3,
-      "updated_at": "2026-09-30T17:14:03.270Z"
+      "updated_at": "2026-09-30T17:20:29.515Z"
     },
     {
       "id": 104,
@@ -1968,7 +2000,7 @@
       "bonus_points": 0,
       "total_points": 22,
       "rank": 4,
-      "updated_at": "2026-09-30T17:14:03.272Z"
+      "updated_at": "2026-09-30T17:20:29.519Z"
     },
     {
       "id": 105,
@@ -1986,7 +2018,7 @@
       "bonus_points": 0,
       "total_points": 11,
       "rank": 5,
-      "updated_at": "2026-09-30T17:14:03.274Z"
+      "updated_at": "2026-09-30T17:20:29.522Z"
     },
     {
       "id": 106,
@@ -2004,7 +2036,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 6,
-      "updated_at": "2026-09-30T17:14:03.276Z"
+      "updated_at": "2026-09-30T17:20:29.525Z"
     },
     {
       "id": 107,
@@ -2022,7 +2054,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 7,
-      "updated_at": "2026-09-30T17:14:03.279Z"
+      "updated_at": "2026-09-30T17:20:29.529Z"
     },
     {
       "id": 108,
@@ -2040,7 +2072,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 8,
-      "updated_at": "2026-09-30T17:14:03.280Z"
+      "updated_at": "2026-09-30T17:20:29.532Z"
     },
     {
       "id": 109,
@@ -2058,7 +2090,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 9,
-      "updated_at": "2026-09-30T17:14:03.281Z"
+      "updated_at": "2026-09-30T17:20:29.535Z"
     },
     {
       "id": 110,
@@ -2076,7 +2108,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 10,
-      "updated_at": "2026-09-30T17:14:03.282Z"
+      "updated_at": "2026-09-30T17:20:29.538Z"
     },
     {
       "id": 111,
@@ -2094,7 +2126,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 11,
-      "updated_at": "2026-09-30T17:14:03.283Z"
+      "updated_at": "2026-09-30T17:20:29.541Z"
     },
     {
       "id": 112,
@@ -2112,7 +2144,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 12,
-      "updated_at": "2026-09-30T17:14:03.285Z"
+      "updated_at": "2026-09-30T17:20:29.544Z"
     },
     {
       "id": 113,
@@ -2130,7 +2162,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 13,
-      "updated_at": "2026-09-30T17:14:03.287Z"
+      "updated_at": "2026-09-30T17:20:29.547Z"
     },
     {
       "id": 114,
@@ -2148,7 +2180,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 14,
-      "updated_at": "2026-09-30T17:14:03.288Z"
+      "updated_at": "2026-09-30T17:20:29.549Z"
     },
     {
       "id": 115,
@@ -2166,7 +2198,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 15,
-      "updated_at": "2026-09-30T17:14:03.289Z"
+      "updated_at": "2026-09-30T17:20:29.552Z"
     },
     {
       "id": 201,
@@ -2431,7 +2463,7 @@
           "points": 11
         }
       ],
-      "updated_at": "2026-09-30T17:14:03.232Z"
+      "updated_at": "2026-09-30T17:20:29.427Z"
     },
     {
       "id": 1002,
@@ -2471,7 +2503,7 @@
           "points": 10
         }
       ],
-      "updated_at": "2026-09-30T17:14:03.233Z"
+      "updated_at": "2026-09-30T17:20:29.432Z"
     },
     {
       "id": 2001,
@@ -2578,7 +2610,7 @@
         }
       ],
       "created_at": "2026-09-30T06:55:06.224Z",
-      "updated_at": "2026-09-30T17:14:03.235Z"
+      "updated_at": "2026-09-30T17:20:29.438Z"
     },
     {
       "id": 2004,
@@ -2612,7 +2644,7 @@
         }
       ],
       "created_at": "2026-09-30T07:00:51.455Z",
-      "updated_at": "2026-09-30T17:14:03.237Z"
+      "updated_at": "2026-09-30T17:20:29.442Z"
     },
     {
       "id": 2005,
@@ -2646,7 +2678,7 @@
         }
       ],
       "created_at": "2026-09-30T07:19:51.068Z",
-      "updated_at": "2026-09-30T17:14:03.238Z"
+      "updated_at": "2026-09-30T17:20:29.447Z"
     }
   ],
   "site_content": {

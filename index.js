@@ -61,17 +61,24 @@ app.use('/api/alliance-one', allianceOneRoutes);
 // Direct browser download endpoint
 app.get('/download/:filename', (req, res) => {
   const filename = path.basename(req.params.filename);
-  const scratchDir = path.resolve(__dirname, '..', '..');
-  const primaryPath = path.join(scratchDir, filename);
-  const userDownloads = path.join('C:', 'Users', 'darsh', 'Downloads', filename);
+  const candidates = [
+    path.join('C:', 'Users', 'darsh', 'OneDrive', 'Desktop', filename),
+    path.join(path.resolve(__dirname, '..', '..'), filename),
+    path.join('C:', 'Users', 'darsh', 'Downloads', filename)
+  ];
 
-  res.download(primaryPath, filename, (err) => {
-    if (err) {
-      res.download(userDownloads, filename, (err2) => {
-        if (err2) res.status(404).json({ error: 'File not found' });
-      });
-    }
-  });
+  const matched = candidates.find(c => fs.existsSync(c));
+  if (matched) {
+    return res.download(matched, filename, (err) => {
+      if (err && !res.headersSent) {
+        res.status(500).json({ error: 'Download failed' });
+      }
+    });
+  }
+
+  if (!res.headersSent) {
+    res.status(404).json({ error: 'File not found' });
+  }
 });
 
 // Serve frontend in production mode if dist exists in any common directory

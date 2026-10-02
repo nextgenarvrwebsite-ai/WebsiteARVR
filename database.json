@@ -1856,7 +1856,7 @@
   "esports_tournaments": [
     {
       "id": 2,
-      "title": "Free Fire MAX ALLIANCE ONE",
+      "title": "Free Fire MAX ALLIANCE ONE.",
       "slug": "free-fire-max-alliance-one",
       "game_id": 2,
       "game_name": "Free Fire MAX",
@@ -1888,7 +1888,7 @@
         "win_title": "BOOYAH 🔥"
       },
       "description": "High-octane Free Fire MAX survival clash featuring 12 top university squads competing in fast-paced Bermuda, Purgatory, and Kalahari drop-ins.",
-      "updated_at": "2026-10-02T06:58:51.588Z"
+      "updated_at": "2026-10-02T07:15:33.521Z"
     },
     {
       "id": 3,
@@ -1933,42 +1933,6 @@
   ],
   "esports_teams": [
     {
-      "id": 201,
-      "tournament_id": 2,
-      "slot": 1,
-      "team_name": "Total Gaming Esports",
-      "tag": "TG",
-      "logo_url": "🐅",
-      "captain_name": "Ajay \"Ajjubhai\" (C)",
-      "matches_played": 2,
-      "wins": 1,
-      "kills": 19,
-      "placement_points": 21,
-      "kill_points": 19,
-      "bonus_points": 0,
-      "total_points": 40,
-      "rank": 2,
-      "updated_at": "2026-10-02T07:13:38.035Z"
-    },
-    {
-      "id": 202,
-      "tournament_id": 2,
-      "slot": 2,
-      "team_name": "Team Elite (Blind FF)",
-      "tag": "ELITE",
-      "logo_url": "⚡",
-      "captain_name": "KillerFF (C)",
-      "matches_played": 2,
-      "wins": 1,
-      "kills": 21,
-      "placement_points": 21,
-      "kill_points": 21,
-      "bonus_points": 0,
-      "total_points": 42,
-      "rank": 1,
-      "updated_at": "2026-10-02T07:13:38.032Z"
-    },
-    {
       "id": 203,
       "tournament_id": 2,
       "slot": 3,
@@ -1983,8 +1947,8 @@
       "kill_points": 13,
       "bonus_points": 0,
       "total_points": 29,
-      "rank": 3,
-      "updated_at": "2026-10-02T07:13:38.036Z"
+      "rank": 1,
+      "updated_at": "2026-10-02T07:26:37.992Z"
     },
     {
       "id": 204,
@@ -2001,8 +1965,8 @@
       "kill_points": 6,
       "bonus_points": 0,
       "total_points": 13,
-      "rank": 4,
-      "updated_at": "2026-10-02T07:13:38.037Z"
+      "rank": 2,
+      "updated_at": "2026-10-02T07:26:37.993Z"
     },
     {
       "id": 205,
@@ -2019,8 +1983,8 @@
       "kill_points": 0,
       "bonus_points": 0,
       "total_points": 0,
-      "rank": 5,
-      "updated_at": "2026-10-02T07:13:38.039Z"
+      "rank": 3,
+      "updated_at": "2026-10-02T07:26:37.995Z"
     },
     {
       "id": 206,
@@ -2037,8 +2001,8 @@
       "kill_points": 0,
       "bonus_points": 0,
       "total_points": 0,
-      "rank": 6,
-      "updated_at": "2026-10-02T07:13:38.040Z"
+      "rank": 4,
+      "updated_at": "2026-10-02T07:26:37.997Z"
     },
     {
       "id": 207,
@@ -2055,8 +2019,8 @@
       "kill_points": 0,
       "bonus_points": 0,
       "total_points": 0,
-      "rank": 7,
-      "updated_at": "2026-10-02T07:13:38.041Z"
+      "rank": 5,
+      "updated_at": "2026-10-02T07:26:37.998Z"
     },
     {
       "id": 208,
@@ -2073,8 +2037,8 @@
       "kill_points": 0,
       "bonus_points": 0,
       "total_points": 0,
-      "rank": 8,
-      "updated_at": "2026-10-02T07:13:38.042Z"
+      "rank": 6,
+      "updated_at": "2026-10-02T07:26:37.999Z"
     },
     {
       "id": 209,
@@ -2091,8 +2055,8 @@
       "kill_points": 0,
       "bonus_points": 0,
       "total_points": 0,
-      "rank": 9,
-      "updated_at": "2026-10-02T07:13:38.043Z"
+      "rank": 7,
+      "updated_at": "2026-10-02T07:26:38.000Z"
     },
     {
       "id": 210,
@@ -2109,8 +2073,8 @@
       "kill_points": 0,
       "bonus_points": 0,
       "total_points": 0,
-      "rank": 10,
-      "updated_at": "2026-10-02T07:13:38.047Z"
+      "rank": 8,
+      "updated_at": "2026-10-02T07:26:38.001Z"
     },
     {
       "id": 211,
@@ -2127,8 +2091,8 @@
       "kill_points": 0,
       "bonus_points": 0,
       "total_points": 0,
-      "rank": 11,
-      "updated_at": "2026-10-02T07:13:38.048Z"
+      "rank": 9,
+      "updated_at": "2026-10-02T07:26:38.002Z"
     },
     {
       "id": 212,
@@ -2145,8 +2109,8 @@
       "kill_points": 0,
       "bonus_points": 0,
       "total_points": 0,
-      "rank": 12,
-      "updated_at": "2026-10-02T07:13:38.049Z"
+      "rank": 10,
+      "updated_at": "2026-10-02T07:26:38.005Z"
     },
     {
       "id": 213,
@@ -2172,7 +2136,7 @@
       "total_points": 36,
       "rank": 2,
       "created_at": "2026-10-02T06:58:10.152Z",
-      "updated_at": "2026-10-02T07:13:47.154Z"
+      "updated_at": "2026-10-02T07:15:26.635Z"
     },
     {
       "id": 214,
@@ -2198,7 +2162,7 @@
       "total_points": 39,
       "rank": 1,
       "created_at": "2026-10-02T06:58:10.155Z",
-      "updated_at": "2026-10-02T07:13:47.152Z"
+      "updated_at": "2026-10-02T07:15:26.631Z"
     },
     {
       "id": 215,
@@ -2224,7 +2188,7 @@
       "total_points": 22,
       "rank": 3,
       "created_at": "2026-10-02T06:58:10.157Z",
-      "updated_at": "2026-10-02T07:13:47.156Z"
+      "updated_at": "2026-10-02T07:15:26.640Z"
     },
     {
       "id": 216,
@@ -2250,7 +2214,7 @@
       "total_points": 22,
       "rank": 4,
       "created_at": "2026-10-02T06:58:10.160Z",
-      "updated_at": "2026-10-02T07:13:47.158Z"
+      "updated_at": "2026-10-02T07:15:26.643Z"
     },
     {
       "id": 217,
@@ -2276,7 +2240,7 @@
       "total_points": 14,
       "rank": 5,
       "created_at": "2026-10-02T06:58:10.164Z",
-      "updated_at": "2026-10-02T07:13:47.160Z"
+      "updated_at": "2026-10-02T07:15:26.647Z"
     },
     {
       "id": 218,
@@ -2302,7 +2266,7 @@
       "total_points": 14,
       "rank": 6,
       "created_at": "2026-10-02T06:58:10.172Z",
-      "updated_at": "2026-10-02T07:13:47.162Z"
+      "updated_at": "2026-10-02T07:15:26.650Z"
     },
     {
       "id": 219,
@@ -2328,7 +2292,7 @@
       "total_points": 7,
       "rank": 7,
       "created_at": "2026-10-02T06:58:10.179Z",
-      "updated_at": "2026-10-02T07:13:47.164Z"
+      "updated_at": "2026-10-02T07:15:26.654Z"
     },
     {
       "id": 220,
@@ -2354,7 +2318,7 @@
       "total_points": 7,
       "rank": 8,
       "created_at": "2026-10-02T06:58:10.184Z",
-      "updated_at": "2026-10-02T07:13:47.166Z"
+      "updated_at": "2026-10-02T07:15:26.657Z"
     },
     {
       "id": 221,
@@ -2380,7 +2344,7 @@
       "total_points": 2,
       "rank": 10,
       "created_at": "2026-10-02T06:58:10.189Z",
-      "updated_at": "2026-10-02T07:13:47.173Z"
+      "updated_at": "2026-10-02T07:15:26.663Z"
     },
     {
       "id": 222,
@@ -2406,7 +2370,7 @@
       "total_points": 3,
       "rank": 9,
       "created_at": "2026-10-02T06:58:10.201Z",
-      "updated_at": "2026-10-02T07:13:47.170Z"
+      "updated_at": "2026-10-02T07:15:26.660Z"
     },
     {
       "id": 223,
@@ -2432,7 +2396,7 @@
       "total_points": 1,
       "rank": 11,
       "created_at": "2026-10-02T06:58:10.209Z",
-      "updated_at": "2026-10-02T07:13:47.175Z"
+      "updated_at": "2026-10-02T07:15:26.667Z"
     },
     {
       "id": 224,
@@ -2458,7 +2422,7 @@
       "total_points": 0,
       "rank": 12,
       "created_at": "2026-10-02T06:58:10.214Z",
-      "updated_at": "2026-10-02T07:13:47.177Z"
+      "updated_at": "2026-10-02T07:15:26.670Z"
     },
     {
       "id": 225,
@@ -2484,7 +2448,7 @@
       "total_points": 0,
       "rank": 13,
       "created_at": "2026-10-02T06:58:10.217Z",
-      "updated_at": "2026-10-02T07:13:47.180Z"
+      "updated_at": "2026-10-02T07:15:26.673Z"
     },
     {
       "id": 226,
@@ -2510,7 +2474,7 @@
       "total_points": 0,
       "rank": 14,
       "created_at": "2026-10-02T06:58:10.220Z",
-      "updated_at": "2026-10-02T07:13:47.182Z"
+      "updated_at": "2026-10-02T07:15:26.676Z"
     },
     {
       "id": 227,
@@ -2536,7 +2500,7 @@
       "total_points": 0,
       "rank": 15,
       "created_at": "2026-10-02T06:58:10.223Z",
-      "updated_at": "2026-10-02T07:13:47.185Z"
+      "updated_at": "2026-10-02T07:15:26.679Z"
     },
     {
       "id": 228,
@@ -2562,7 +2526,7 @@
       "total_points": 0,
       "rank": 16,
       "created_at": "2026-10-02T06:58:10.227Z",
-      "updated_at": "2026-10-02T07:13:47.187Z"
+      "updated_at": "2026-10-02T07:15:26.682Z"
     }
   ],
   "esports_matches": [
@@ -2575,20 +2539,6 @@
       "played_at": "2026-09-24 16:30",
       "mvp_player": "TG_FozyAjay (8 Kills)",
       "results": [
-        {
-          "team_id": 201,
-          "team_name": "Total Gaming Esports",
-          "placement": 1,
-          "kills": 11,
-          "points": 23
-        },
-        {
-          "team_id": 202,
-          "team_name": "Team Elite (Blind FF)",
-          "placement": 2,
-          "kills": 9,
-          "points": 18
-        },
         {
           "team_id": 203,
           "team_name": "Desi Gamers Esports",
@@ -2604,7 +2554,7 @@
           "points": 13
         }
       ],
-      "updated_at": "2026-10-02T07:13:38.011Z"
+      "updated_at": "2026-10-02T07:26:37.962Z"
     },
     {
       "id": 2002,
@@ -2616,20 +2566,6 @@
       "mvp_player": "ELITE_Killer (10 Kills)",
       "results": [
         {
-          "team_id": 202,
-          "team_name": "Team Elite (Blind FF)",
-          "placement": 1,
-          "kills": 12,
-          "points": 24
-        },
-        {
-          "team_id": 201,
-          "team_name": "Total Gaming Esports",
-          "placement": 2,
-          "kills": 8,
-          "points": 17
-        },
-        {
           "team_id": 203,
           "team_name": "Desi Gamers Esports",
           "placement": 3,
@@ -2637,7 +2573,7 @@
           "points": 14
         }
       ],
-      "updated_at": "2026-10-02T07:13:38.012Z"
+      "updated_at": "2026-10-02T07:26:37.965Z"
     },
     {
       "id": 2003,
@@ -2762,7 +2698,7 @@
         }
       ],
       "created_at": "2026-10-02T07:13:42.925Z",
-      "updated_at": "2026-10-02T07:13:47.107Z"
+      "updated_at": "2026-10-02T07:15:26.547Z"
     },
     {
       "id": 2004,
@@ -2887,7 +2823,7 @@
         }
       ],
       "created_at": "2026-10-02T07:13:45.023Z",
-      "updated_at": "2026-10-02T07:13:47.110Z"
+      "updated_at": "2026-10-02T07:15:26.550Z"
     }
   ],
   "site_content": {
@@ -3100,6 +3036,27 @@
       "action": "RECORD_MATCH_RESULT",
       "details": "{\"tournament_id\":3,\"match_id\":2004}",
       "created_at": "2026-10-02T07:13:45.071Z"
+    },
+    {
+      "id": 27,
+      "admin_user": "admin",
+      "action": "UPDATE_TOURNAMENT",
+      "details": "{\"tournament_id\":2,\"title\":\"Free Fire MAX ALLIANCE ONE.\"}",
+      "created_at": "2026-10-02T07:15:33.525Z"
+    },
+    {
+      "id": 28,
+      "admin_user": "admin",
+      "action": "DELETE_ESPORTS_TEAM",
+      "details": "{\"team_id\":202,\"team_name\":\"Team Elite (Blind FF)\",\"tournament_id\":2}",
+      "created_at": "2026-10-02T07:16:17.137Z"
+    },
+    {
+      "id": 29,
+      "admin_user": "admin",
+      "action": "DELETE_ESPORTS_TEAM",
+      "details": "{\"team_id\":201,\"team_name\":\"Total Gaming Esports\",\"tournament_id\":2}",
+      "created_at": "2026-10-02T07:16:27.890Z"
     }
   ],
   "alliance_one_registrations": [

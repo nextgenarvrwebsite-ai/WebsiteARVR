@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: nextgen-arvr-backend
+    name: nextgen-arvr-api
     runtime: node
     plan: free
     buildCommand: npm install
@@ -12,4 +12,12 @@ services:
         value: 10000
       - key: JWT_SECRET
         generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
     healthCheckPath: /api/health

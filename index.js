@@ -146,12 +146,20 @@ var AllianceOneRegistrationModel = mongoose.model("AllianceOneRegistration", new
   college: String,
   teammate_2_name: String,
   teammate_2_ingame_id: String,
+  teammate_2_email: String,
+  teammate_2_phone: String,
   teammate_3_name: String,
   teammate_3_ingame_id: String,
+  teammate_3_email: String,
+  teammate_3_phone: String,
   teammate_4_name: String,
   teammate_4_ingame_id: String,
+  teammate_4_email: String,
+  teammate_4_phone: String,
   teammate_5_name: String,
   teammate_5_ingame_id: String,
+  teammate_5_email: String,
+  teammate_5_phone: String,
   project_title: String,
   project_track: String,
   bank_account_number: String,
@@ -161,6 +169,8 @@ var AllianceOneRegistrationModel = mongoose.model("AllianceOneRegistration", new
   bank_linked_mobile: String,
   upi_id: String,
   passbook_preview: String,
+  payment_proof_preview: String,
+  payment_proof_name: String,
   bank_details_confirmed: Boolean,
   timestamp: String,
   created_at: String
@@ -3854,12 +3864,20 @@ router9.get("/export", (req, res) => {
       "College / Institution",
       "Teammate 2 Name",
       "Teammate 2 In-Game ID",
+      "Teammate 2 Email",
+      "Teammate 2 Phone",
       "Teammate 3 Name",
       "Teammate 3 In-Game ID",
+      "Teammate 3 Email",
+      "Teammate 3 Phone",
       "Teammate 4 Name",
       "Teammate 4 In-Game ID",
+      "Teammate 4 Email",
+      "Teammate 4 Phone",
       "Teammate 5 Name",
       "Teammate 5 In-Game ID",
+      "Teammate 5 Email",
+      "Teammate 5 Phone",
       "Bank Account Number",
       "Account Holder Name",
       "Bank Name",
@@ -3869,6 +3887,8 @@ router9.get("/export", (req, res) => {
       "UPI ID",
       "Passbook Proof Attached",
       "Passbook Image URL",
+      "Payment Proof Attached",
+      "Payment Proof URL",
       "Bank Details Confirmation Status"
     ];
     const escapeCsv = (val) => {
@@ -3880,8 +3900,10 @@ router9.get("/export", (req, res) => {
       const isIndiv = r.is_individual || r.game_name?.includes("Clash Royale") || r.game_name?.includes("EAFC");
       const formatStr = isIndiv ? "Solo (1v1)" : "Squad Team";
       const hasPassbook = !!(r.passbook_preview || r.passbook_url);
+      const hasPaymentProof = !!(r.payment_proof_preview || r.payment_proof_url);
       const hostUrl = req.protocol + "://" + req.get("host");
       const passbookLink = hasPassbook ? `${hostUrl}/api/alliance-one/passbook/${r.id}` : "None";
+      const paymentLink = hasPaymentProof ? `${hostUrl}/api/alliance-one/payment-proof/${r.id}` : "None";
       const formattedAcc = r.bank_account_number ? `="${r.bank_account_number}"` : '""';
       return [
         escapeCsv(index + 1),
@@ -3897,12 +3919,20 @@ router9.get("/export", (req, res) => {
         escapeCsv(r.college || r.university || "-"),
         escapeCsv(r.teammate_2_name || "-"),
         escapeCsv(r.teammate_2_ingame_id || "-"),
+        escapeCsv(r.teammate_2_email || "-"),
+        escapeCsv(r.teammate_2_phone || "-"),
         escapeCsv(r.teammate_3_name || "-"),
         escapeCsv(r.teammate_3_ingame_id || "-"),
+        escapeCsv(r.teammate_3_email || "-"),
+        escapeCsv(r.teammate_3_phone || "-"),
         escapeCsv(r.teammate_4_name || "-"),
         escapeCsv(r.teammate_4_ingame_id || "-"),
+        escapeCsv(r.teammate_4_email || "-"),
+        escapeCsv(r.teammate_4_phone || "-"),
         escapeCsv(r.teammate_5_name || "-"),
         escapeCsv(r.teammate_5_ingame_id || "-"),
+        escapeCsv(r.teammate_5_email || "-"),
+        escapeCsv(r.teammate_5_phone || "-"),
         formattedAcc,
         escapeCsv(r.bank_account_holder_name || "-"),
         escapeCsv(r.bank_name || "-"),
@@ -3912,6 +3942,8 @@ router9.get("/export", (req, res) => {
         escapeCsv(r.upi_id || "-"),
         escapeCsv(hasPassbook ? "YES" : "NO"),
         escapeCsv(passbookLink),
+        escapeCsv(hasPaymentProof ? "YES" : "NO"),
+        escapeCsv(paymentLink),
         escapeCsv(r.bank_details_confirmed ? "Confirmed Verified" : "Pending Verification")
       ].join(",");
     });
@@ -3958,6 +3990,38 @@ router9.get("/passbook/:id", (req, res) => {
     res.status(500).send("Failed to serve passbook image");
   }
 });
+router9.get("/payment-proof/:id", (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const item = db.get("alliance_one_registrations", (r) => r.id === id);
+    if (!item) {
+      return res.status(404).send("Registration record not found");
+    }
+    const dataUrl = item.payment_proof_preview || item.payment_proof_url;
+    if (!dataUrl) {
+      return res.status(404).send("No payment confirmation proof attached for this record");
+    }
+    const match = dataUrl.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9\+\-\.]+);base64,(.+)$/);
+    if (match) {
+      const mimeType = match[1];
+      const base64Data = match[2];
+      const buffer = Buffer.from(base64Data, "base64");
+      let ext = "png";
+      if (mimeType.includes("jpeg") || mimeType.includes("jpg")) ext = "jpg";
+      else if (mimeType.includes("pdf")) ext = "pdf";
+      else if (mimeType.includes("webp")) ext = "webp";
+      const cleanName = (item.team_name || item.team_lead_name || item.participant_name || `Entry_${item.id}`).replace(/[^a-zA-Z0-9_-]/g, "_");
+      const filename = `${cleanName}_Payment_Confirmation.${ext}`;
+      res.setHeader("Content-Type", mimeType);
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      return res.send(buffer);
+    }
+    res.redirect(dataUrl);
+  } catch (err) {
+    console.error("Error serving payment proof image:", err);
+    res.status(500).send("Failed to serve payment proof image");
+  }
+});
 router9.get("/export-passbooks", async (req, res) => {
   try {
     const list = db.all("alliance_one_registrations") || [];
@@ -3969,54 +4033,72 @@ router9.get("/export-passbooks", async (req, res) => {
         (r) => r.game_name && r.game_name.toUpperCase().includes(filterUpper) || r.event_name && r.event_name.toUpperCase().includes(filterUpper) || r.category && r.category.toUpperCase().includes(filterUpper)
       );
     }
-    const withProof = filtered.filter((r) => !!(r.passbook_preview || r.passbook_url));
+    const withProof = filtered.filter((r) => !!(r.passbook_preview || r.passbook_url || r.payment_proof_preview || r.payment_proof_url));
     if (withProof.length === 0) {
-      return res.status(404).send("No uploaded passbook photos found for this selection.");
+      return res.status(404).send("No uploaded passbook or payment photos found for this selection.");
     }
     const zip = new JSZip();
     const manifestRows = [
-      "Index,Team/Participant,Event,Game,Account Number,Account Holder,IFSC Code,Passbook Filename"
+      "Index,Team/Participant,Event,Game,Account Number,Account Holder,IFSC Code,Passbook Filename,Payment Proof Filename"
     ];
     let count = 0;
     for (const r of withProof) {
-      const dataUrl = r.passbook_preview || r.passbook_url;
-      if (!dataUrl) continue;
-      const match = dataUrl.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9\+\-\.]+);base64,(.+)$/);
-      if (match) {
-        count++;
-        const mimeType = match[1];
-        const base64Data = match[2];
-        let ext = "png";
-        if (mimeType.includes("jpeg") || mimeType.includes("jpg")) ext = "jpg";
-        else if (mimeType.includes("pdf")) ext = "pdf";
-        else if (mimeType.includes("webp")) ext = "webp";
-        const cleanTeam = (r.team_name || r.participant_name || r.team_lead_name || "Team").replace(/[^a-zA-Z0-9_-]/g, "_");
-        const filename = `${String(count).padStart(2, "0")}_${cleanTeam}_Passbook.${ext}`;
-        zip.file(filename, base64Data, { base64: true });
-        manifestRows.push([
-          count,
-          `"${(r.team_name || r.participant_name || "-").replace(/"/g, '""')}"`,
-          `"${(r.event_name || "-").replace(/"/g, '""')}"`,
-          `"${(r.game_name || r.category || "-").replace(/"/g, '""')}"`,
-          `="${r.bank_account_number || ""}"`,
-          `"${(r.bank_account_holder_name || "-").replace(/"/g, '""')}"`,
-          `"${(r.bank_ifsc || "-").replace(/"/g, '""')}"`,
-          filename
-        ].join(","));
+      count++;
+      const cleanTeam = (r.team_name || r.participant_name || r.team_lead_name || "Team").replace(/[^a-zA-Z0-9_-]/g, "_");
+      let passbookFilename = "None";
+      let paymentFilename = "None";
+      const passbookUrl = r.passbook_preview || r.passbook_url;
+      if (passbookUrl) {
+        const match = passbookUrl.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9\+\-\.]+);base64,(.+)$/);
+        if (match) {
+          const mimeType = match[1];
+          const base64Data = match[2];
+          let ext = "png";
+          if (mimeType.includes("jpeg") || mimeType.includes("jpg")) ext = "jpg";
+          else if (mimeType.includes("pdf")) ext = "pdf";
+          else if (mimeType.includes("webp")) ext = "webp";
+          passbookFilename = `Passbooks/${String(count).padStart(2, "0")}_${cleanTeam}_Passbook.${ext}`;
+          zip.file(passbookFilename, base64Data, { base64: true });
+        }
       }
+      const paymentUrl = r.payment_proof_preview || r.payment_proof_url;
+      if (paymentUrl) {
+        const pMatch = paymentUrl.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9\+\-\.]+);base64,(.+)$/);
+        if (pMatch) {
+          const pMimeType = pMatch[1];
+          const pBase64Data = pMatch[2];
+          let pExt = "png";
+          if (pMimeType.includes("jpeg") || pMimeType.includes("jpg")) pExt = "jpg";
+          else if (pMimeType.includes("pdf")) pExt = "pdf";
+          else if (pMimeType.includes("webp")) pExt = "webp";
+          paymentFilename = `Payment_Proofs/${String(count).padStart(2, "0")}_${cleanTeam}_PaymentProof.${pExt}`;
+          zip.file(paymentFilename, pBase64Data, { base64: true });
+        }
+      }
+      manifestRows.push([
+        count,
+        `"${(r.team_name || r.participant_name || "-").replace(/"/g, '""')}"`,
+        `"${(r.event_name || "-").replace(/"/g, '""')}"`,
+        `"${(r.game_name || r.category || "-").replace(/"/g, '""')}"`,
+        `="${r.bank_account_number || ""}"`,
+        `"${(r.bank_account_holder_name || "-").replace(/"/g, '""')}"`,
+        `"${(r.bank_ifsc || "-").replace(/"/g, '""')}"`,
+        passbookFilename,
+        paymentFilename
+      ].join(","));
     }
-    zip.file("PASSBOOK_INDEX.csv", "\uFEFF" + manifestRows.join("\r\n"));
+    zip.file("DOCUMENT_VERIFICATION_INDEX.csv", "\uFEFF" + manifestRows.join("\r\n"));
     zip.file(
       "README_VERIFICATION.txt",
-      `ALLIANCE ONE 2026 - BANK PASSBOOK VERIFICATION BUNDLE
+      `ALLIANCE ONE 2026 - BANK PASSBOOK & PAYMENT CONFIRMATION BUNDLE
 Alliance School of Advanced Computing
 Official Event Dates: 29, 30, 31 OCTOBER, 2026
 
 Filter Selection: ${filterUpper}
-Total Attached Passbooks: ${count}
+Total Attached Verification Records: ${count}
 Export Timestamp: ${(/* @__PURE__ */ new Date()).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
 
-All files in this archive correspond to student bank details submitted for cash prize disbursements.`
+Includes both student bank passbooks for prize disbursal and payment screenshot/mail proofs for record verification.`
     );
     const zipBuffer = await zip.generateAsync({
       type: "nodebuffer",
@@ -4024,7 +4106,7 @@ All files in this archive correspond to student bank details submitted for cash 
       compressionOptions: { level: 6 }
     });
     const slug = getEventSlug(filterUpper);
-    const zipName = `Alliance_ONE_2026_${slug}_Passbook_Photos.zip`;
+    const zipName = `Alliance_ONE_2026_${slug}_Verification_Documents.zip`;
     res.setHeader("Content-Type", "application/zip");
     res.setHeader("Content-Disposition", `attachment; filename="${zipName}"`);
     res.send(zipBuffer);

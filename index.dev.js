@@ -16,6 +16,7 @@ import feedbackRoutes from './routes/feedback.js';
 import esportsRoutes from './routes/esports.js';
 import cmsRoutes from './routes/cms.js';
 import exportRoutes from './routes/export.js';
+import allianceOneRoutes from './routes/allianceOne.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,7 +40,8 @@ app.use((req, res, next) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => res.json({ 
-  status: 'ok', 
+  status: 'healthy',
+  ok: true,
   service: 'NextGen AR/VR API', 
   cloud: getCloudStatus(),
   time: new Date().toISOString() 
@@ -54,6 +56,7 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/esports', esportsRoutes);
 app.use('/api/cms', cmsRoutes);
 app.use('/api/admin/export', exportRoutes);
+app.use('/api/alliance-one', allianceOneRoutes);
 
 // Direct browser download endpoint
 app.get('/download/:filename', (req, res) => {

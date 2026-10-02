@@ -7,8 +7,8 @@
       "password_hash": "$2a$10$dbStjEQjDn1TtVDYvQoCk.H0jClOD15obIfLsRJF5XhuMfoz20DwK",
       "role": "super_admin",
       "created_at": "2026-08-22T09:06:47.318Z",
-      "last_login": "2026-09-30T07:20:43.233Z",
-      "updated_at": "2026-09-30T07:20:43.233Z"
+      "last_login": "2026-10-02T07:13:38.797Z",
+      "updated_at": "2026-10-02T07:13:38.797Z"
     }
   ],
   "members": [
@@ -597,7 +597,8 @@
       "is_team_event": 0,
       "max_team_size": 4,
       "feedbackQuestions": [],
-      "created_at": "2026-09-30T17:15:14.525Z"
+      "created_at": "2026-09-30T17:15:14.525Z",
+      "is_full": false
     }
   ],
   "event_registrations": [
@@ -1854,49 +1855,9 @@
   ],
   "esports_tournaments": [
     {
-      "id": 1,
-      "title": "BGIS Ultimate Champions Cup 2026",
-      "slug": "bgis-ultimate-champions-cup-2026",
-      "game_id": 1,
-      "game_name": "BGMI (Battlegrounds Mobile India)",
-      "prize_pool": "₹1,00,000 INR",
-      "status": "live",
-      "start_date": "2026-09-20",
-      "end_date": "2026-10-15",
-      "venue": "NextGen Spatial Esports Lab & YouTube Live",
-      "banner_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=1200",
-      "registration_open": 1,
-      "scoring_rules": {
-        "system_name": "Official BGIS / BMPS (10-Point)",
-        "placement_scale": {
-          "1": 10,
-          "2": 6,
-          "3": 5,
-          "4": 4,
-          "5": 3,
-          "6": 2,
-          "7": 1,
-          "8": 1,
-          "9": 0,
-          "10": 0,
-          "11": 0,
-          "12": 0,
-          "13": 0,
-          "14": 0,
-          "15": 0,
-          "16": 0
-        },
-        "kill_multiplier": 1,
-        "win_bonus": 0,
-        "win_title": "WWCD 🍗"
-      },
-      "description": "The premier college Battle Royale championship featuring 16 top squads battling across 5 rigorous map rotations.",
-      "updated_at": "2026-09-30T07:20:43.403Z"
-    },
-    {
       "id": 2,
-      "title": "NextGen Free Fire MAX Clash Series 2026",
-      "slug": "nextgen-free-fire-clash-series",
+      "title": "Free Fire MAX ALLIANCE ONE",
+      "slug": "free-fire-max-alliance-one",
       "game_id": 2,
       "game_name": "Free Fire MAX",
       "prize_pool": "₹35,000 INR (~$420 USD)",
@@ -1926,280 +1887,51 @@
         "win_bonus": 0,
         "win_title": "BOOYAH 🔥"
       },
-      "description": "High-octane Free Fire MAX survival clash featuring 12 top university squads competing in fast-paced Bermuda, Purgatory, and Kalahari drop-ins."
+      "description": "High-octane Free Fire MAX survival clash featuring 12 top university squads competing in fast-paced Bermuda, Purgatory, and Kalahari drop-ins.",
+      "updated_at": "2026-10-02T06:58:51.588Z"
+    },
+    {
+      "id": 3,
+      "title": "BGMI ALLIANCE ONE",
+      "slug": "bgmi-alliance-one",
+      "game_id": 1,
+      "game_name": "BGMI (Battlegrounds Mobile India)",
+      "prize_pool": "₹50,000 INR",
+      "status": "live",
+      "start_date": "2026-10-02",
+      "end_date": "",
+      "venue": "NextGen Spatial Esports Lab & Live Stream",
+      "banner_url": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1200",
+      "registration_open": 1,
+      "scoring_rules": {
+        "system_name": "Official BGIS / BMPS (10-Point)",
+        "placement_scale": {
+          "1": 10,
+          "2": 6,
+          "3": 5,
+          "4": 4,
+          "5": 3,
+          "6": 2,
+          "7": 1,
+          "8": 1,
+          "9": 0,
+          "10": 0,
+          "11": 0,
+          "12": 0,
+          "13": 0,
+          "14": 0,
+          "15": 0,
+          "16": 0
+        },
+        "kill_multiplier": 1,
+        "win_bonus": 0,
+        "win_title": "WWCD 🍗"
+      },
+      "description": "Premier collegiate tournament championship series.",
+      "created_at": "2026-10-02T06:58:10.146Z"
     }
   ],
   "esports_teams": [
-    {
-      "id": 101,
-      "tournament_id": 1,
-      "slot": 1,
-      "team_name": "Soul Esports",
-      "tag": "SOUL",
-      "logo_url": "⚡",
-      "captain_name": "Samar \"Vortex\" (C)",
-      "matches_played": 4,
-      "wins": 1,
-      "kills": 34,
-      "placement_points": 28,
-      "kill_points": 34,
-      "bonus_points": 0,
-      "total_points": 62,
-      "rank": 2,
-      "updated_at": "2026-09-30T17:20:29.513Z"
-    },
-    {
-      "id": 102,
-      "tournament_id": 1,
-      "slot": 2,
-      "team_name": "GodLike Esports",
-      "tag": "GODL",
-      "logo_url": "👑",
-      "captain_name": "Jonathan \"JONNY\" (C)",
-      "matches_played": 4,
-      "wins": 3,
-      "kills": 47,
-      "placement_points": 36,
-      "kill_points": 47,
-      "bonus_points": 0,
-      "total_points": 83,
-      "rank": 1,
-      "updated_at": "2026-09-30T17:20:29.510Z"
-    },
-    {
-      "id": 103,
-      "tournament_id": 1,
-      "slot": 3,
-      "team_name": "Team XSpark",
-      "tag": "TX",
-      "logo_url": "🔥",
-      "captain_name": "ScoutOP \"Tanmay\" (C)",
-      "matches_played": 4,
-      "wins": 0,
-      "kills": 23,
-      "placement_points": 19,
-      "kill_points": 23,
-      "bonus_points": 0,
-      "total_points": 42,
-      "rank": 3,
-      "updated_at": "2026-09-30T17:20:29.515Z"
-    },
-    {
-      "id": 104,
-      "tournament_id": 1,
-      "slot": 4,
-      "team_name": "Entity Gaming",
-      "tag": "ENT",
-      "logo_url": "🛡️",
-      "captain_name": "Saumraj \"Leader\" (C)",
-      "matches_played": 2,
-      "wins": 0,
-      "kills": 13,
-      "placement_points": 9,
-      "kill_points": 13,
-      "bonus_points": 0,
-      "total_points": 22,
-      "rank": 4,
-      "updated_at": "2026-09-30T17:20:29.519Z"
-    },
-    {
-      "id": 105,
-      "tournament_id": 1,
-      "slot": 5,
-      "team_name": "Blind Esports",
-      "tag": "BLND",
-      "logo_url": "👁️",
-      "captain_name": "ManyaOP (C)",
-      "matches_played": 1,
-      "wins": 0,
-      "kills": 8,
-      "placement_points": 3,
-      "kill_points": 8,
-      "bonus_points": 0,
-      "total_points": 11,
-      "rank": 5,
-      "updated_at": "2026-09-30T17:20:29.522Z"
-    },
-    {
-      "id": 106,
-      "tournament_id": 1,
-      "slot": 6,
-      "team_name": "Revenant Esports",
-      "tag": "RNT",
-      "logo_url": "🦅",
-      "captain_name": "Sensei \"Deepak\" (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 6,
-      "updated_at": "2026-09-30T17:20:29.525Z"
-    },
-    {
-      "id": 107,
-      "tournament_id": 1,
-      "slot": 7,
-      "team_name": "Orangutan Gaming",
-      "tag": "OG",
-      "logo_url": "🦧",
-      "captain_name": "Ash \"Aashish\" (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 7,
-      "updated_at": "2026-09-30T17:20:29.529Z"
-    },
-    {
-      "id": 108,
-      "tournament_id": 1,
-      "slot": 8,
-      "team_name": "Gladiators Esports",
-      "tag": "GLAD",
-      "logo_url": "⚔️",
-      "captain_name": "Destro (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 8,
-      "updated_at": "2026-09-30T17:20:29.532Z"
-    },
-    {
-      "id": 109,
-      "tournament_id": 1,
-      "slot": 9,
-      "team_name": "Global Esports",
-      "tag": "GE",
-      "logo_url": "🌐",
-      "captain_name": "Mavi \"Harmandeep\" (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 9,
-      "updated_at": "2026-09-30T17:20:29.535Z"
-    },
-    {
-      "id": 110,
-      "tournament_id": 1,
-      "slot": 10,
-      "team_name": "Medal Esports",
-      "tag": "MEDL",
-      "logo_url": "🏅",
-      "captain_name": "Paradox (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 10,
-      "updated_at": "2026-09-30T17:20:29.538Z"
-    },
-    {
-      "id": 111,
-      "tournament_id": 1,
-      "slot": 11,
-      "team_name": "Hyderabad Hydras",
-      "tag": "HH",
-      "logo_url": "🐍",
-      "captain_name": "Carry \"Akash\" (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 11,
-      "updated_at": "2026-09-30T17:20:29.541Z"
-    },
-    {
-      "id": 112,
-      "tournament_id": 1,
-      "slot": 12,
-      "team_name": "Team Insane",
-      "tag": "INS",
-      "logo_url": "🧠",
-      "captain_name": "Aadi (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 12,
-      "updated_at": "2026-09-30T17:20:29.544Z"
-    },
-    {
-      "id": 113,
-      "tournament_id": 1,
-      "slot": 13,
-      "team_name": "Gujarat Tigers",
-      "tag": "GT",
-      "logo_url": "🐅",
-      "captain_name": "Shadow (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 13,
-      "updated_at": "2026-09-30T17:20:29.547Z"
-    },
-    {
-      "id": 114,
-      "tournament_id": 1,
-      "slot": 14,
-      "team_name": "Big Brother Esports",
-      "tag": "BB",
-      "logo_url": "🤝",
-      "captain_name": "Uzair (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 14,
-      "updated_at": "2026-09-30T17:20:29.549Z"
-    },
-    {
-      "id": 115,
-      "tournament_id": 1,
-      "slot": 15,
-      "team_name": "Team 8Bit",
-      "tag": "8BIT",
-      "logo_url": "👾",
-      "captain_name": "Juicy (C)",
-      "matches_played": 0,
-      "wins": 0,
-      "kills": 0,
-      "placement_points": 0,
-      "kill_points": 0,
-      "bonus_points": 0,
-      "total_points": 0,
-      "rank": 15,
-      "updated_at": "2026-09-30T17:20:29.552Z"
-    },
     {
       "id": 201,
       "tournament_id": 2,
@@ -2216,7 +1948,7 @@
       "bonus_points": 0,
       "total_points": 40,
       "rank": 2,
-      "updated_at": "2026-09-30T07:26:03.950Z"
+      "updated_at": "2026-10-02T07:13:38.035Z"
     },
     {
       "id": 202,
@@ -2234,7 +1966,7 @@
       "bonus_points": 0,
       "total_points": 42,
       "rank": 1,
-      "updated_at": "2026-09-30T07:26:03.947Z"
+      "updated_at": "2026-10-02T07:13:38.032Z"
     },
     {
       "id": 203,
@@ -2252,7 +1984,7 @@
       "bonus_points": 0,
       "total_points": 29,
       "rank": 3,
-      "updated_at": "2026-09-30T07:26:03.952Z"
+      "updated_at": "2026-10-02T07:13:38.036Z"
     },
     {
       "id": 204,
@@ -2270,7 +2002,7 @@
       "bonus_points": 0,
       "total_points": 13,
       "rank": 4,
-      "updated_at": "2026-09-30T07:26:03.956Z"
+      "updated_at": "2026-10-02T07:13:38.037Z"
     },
     {
       "id": 205,
@@ -2288,7 +2020,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 5,
-      "updated_at": "2026-09-30T07:26:03.958Z"
+      "updated_at": "2026-10-02T07:13:38.039Z"
     },
     {
       "id": 206,
@@ -2306,7 +2038,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 6,
-      "updated_at": "2026-09-30T07:26:03.961Z"
+      "updated_at": "2026-10-02T07:13:38.040Z"
     },
     {
       "id": 207,
@@ -2324,7 +2056,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 7,
-      "updated_at": "2026-09-30T07:26:03.964Z"
+      "updated_at": "2026-10-02T07:13:38.041Z"
     },
     {
       "id": 208,
@@ -2342,7 +2074,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 8,
-      "updated_at": "2026-09-30T07:26:03.967Z"
+      "updated_at": "2026-10-02T07:13:38.042Z"
     },
     {
       "id": 209,
@@ -2360,7 +2092,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 9,
-      "updated_at": "2026-09-30T07:26:03.971Z"
+      "updated_at": "2026-10-02T07:13:38.043Z"
     },
     {
       "id": 210,
@@ -2378,7 +2110,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 10,
-      "updated_at": "2026-09-30T07:26:03.974Z"
+      "updated_at": "2026-10-02T07:13:38.047Z"
     },
     {
       "id": 211,
@@ -2396,7 +2128,7 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 11,
-      "updated_at": "2026-09-30T07:26:03.976Z"
+      "updated_at": "2026-10-02T07:13:38.048Z"
     },
     {
       "id": 212,
@@ -2414,97 +2146,426 @@
       "bonus_points": 0,
       "total_points": 0,
       "rank": 12,
-      "updated_at": "2026-09-30T07:26:03.979Z"
+      "updated_at": "2026-10-02T07:13:38.049Z"
+    },
+    {
+      "id": 213,
+      "tournament_id": 3,
+      "slot": 1,
+      "team_name": "Soul Esports",
+      "tag": "SOUL",
+      "logo_url": "⚡",
+      "captain_name": "Samar \"Vortex\" (C)",
+      "captain_contact": "",
+      "members": [
+        "Manya",
+        "Spower",
+        "Rony",
+        "Nakul"
+      ],
+      "matches_played": 2,
+      "wins": 1,
+      "kills": 20,
+      "placement_points": 16,
+      "kill_points": 20,
+      "bonus_points": 0,
+      "total_points": 36,
+      "rank": 2,
+      "created_at": "2026-10-02T06:58:10.152Z",
+      "updated_at": "2026-10-02T07:13:47.154Z"
+    },
+    {
+      "id": 214,
+      "tournament_id": 3,
+      "slot": 2,
+      "team_name": "GodLike Esports",
+      "tag": "GODL",
+      "logo_url": "👑",
+      "captain_name": "Jonathan \"JONNY\" (C)",
+      "captain_contact": "",
+      "members": [
+        "Jonathan",
+        "Zgod",
+        "ClutchGod",
+        "Admino"
+      ],
+      "matches_played": 2,
+      "wins": 1,
+      "kills": 23,
+      "placement_points": 16,
+      "kill_points": 23,
+      "bonus_points": 0,
+      "total_points": 39,
+      "rank": 1,
+      "created_at": "2026-10-02T06:58:10.155Z",
+      "updated_at": "2026-10-02T07:13:47.152Z"
+    },
+    {
+      "id": 215,
+      "tournament_id": 3,
+      "slot": 3,
+      "team_name": "Team XSpark",
+      "tag": "TX",
+      "logo_url": "🔥",
+      "captain_name": "ScoutOP \"Tanmay\" (C)",
+      "captain_contact": "",
+      "members": [
+        "ScoutOP",
+        "Sarang",
+        "SprayGod",
+        "NinjaBoi"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 13,
+      "placement_points": 9,
+      "kill_points": 13,
+      "bonus_points": 0,
+      "total_points": 22,
+      "rank": 3,
+      "created_at": "2026-10-02T06:58:10.157Z",
+      "updated_at": "2026-10-02T07:13:47.156Z"
+    },
+    {
+      "id": 216,
+      "tournament_id": 3,
+      "slot": 4,
+      "team_name": "Entity Gaming",
+      "tag": "ENT",
+      "logo_url": "🛡️",
+      "captain_name": "Saumraj \"Leader\" (C)",
+      "captain_contact": "",
+      "members": [
+        "Saumraj",
+        "Pukar",
+        "Gamlaboy",
+        "Trojan"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 13,
+      "placement_points": 9,
+      "kill_points": 13,
+      "bonus_points": 0,
+      "total_points": 22,
+      "rank": 4,
+      "created_at": "2026-10-02T06:58:10.160Z",
+      "updated_at": "2026-10-02T07:13:47.158Z"
+    },
+    {
+      "id": 217,
+      "tournament_id": 3,
+      "slot": 5,
+      "team_name": "Blind Esports",
+      "tag": "BLND",
+      "logo_url": "👁️",
+      "captain_name": "ManyaOP (C)",
+      "captain_contact": "",
+      "members": [
+        "Manya",
+        "Joker",
+        "Darklord",
+        "Blaze"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 9,
+      "placement_points": 5,
+      "kill_points": 9,
+      "bonus_points": 0,
+      "total_points": 14,
+      "rank": 5,
+      "created_at": "2026-10-02T06:58:10.164Z",
+      "updated_at": "2026-10-02T07:13:47.160Z"
+    },
+    {
+      "id": 218,
+      "tournament_id": 3,
+      "slot": 6,
+      "team_name": "Revenant Esports",
+      "tag": "RNT",
+      "logo_url": "🦅",
+      "captain_name": "Sensei \"Deepak\" (C)",
+      "captain_contact": "",
+      "members": [
+        "Sensei",
+        "Aquanox",
+        "Fierce",
+        "Punk"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 9,
+      "placement_points": 5,
+      "kill_points": 9,
+      "bonus_points": 0,
+      "total_points": 14,
+      "rank": 6,
+      "created_at": "2026-10-02T06:58:10.172Z",
+      "updated_at": "2026-10-02T07:13:47.162Z"
+    },
+    {
+      "id": 219,
+      "tournament_id": 3,
+      "slot": 7,
+      "team_name": "Orangutan Gaming",
+      "tag": "OG",
+      "logo_url": "🦧",
+      "captain_name": "Ash \"Aashish\" (C)",
+      "captain_contact": "",
+      "members": [
+        "Ash",
+        "WizzGod",
+        "Drigger",
+        "Attanki"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 5,
+      "placement_points": 2,
+      "kill_points": 5,
+      "bonus_points": 0,
+      "total_points": 7,
+      "rank": 7,
+      "created_at": "2026-10-02T06:58:10.179Z",
+      "updated_at": "2026-10-02T07:13:47.164Z"
+    },
+    {
+      "id": 220,
+      "tournament_id": 3,
+      "slot": 8,
+      "team_name": "Gladiators Esports",
+      "tag": "GLAD",
+      "logo_url": "⚔️",
+      "captain_name": "Destro (C)",
+      "captain_contact": "",
+      "members": [
+        "Destro",
+        "Justin",
+        "DeltaPG",
+        "Shogun"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 5,
+      "placement_points": 2,
+      "kill_points": 5,
+      "bonus_points": 0,
+      "total_points": 7,
+      "rank": 8,
+      "created_at": "2026-10-02T06:58:10.184Z",
+      "updated_at": "2026-10-02T07:13:47.166Z"
+    },
+    {
+      "id": 221,
+      "tournament_id": 3,
+      "slot": 9,
+      "team_name": "Global Esports",
+      "tag": "GE",
+      "logo_url": "🌐",
+      "captain_name": "Mavi \"Harmandeep\" (C)",
+      "captain_contact": "",
+      "members": [
+        "Mavi",
+        "Beast",
+        "Slug",
+        "Ninjajod"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 2,
+      "placement_points": 0,
+      "kill_points": 2,
+      "bonus_points": 0,
+      "total_points": 2,
+      "rank": 10,
+      "created_at": "2026-10-02T06:58:10.189Z",
+      "updated_at": "2026-10-02T07:13:47.173Z"
+    },
+    {
+      "id": 222,
+      "tournament_id": 3,
+      "slot": 10,
+      "team_name": "Medal Esports",
+      "tag": "MEDL",
+      "logo_url": "🏅",
+      "captain_name": "Paradox (C)",
+      "captain_contact": "",
+      "members": [
+        "Paradox",
+        "TopG",
+        "Kyoya",
+        "Enigma"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 3,
+      "placement_points": 0,
+      "kill_points": 3,
+      "bonus_points": 0,
+      "total_points": 3,
+      "rank": 9,
+      "created_at": "2026-10-02T06:58:10.201Z",
+      "updated_at": "2026-10-02T07:13:47.170Z"
+    },
+    {
+      "id": 223,
+      "tournament_id": 3,
+      "slot": 11,
+      "team_name": "Hyderabad Hydras",
+      "tag": "HH",
+      "logo_url": "🐍",
+      "captain_name": "Carry \"Akash\" (C)",
+      "captain_contact": "",
+      "members": [
+        "Carry",
+        "Epic",
+        "Bison",
+        "Viper"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 1,
+      "placement_points": 0,
+      "kill_points": 1,
+      "bonus_points": 0,
+      "total_points": 1,
+      "rank": 11,
+      "created_at": "2026-10-02T06:58:10.209Z",
+      "updated_at": "2026-10-02T07:13:47.175Z"
+    },
+    {
+      "id": 224,
+      "tournament_id": 3,
+      "slot": 12,
+      "team_name": "Team Insane",
+      "tag": "INS",
+      "logo_url": "🧠",
+      "captain_name": "Aadi (C)",
+      "captain_contact": "",
+      "members": [
+        "Aadi",
+        "Skipz",
+        "Harsh",
+        "Thunder"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 0,
+      "placement_points": 0,
+      "kill_points": 0,
+      "bonus_points": 0,
+      "total_points": 0,
+      "rank": 12,
+      "created_at": "2026-10-02T06:58:10.214Z",
+      "updated_at": "2026-10-02T07:13:47.177Z"
+    },
+    {
+      "id": 225,
+      "tournament_id": 3,
+      "slot": 13,
+      "team_name": "Gujarat Tigers",
+      "tag": "GT",
+      "logo_url": "🐅",
+      "captain_name": "Shadow (C)",
+      "captain_contact": "",
+      "members": [
+        "Shadow",
+        "Prince",
+        "AJ",
+        "Rishi"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 0,
+      "placement_points": 0,
+      "kill_points": 0,
+      "bonus_points": 0,
+      "total_points": 0,
+      "rank": 13,
+      "created_at": "2026-10-02T06:58:10.217Z",
+      "updated_at": "2026-10-02T07:13:47.180Z"
+    },
+    {
+      "id": 226,
+      "tournament_id": 3,
+      "slot": 14,
+      "team_name": "Big Brother Esports",
+      "tag": "BB",
+      "logo_url": "🤝",
+      "captain_name": "Uzair (C)",
+      "captain_contact": "",
+      "members": [
+        "Uzair",
+        "Saif",
+        "Kratos",
+        "Zod"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 0,
+      "placement_points": 0,
+      "kill_points": 0,
+      "bonus_points": 0,
+      "total_points": 0,
+      "rank": 14,
+      "created_at": "2026-10-02T06:58:10.220Z",
+      "updated_at": "2026-10-02T07:13:47.182Z"
+    },
+    {
+      "id": 227,
+      "tournament_id": 3,
+      "slot": 15,
+      "team_name": "Team 8Bit",
+      "tag": "8BIT",
+      "logo_url": "👾",
+      "captain_name": "Juicy (C)",
+      "captain_contact": "",
+      "members": [
+        "Juicy",
+        "Mighty",
+        "Beast",
+        "Mac"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 0,
+      "placement_points": 0,
+      "kill_points": 0,
+      "bonus_points": 0,
+      "total_points": 0,
+      "rank": 15,
+      "created_at": "2026-10-02T06:58:10.223Z",
+      "updated_at": "2026-10-02T07:13:47.185Z"
+    },
+    {
+      "id": 228,
+      "tournament_id": 3,
+      "slot": 16,
+      "team_name": "Autobotz Esports",
+      "tag": "AUTO",
+      "logo_url": "🤖",
+      "captain_name": "Cyber (C)",
+      "captain_contact": "",
+      "members": [
+        "Cyber",
+        "Bolt",
+        "Gizmo",
+        "Rotor"
+      ],
+      "matches_played": 2,
+      "wins": 0,
+      "kills": 0,
+      "placement_points": 0,
+      "kill_points": 0,
+      "bonus_points": 0,
+      "total_points": 0,
+      "rank": 16,
+      "created_at": "2026-10-02T06:58:10.227Z",
+      "updated_at": "2026-10-02T07:13:47.187Z"
     }
   ],
   "esports_matches": [
-    {
-      "id": 1001,
-      "tournament_id": 1,
-      "match_title": "Match 1 · Erangel Launch",
-      "match_number": 1,
-      "map_name": "Erangel",
-      "played_at": "2026-09-24 16:30",
-      "mvp_player": "SOUL_Manya (7 Kills)",
-      "results": [
-        {
-          "team_id": 101,
-          "team_name": "Soul Esports",
-          "placement": 1,
-          "kills": 12,
-          "points": 22
-        },
-        {
-          "team_id": 102,
-          "team_name": "GodLike Esports",
-          "placement": 2,
-          "kills": 9,
-          "points": 15
-        },
-        {
-          "team_id": 103,
-          "team_name": "Team XSpark",
-          "placement": 3,
-          "kills": 7,
-          "points": 12
-        },
-        {
-          "team_id": 104,
-          "team_name": "Entity Gaming",
-          "placement": 4,
-          "kills": 6,
-          "points": 10
-        },
-        {
-          "team_id": 105,
-          "team_name": "Blind Esports",
-          "placement": 5,
-          "kills": 8,
-          "points": 11
-        }
-      ],
-      "updated_at": "2026-09-30T17:20:29.427Z"
-    },
-    {
-      "id": 1002,
-      "tournament_id": 1,
-      "match_title": "Match 2 · Miramar Ridge Storm",
-      "match_number": 2,
-      "map_name": "Miramar",
-      "played_at": "2026-09-24 17:30",
-      "mvp_player": "GODL_Jonathan (9 Kills)",
-      "results": [
-        {
-          "team_id": 102,
-          "team_name": "GodLike Esports",
-          "placement": 1,
-          "kills": 14,
-          "points": 24
-        },
-        {
-          "team_id": 101,
-          "team_name": "Soul Esports",
-          "placement": 2,
-          "kills": 8,
-          "points": 14
-        },
-        {
-          "team_id": 104,
-          "team_name": "Entity Gaming",
-          "placement": 3,
-          "kills": 7,
-          "points": 12
-        },
-        {
-          "team_id": 103,
-          "team_name": "Team XSpark",
-          "placement": 4,
-          "kills": 6,
-          "points": 10
-        }
-      ],
-      "updated_at": "2026-09-30T17:20:29.432Z"
-    },
     {
       "id": 2001,
       "tournament_id": 2,
@@ -2543,7 +2604,7 @@
           "points": 13
         }
       ],
-      "updated_at": "2026-09-30T07:26:03.900Z"
+      "updated_at": "2026-10-02T07:13:38.011Z"
     },
     {
       "id": 2002,
@@ -2576,109 +2637,257 @@
           "points": 14
         }
       ],
-      "updated_at": "2026-09-30T07:26:03.903Z"
+      "updated_at": "2026-10-02T07:13:38.012Z"
     },
     {
       "id": 2003,
-      "tournament_id": 1,
-      "match_title": "Match 3: Sanhok Jungle Brawl",
-      "match_number": 3,
-      "map_name": "Sanhok",
-      "played_at": "2026-09-30 06:55",
-      "mvp_player": "VP_Krypton (10 Kills)",
+      "tournament_id": 3,
+      "match_title": "Match 1 · Erangel Launch",
+      "match_number": 1,
+      "map_name": "Erangel",
+      "played_at": "2026-10-02 07:13",
+      "mvp_player": "SOUL_Manya (7 Kills)",
       "results": [
         {
-          "team_id": 1,
-          "team_name": "Vortex Phantom",
+          "team_id": 213,
+          "team_name": "Soul Esports",
           "placement": 1,
           "kills": 12,
           "points": 22
         },
         {
-          "team_id": 2,
-          "team_name": "Cyber Valkyries",
+          "team_id": 214,
+          "team_name": "GodLike Esports",
           "placement": 2,
-          "kills": 7,
-          "points": 13
+          "kills": 9,
+          "points": 15
         },
         {
-          "team_id": 3,
-          "team_name": "HyperDrive Gaming",
+          "team_id": 215,
+          "team_name": "Team XSpark",
           "placement": 3,
-          "kills": 5,
+          "kills": 7,
+          "points": 12
+        },
+        {
+          "team_id": 216,
+          "team_name": "Entity Gaming",
+          "placement": 4,
+          "kills": 6,
           "points": 10
+        },
+        {
+          "team_id": 217,
+          "team_name": "Blind Esports",
+          "placement": 5,
+          "kills": 5,
+          "points": 8
+        },
+        {
+          "team_id": 218,
+          "team_name": "Revenant Esports",
+          "placement": 6,
+          "kills": 4,
+          "points": 6
+        },
+        {
+          "team_id": 219,
+          "team_name": "Orangutan Gaming",
+          "placement": 7,
+          "kills": 3,
+          "points": 4
+        },
+        {
+          "team_id": 220,
+          "team_name": "Gladiators Esports",
+          "placement": 8,
+          "kills": 2,
+          "points": 3
+        },
+        {
+          "team_id": 221,
+          "team_name": "Global Esports",
+          "placement": 9,
+          "kills": 1,
+          "points": 1
+        },
+        {
+          "team_id": 222,
+          "team_name": "Medal Esports",
+          "placement": 10,
+          "kills": 1,
+          "points": 1
+        },
+        {
+          "team_id": 223,
+          "team_name": "Hyderabad Hydras",
+          "placement": 11,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 224,
+          "team_name": "Team Insane",
+          "placement": 12,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 225,
+          "team_name": "Gujarat Tigers",
+          "placement": 13,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 226,
+          "team_name": "Big Brother Esports",
+          "placement": 14,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 227,
+          "team_name": "Team 8Bit",
+          "placement": 15,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 228,
+          "team_name": "Autobotz Esports",
+          "placement": 16,
+          "kills": 0,
+          "points": 0
         }
       ],
-      "created_at": "2026-09-30T06:55:06.224Z",
-      "updated_at": "2026-09-30T17:20:29.438Z"
+      "created_at": "2026-10-02T07:13:42.925Z",
+      "updated_at": "2026-10-02T07:13:47.107Z"
     },
     {
       "id": 2004,
-      "tournament_id": 1,
-      "match_title": "Match 3: Sanhok Jungle Brawl",
-      "match_number": 3,
-      "map_name": "Sanhok",
-      "played_at": "2026-09-30 07:00",
-      "mvp_player": "VP_Krypton (10 Kills)",
+      "tournament_id": 3,
+      "match_title": "Match 2 · Miramar Ridge Storm",
+      "match_number": 2,
+      "map_name": "Miramar",
+      "played_at": "2026-10-02 07:13",
+      "mvp_player": "GODL_Jonathan (9 Kills)",
       "results": [
         {
-          "team_id": 102,
+          "team_id": 214,
           "team_name": "GodLike Esports",
           "placement": 1,
-          "kills": 12,
-          "points": 22
+          "kills": 14,
+          "points": 24
         },
         {
-          "team_id": 101,
+          "team_id": 213,
           "team_name": "Soul Esports",
           "placement": 2,
-          "kills": 7,
-          "points": 13
+          "kills": 8,
+          "points": 14
         },
         {
-          "team_id": 103,
-          "team_name": "Team XSpark",
+          "team_id": 216,
+          "team_name": "Entity Gaming",
           "placement": 3,
-          "kills": 5,
+          "kills": 7,
+          "points": 12
+        },
+        {
+          "team_id": 215,
+          "team_name": "Team XSpark",
+          "placement": 4,
+          "kills": 6,
           "points": 10
+        },
+        {
+          "team_id": 218,
+          "team_name": "Revenant Esports",
+          "placement": 5,
+          "kills": 5,
+          "points": 8
+        },
+        {
+          "team_id": 217,
+          "team_name": "Blind Esports",
+          "placement": 6,
+          "kills": 4,
+          "points": 6
+        },
+        {
+          "team_id": 220,
+          "team_name": "Gladiators Esports",
+          "placement": 7,
+          "kills": 3,
+          "points": 4
+        },
+        {
+          "team_id": 219,
+          "team_name": "Orangutan Gaming",
+          "placement": 8,
+          "kills": 2,
+          "points": 3
+        },
+        {
+          "team_id": 222,
+          "team_name": "Medal Esports",
+          "placement": 9,
+          "kills": 2,
+          "points": 2
+        },
+        {
+          "team_id": 221,
+          "team_name": "Global Esports",
+          "placement": 10,
+          "kills": 1,
+          "points": 1
+        },
+        {
+          "team_id": 223,
+          "team_name": "Hyderabad Hydras",
+          "placement": 11,
+          "kills": 1,
+          "points": 1
+        },
+        {
+          "team_id": 224,
+          "team_name": "Team Insane",
+          "placement": 12,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 225,
+          "team_name": "Gujarat Tigers",
+          "placement": 13,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 226,
+          "team_name": "Big Brother Esports",
+          "placement": 14,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 227,
+          "team_name": "Team 8Bit",
+          "placement": 15,
+          "kills": 0,
+          "points": 0
+        },
+        {
+          "team_id": 228,
+          "team_name": "Autobotz Esports",
+          "placement": 16,
+          "kills": 0,
+          "points": 0
         }
       ],
-      "created_at": "2026-09-30T07:00:51.455Z",
-      "updated_at": "2026-09-30T17:20:29.442Z"
-    },
-    {
-      "id": 2005,
-      "tournament_id": 1,
-      "match_title": "Match 3: Sanhok Jungle Brawl",
-      "match_number": 3,
-      "map_name": "Sanhok",
-      "played_at": "2026-09-30 07:19",
-      "mvp_player": "VP_Krypton (10 Kills)",
-      "results": [
-        {
-          "team_id": 102,
-          "team_name": "GodLike Esports",
-          "placement": 1,
-          "kills": 12,
-          "points": 22
-        },
-        {
-          "team_id": 101,
-          "team_name": "Soul Esports",
-          "placement": 2,
-          "kills": 7,
-          "points": 13
-        },
-        {
-          "team_id": 103,
-          "team_name": "Team XSpark",
-          "placement": 3,
-          "kills": 5,
-          "points": 10
-        }
-      ],
-      "created_at": "2026-09-30T07:19:51.068Z",
-      "updated_at": "2026-09-30T17:20:29.447Z"
+      "created_at": "2026-10-02T07:13:45.023Z",
+      "updated_at": "2026-10-02T07:13:47.110Z"
     }
   ],
   "site_content": {
@@ -2821,6 +3030,76 @@
       "action": "DELETE_EVENT",
       "details": "{\"event_id\":1789967508331,\"title\":\"Cross-Browser Test Event 3247\"}",
       "created_at": "2026-09-30T07:20:43.870Z"
+    },
+    {
+      "id": 17,
+      "admin_user": "admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin logged in successfully.",
+      "created_at": "2026-10-02T05:17:25.492Z"
+    },
+    {
+      "id": 18,
+      "admin_user": "admin",
+      "action": "CREATE_TOURNAMENT",
+      "details": "{\"tournament_id\":3,\"title\":\"Valorant Champions Spring 2026\"}",
+      "created_at": "2026-10-02T05:17:25.506Z"
+    },
+    {
+      "id": 19,
+      "admin_user": "admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin logged in successfully.",
+      "created_at": "2026-10-02T06:00:34.802Z"
+    },
+    {
+      "id": 20,
+      "admin_user": "admin",
+      "action": "DELETE_TOURNAMENT",
+      "details": "{\"tournament_id\":3,\"title\":\"Valorant Champions Spring 2026\"}",
+      "created_at": "2026-10-02T06:00:34.814Z"
+    },
+    {
+      "id": 21,
+      "admin_user": "admin",
+      "action": "DELETE_TOURNAMENT",
+      "details": "{\"tournament_id\":1,\"title\":\"BGIS Ultimate Champions Cup 2026\"}",
+      "created_at": "2026-10-02T06:57:18.775Z"
+    },
+    {
+      "id": 22,
+      "admin_user": "admin",
+      "action": "CREATE_TOURNAMENT",
+      "details": "{\"tournament_id\":3,\"title\":\"BGMI ALLIANCE ONE\"}",
+      "created_at": "2026-10-02T06:58:10.230Z"
+    },
+    {
+      "id": 23,
+      "admin_user": "admin",
+      "action": "UPDATE_TOURNAMENT",
+      "details": "{\"tournament_id\":2,\"title\":\"Free Fire MAX ALLIANCE ONE\"}",
+      "created_at": "2026-10-02T06:58:51.591Z"
+    },
+    {
+      "id": 24,
+      "admin_user": "admin",
+      "action": "ADMIN_LOGIN",
+      "details": "Admin logged in successfully.",
+      "created_at": "2026-10-02T07:13:38.799Z"
+    },
+    {
+      "id": 25,
+      "admin_user": "admin",
+      "action": "RECORD_MATCH_RESULT",
+      "details": "{\"tournament_id\":3,\"match_id\":2003}",
+      "created_at": "2026-10-02T07:13:42.971Z"
+    },
+    {
+      "id": 26,
+      "admin_user": "admin",
+      "action": "RECORD_MATCH_RESULT",
+      "details": "{\"tournament_id\":3,\"match_id\":2004}",
+      "created_at": "2026-10-02T07:13:45.071Z"
     }
   ],
   "alliance_one_registrations": [
@@ -2879,6 +3158,40 @@
       "bank_details_confirmed": true,
       "timestamp": "30/9/2026, 10:37:39 pm",
       "created_at": "2026-09-30T17:07:39.358Z"
+    },
+    {
+      "id": 3,
+      "event_id": "shastra-2026",
+      "event_name": "RanShastra 3.0 – AstraArena E-sports Championship",
+      "game_name": "BGMI (Battlegrounds Mobile India)",
+      "is_individual": false,
+      "team_name": "Vortex Legends",
+      "team_lead_name": "Aarav Sharma",
+      "participant_name": "Aarav Sharma",
+      "team_lead_ingame_id": "VORTEX_LEAD",
+      "team_lead_email": "aarav.sharma@alliance.edu.in",
+      "team_lead_phone": "9876543210",
+      "college": "Alliance University",
+      "teammate_2_name": "Rohan Verma",
+      "teammate_2_ingame_id": "VORTEX_2",
+      "teammate_2_email": "rohan.v@gmail.com",
+      "teammate_2_phone": "9876543211",
+      "teammate_3_name": "Karan Patel",
+      "teammate_3_ingame_id": "VORTEX_3",
+      "teammate_3_email": "karan.p@gmail.com",
+      "teammate_3_phone": "9876543212",
+      "bank_account_number": "123456789012",
+      "bank_account_holder_name": "Aarav Sharma",
+      "bank_ifsc": "HDFC0001234",
+      "bank_branch": "Anekal Bangalore",
+      "bank_linked_mobile": "9876543210",
+      "upi_id": "aarav@okaxis",
+      "passbook_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "payment_proof_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "payment_proof_name": "payment_screenshot_aarav.png",
+      "bank_details_confirmed": true,
+      "timestamp": "2/10/2026, 10:46:53 am",
+      "created_at": "2026-10-02T05:16:53.733Z"
     }
   ],
   "alliance_one_settings": [

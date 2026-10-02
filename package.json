@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node index.js",
-    "build": "echo \"Backend ready\""
+    "build": "echo \"Backend build completed\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.115.0",

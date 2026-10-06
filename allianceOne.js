@@ -160,6 +160,30 @@ function getEventSlug(filter) {
   return filter.replace(/[^a-zA-Z0-9_-]/g, '_');
 }
 
+function matchesEventCategory(r, filter) {
+  if (!filter || filter.toUpperCase() === 'ALL') return true;
+  const f = filter.toUpperCase();
+  const ev = (r.event_name || '').toUpperCase();
+  const gm = (r.game_name || '').toUpperCase();
+  const cat = (r.category || '').toUpperCase();
+  const eid = (r.event_id || '').toUpperCase();
+  const allText = `${ev} ${gm} ${cat} ${eid}`;
+
+  if (f.includes('FREE FIRE')) return allText.includes('FREE FIRE') || allText.includes('FREEFIRE');
+  if (f.includes('BGMI')) return allText.includes('BGMI') || allText.includes('BATTLEGROUNDS');
+  if (f.includes('VALORANT')) return allText.includes('VALORANT') || allText.includes('VALO');
+  if (f.includes('CLASH ROYALE')) return allText.includes('CLASH ROYALE') || allText.includes('CLASH');
+  if (f.includes('EAFC')) return allText.includes('EAFC') || allText.includes('FIFA') || allText.includes('FC 25') || allText.includes('FC25');
+  if (f.includes('CODESANGRAM') || f.includes('CODE SANGRAM') || f.includes('HACKATHON')) {
+    return allText.includes('CODESANGRAM') || allText.includes('CODE SANGRAM') || allText.includes('HACKATHON');
+  }
+  if (f.includes('IPRAGYAN') || f.includes('MEDIA') || f.includes('ART')) {
+    return allText.includes('IPRAGYAN') || allText.includes('I-PRAGYAN') || allText.includes('PRAGYAN') ||
+           allText.includes('FILMMAKING') || allText.includes('FILM') || allText.includes('PIXEL') || allText.includes('DIGITAL ART');
+  }
+  return allText.includes(f);
+}
+
 /**
  * GET /api/alliance-one/export
  * Download CSV of registrations, optionally filtered by event or game
@@ -170,14 +194,7 @@ router.get('/export', (req, res) => {
     const filter = (req.query.filter || req.query.event || req.query.game || 'ALL').trim();
     const filterUpper = filter.toUpperCase();
 
-    let filtered = [...list];
-    if (filterUpper !== 'ALL') {
-      filtered = filtered.filter(r => 
-        (r.game_name && r.game_name.toUpperCase().includes(filterUpper)) ||
-        (r.event_name && r.event_name.toUpperCase().includes(filterUpper)) ||
-        (r.category && r.category.toUpperCase().includes(filterUpper))
-      );
-    }
+    const filtered = list.filter(r => matchesEventCategory(r, filter));
 
     const sorted = filtered.sort((a, b) => new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp));
 
@@ -398,15 +415,7 @@ router.get('/export-passbooks', async (req, res) => {
     const list = db.all('alliance_one_registrations') || [];
     const filter = (req.query.filter || req.query.event || req.query.game || 'ALL').trim();
     const filterUpper = filter.toUpperCase();
-
-    let filtered = [...list];
-    if (filterUpper !== 'ALL') {
-      filtered = filtered.filter(r => 
-        (r.game_name && r.game_name.toUpperCase().includes(filterUpper)) ||
-        (r.event_name && r.event_name.toUpperCase().includes(filterUpper)) ||
-        (r.category && r.category.toUpperCase().includes(filterUpper))
-      );
-    }
+    const filtered = list.filter(r => matchesEventCategory(r, filter));
 
     // Filter to those with passbook proof or payment proof
     const withProof = filtered.filter(r => !!(r.passbook_preview || r.passbook_url || r.payment_proof_preview || r.payment_proof_url));

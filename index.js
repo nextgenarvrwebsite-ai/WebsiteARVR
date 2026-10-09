@@ -2647,22 +2647,19 @@ function handleBatchSync(req, res) {
     "unreal engine 5.5 masterclass: nanite & lumen",
     "cyberclash: collegiate valorant championship",
     "hands-on webxr & three.js bootcamp",
-    "hands-on spatial xr & webxr masterclass 2026"
+    "hands-on spatial xr & webxr masterclass 2026",
+    "workshop on game development",
+    "metaverse & webxr hands-on lab",
+    "spatial ui/ux & unity 3d design sprint",
+    "3d-game development"
   ];
-  const currentEvents = db.all("events");
   const mergedMap = /* @__PURE__ */ new Map();
-  currentEvents.forEach((e) => {
-    if (!e || !e.id) return;
-    const t = (e.title || "").trim().toLowerCase();
-    if (legacyTitles.includes(t) || t.includes("hands-on spatial xr") || t.includes("spatial xr & webxr")) return;
-    mergedMap.set(String(e.id), e);
-  });
   eventsList.forEach((e, idx) => {
     if (!e || !e.title) return;
     const t = (e.title || "").trim().toLowerCase();
     if (legacyTitles.includes(t) || t.includes("hands-on spatial xr") || t.includes("spatial xr & webxr")) return;
     const id = e.id ? String(e.id) : String(Date.now() + idx);
-    const existing = mergedMap.get(id);
+    const existing = db.get("events", (ev) => String(ev.id) === id);
     const clean = {
       ...existing || {},
       ...e,
@@ -2723,8 +2720,8 @@ router4.post("/", (req, res, next) => {
   });
 });
 router4.put("/:id", authenticateAdmin, (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const existing = db.get("events", (e) => e.id === id);
+  const rawId = String(req.params.id);
+  const existing = db.get("events", (e) => String(e.id) === rawId);
   if (!existing) {
     return res.status(404).json({ error: "Event not found." });
   }
@@ -2738,19 +2735,19 @@ router4.put("/:id", authenticateAdmin, (req, res) => {
   if (updatePayload.tags && typeof updatePayload.tags === "string") {
     updatePayload.tags = updatePayload.tags.split(",").map((t) => t.trim());
   }
-  const updated = db.update("events", (e) => e.id === id, updatePayload);
-  logAdminAction(req.admin.username, "EDIT_EVENT", { event_id: id, title: updated.title });
+  const updated = db.update("events", (e) => String(e.id) === rawId, updatePayload);
+  logAdminAction(req.admin.username, "EDIT_EVENT", { event_id: rawId, title: updated.title });
   return res.json({ message: "Event updated successfully", event: updated });
 });
 router4.delete("/:id", authenticateAdmin, (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const existing = db.get("events", (e) => e.id === id);
+  const rawId = String(req.params.id);
+  const existing = db.get("events", (e) => String(e.id) === rawId);
   if (!existing) {
     return res.status(404).json({ error: "Event not found." });
   }
-  db.delete("events", (e) => e.id === id);
-  db.delete("event_registrations", (r) => r.event_id === id);
-  logAdminAction(req.admin.username, "DELETE_EVENT", { event_id: id, title: existing.title });
+  db.delete("events", (e) => String(e.id) === rawId);
+  db.delete("event_registrations", (r) => String(r.event_id) === rawId);
+  logAdminAction(req.admin.username, "DELETE_EVENT", { event_id: rawId, title: existing.title });
   return res.json({ message: "Event deleted successfully." });
 });
 function resolveSchool(r) {
